@@ -33,3 +33,7 @@ build/
 .worktrees/
 
 .codegraph/
+
+### Node ###
+node_modules/
+.DS_Store
