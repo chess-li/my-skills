@@ -8,7 +8,8 @@
 // 自动退出——服务无状态（状态全在磁盘），消亡无损失，需要时重新启动即可。
 //
 // 写盘面：POST /__am_save 按 DOM 路径（html:0/body:0/div:1，同标签兄弟序号）
-// 在源码对应起始标签精确插入/替换 data-term-anchor，并把新术语同步进项目内
+// 在源码对应起始标签精确插入/替换 data-term-anchor；wrap 模式把 paths 指出的
+// 同父相邻兄弟包进一个 <div data-term-anchor> 盒。并把新术语同步进项目内
 // 唯一引用锚点的术语表。安全面：仅写白名单根目录（默认 ~/workspace，
 // AM_ALLOW 冒号分隔追加）内的 .html；术语表写入仅限项目 docs/contexts 下。
 import http from 'node:http';
@@ -16,7 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 
-const VERSION = '0.3.0';
+const VERSION = '0.4.0';
 const ALLOW = [path.join(os.homedir(), 'workspace'),
   ...(process.env.AM_ALLOW ? process.env.AM_ALLOW.split(':') : [])]
   .map(p => path.resolve(p));
@@ -28,7 +29,8 @@ function allowed(f) {
   return ALLOW.some(a => r === a || r.startsWith(a + path.sep));
 }
 
-// 与客户端 amPath 同构的源码元素树：节点记录起始标签的绝对区间 [start, end)
+// 与客户端 amPath 同构的源码元素树：节点记录起始标签的绝对区间 [start, end)，
+// fullEnd 为元素整体结束（匹配闭合标签之后；自闭合/void = end；未闭合 = undefined）
 function parseTree(text) {
   const root = { tag: '', children: [] };
   const stack = [root];
@@ -51,7 +53,10 @@ function parseTree(text) {
       if (m) {
         const t = m[1].toLowerCase();
         for (let s = stack.length - 1; s > 0; s--)
-          if (stack[s].tag === t) { stack.length = s; break; }
+          if (stack[s].tag === t) {
+            while (stack.length > s) stack.pop().fullEnd = i;
+            break;
+          }
       }
       continue;
     }
@@ -70,6 +75,7 @@ function parseTree(text) {
     const node = { tag, children: [], start: lt, end: j + 1 };
     stack[stack.length - 1].children.push(node);
     if (text[j - 1] !== '/' && !VOID.has(tag)) stack.push(node);
+    else node.fullEnd = j + 1;
     i = j + 1;
   }
   return root;
@@ -98,8 +104,7 @@ function projectRootOf(file) {
   }
 }
 
-function syncDomains(file, term, anchor, def, attr) {
-  attr = attr || 'data-term-anchor';
+function syncDomains(file, term, anchor, def) {
   if (!term) return null;
   const root = projectRootOf(file);
   if (!root) return null;
@@ -117,17 +122,16 @@ function syncDomains(file, term, anchor, def, attr) {
   if (hit.length !== 1) return null;
   const f = hit[0];
   const text = fs.readFileSync(f, 'utf8');
-  if (text.includes(`${attr}="${anchor}"`)) return '术语表已存在';
+  if (text.includes(`data-term-anchor="${anchor}"`)) return '术语表已存在';
   const lines = text.split('\n');
   let lastRow = -1;
   lines.forEach((l, i) => { if (l.startsWith('| **')) lastRow = i; });
   if (lastRow < 0) return null;
-  const label = attr === 'data-anchor-member' ? '原型组锚点' : '原型锚点';
   lines.splice(lastRow + 1, 0,
-    `| **${term}** | ${def || '（待补定义）'}，${label} \`[${attr}="${anchor}"]\` | — |`);
+    `| **${term}** | ${def || '（待补定义）'}，原型锚点 \`[data-term-anchor="${anchor}"]\` | — |`);
   const today = new Date().toISOString().slice(0, 10);
   while (lines.length && lines[lines.length - 1] === '') lines.pop();
-  lines.push(`- ${today} 锚点视图模式新增${attr === 'data-anchor-member' ? '分组' : ''}：${term}（${anchor}）`);
+  lines.push(`- ${today} 锚点视图模式新增：${term}（${anchor}）`);
   fs.writeFileSync(f, lines.join('\n') + '\n', 'utf8');
   return '术语表已同步';
 }
@@ -137,37 +141,52 @@ function saveAnchor(b) {
   if (!file.endsWith('.html') || !path.isAbsolute(file) || !allowed(file))
     return { error: 'file rejected' };
   if (!fs.existsSync(file)) return { error: 'file not found' };
-  const attr = b.attr === 'data-anchor-member' ? 'data-anchor-member' : 'data-term-anchor';
   const anchor = String(b.anchor || '');
   if (!/^[a-z0-9][a-z0-9-]*$/.test(anchor))
     return { error: 'anchor 值须为 kebab-case' };
   const text = fs.readFileSync(file, 'utf8');
-  const paths = Array.isArray(b.paths) && b.paths.length ? b.paths.map(String) : [String(b.path || '')];
   const root = parseTree(text);
-  const nodes = [];
-  for (const p of paths) {
-    try { nodes.push(findByPath(root, p)); }
-    catch (e) { return { error: e.message }; }
+  if (b.wrap) {
+    // 包盒：paths 须为同一父级下的相邻兄弟；盒 = <div data-term-anchor="anchor">
+    const paths = Array.isArray(b.paths) && b.paths.length ? b.paths.map(String) : [];
+    if (paths.length < 2) return { error: '分组至少选 2 个元素' };
+    const nodes = [], parents = [];
+    try {
+      for (const p of paths) {
+        nodes.push(findByPath(root, p));
+        const i = p.lastIndexOf('/');
+        parents.push(i < 0 ? root : findByPath(root, p.slice(0, i)));
+      }
+    } catch (e) { return { error: e.message }; }
+    const parent = parents[0];
+    if (parents.some(x => x !== parent))
+      return { error: '所选元素须属同一父级' };
+    const idx = nodes.map(n => parent.children.indexOf(n)).sort((a, b) => a - b);
+    for (let i = 1; i < idx.length; i++)
+      if (idx[i] !== idx[0] + i)
+        return { error: '所选元素在源码中不相邻，无法包盒' };
+    const first = parent.children[idx[0]], last = parent.children[idx[idx.length - 1]];
+    if (last.fullEnd == null) return { error: '元素区间解析失败' };
+    const out = text.slice(0, first.start) + `<div data-term-anchor="${anchor}">`
+      + text.slice(first.start, last.fullEnd) + '</div>' + text.slice(last.fullEnd);
+    fs.writeFileSync(file, out, 'utf8');
+    return { ok: true, count: nodes.length, domains: syncDomains(file, b.term, anchor, b.def || '') };
   }
-  // 起始标签区间互不相交：按 start 降序改写，先改后面的，前面的偏移不失效
-  nodes.sort((x, y) => y.start - x.start);
-  const re = new RegExp('\\s' + attr + '="[^"]*"');
-  let out = text;
-  for (const node of nodes) {
-    const tagText = out.slice(node.start, node.end);
-    const m = re.exec(tagText);
-    let newTag;
-    if (m) {
-      newTag = tagText.slice(0, m.index) + ` ${attr}="${anchor}"` + tagText.slice(m.index + m[0].length);
-    } else {
-      let ins = tagText.length - 1;
-      if (tagText[ins - 1] === '/') ins--;
-      newTag = tagText.slice(0, ins) + ` ${attr}="${anchor}"` + tagText.slice(ins);
-    }
-    out = out.slice(0, node.start) + newTag + out.slice(node.end);
+  let node;
+  try { node = findByPath(root, String(b.path || '')); }
+  catch (e) { return { error: e.message }; }
+  const tagText = text.slice(node.start, node.end);
+  const m = /\sdata-term-anchor="[^"]*"/.exec(tagText);
+  let newTag;
+  if (m) {
+    newTag = tagText.slice(0, m.index) + ` data-term-anchor="${anchor}"` + tagText.slice(m.index + m[0].length);
+  } else {
+    let ins = tagText.length - 1;
+    if (tagText[ins - 1] === '/') ins--;
+    newTag = tagText.slice(0, ins) + ` data-term-anchor="${anchor}"` + tagText.slice(ins);
   }
-  fs.writeFileSync(file, out, 'utf8');
-  return { ok: true, count: nodes.length, domains: syncDomains(file, b.term, anchor, b.def || '', attr) };
+  fs.writeFileSync(file, text.slice(0, node.start) + newTag + text.slice(node.end), 'utf8');
+  return { ok: true, domains: syncDomains(file, b.term, anchor, b.def || '') };
 }
 
 function cors(res) {
