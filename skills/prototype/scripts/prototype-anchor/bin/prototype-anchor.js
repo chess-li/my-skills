@@ -9,15 +9,16 @@
 //
 // 写盘面：POST /__am_save 按 DOM 路径（html:0/body:0/div:1，同标签兄弟序号）
 // 在源码对应起始标签精确插入/替换 data-term-anchor；wrap 模式把 paths 指出的
-// 同父相邻兄弟包进一个 <div data-term-anchor> 盒。并把新术语同步进项目内
-// 唯一引用锚点的术语表。安全面：仅写白名单根目录（默认 ~/workspace，
+// 同父相邻兄弟包进一个 <div data-term-anchor> 盒。POST /__am_delete 删除锚点
+// 属性（unwrap 时连盒拆除、内容保留）。新术语同步进项目内唯一引用锚点的术
+// 语表。安全面：仅写白名单根目录（默认 ~/workspace，
 // AM_ALLOW 冒号分隔追加）内的 .html；术语表写入仅限项目 docs/contexts 下。
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 
-const VERSION = '0.4.0';
+const VERSION = '0.5.0';
 const ALLOW = [path.join(os.homedir(), 'workspace'),
   ...(process.env.AM_ALLOW ? process.env.AM_ALLOW.split(':') : [])]
   .map(p => path.resolve(p));
@@ -30,7 +31,8 @@ function allowed(f) {
 }
 
 // 与客户端 amPath 同构的源码元素树：节点记录起始标签的绝对区间 [start, end)，
-// fullEnd 为元素整体结束（匹配闭合标签之后；自闭合/void = end；未闭合 = undefined）
+// fullEnd 为元素整体结束（匹配闭合标签之后；自闭合/void = end；未闭合 = undefined），
+// closeStart 为匹配闭合标签起点（拆盒用；自闭合/void/隐式闭合 = undefined）
 function parseTree(text) {
   const root = { tag: '', children: [] };
   const stack = [root];
@@ -54,7 +56,10 @@ function parseTree(text) {
         const t = m[1].toLowerCase();
         for (let s = stack.length - 1; s > 0; s--)
           if (stack[s].tag === t) {
-            while (stack.length > s) stack.pop().fullEnd = i;
+            const closed = [];
+            while (stack.length > s) closed.push(stack.pop());
+            closed.forEach(n => { n.fullEnd = i; });
+            closed[closed.length - 1].closeStart = lt;
             break;
           }
       }
@@ -189,6 +194,31 @@ function saveAnchor(b) {
   return { ok: true, domains: syncDomains(file, b.term, anchor, b.def || '') };
 }
 
+function deleteAnchor(b) {
+  const file = String(b.file || '');
+  if (!file.endsWith('.html') || !path.isAbsolute(file) || !allowed(file))
+    return { error: 'file rejected' };
+  if (!fs.existsSync(file)) return { error: 'file not found' };
+  const text = fs.readFileSync(file, 'utf8');
+  let node;
+  try { node = findByPath(parseTree(text), String(b.path || '')); }
+  catch (e) { return { error: e.message }; }
+  const tagText = text.slice(node.start, node.end);
+  const m = /\sdata-term-anchor="[^"]*"/.exec(tagText);
+  if (!m) return { error: '该元素没有锚点属性' };
+  let out;
+  if (b.unwrap) {
+    if (node.closeStart == null || node.fullEnd == null)
+      return { error: '元素区间解析失败，无法拆盒' };
+    out = text.slice(0, node.start) + text.slice(node.end, node.closeStart) + text.slice(node.fullEnd);
+  } else {
+    const newTag = tagText.slice(0, m.index) + tagText.slice(m.index + m[0].length);
+    out = text.slice(0, node.start) + newTag + text.slice(node.end);
+  }
+  fs.writeFileSync(file, out, 'utf8');
+  return { ok: true };
+}
+
 function cors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -235,6 +265,16 @@ function serve(port) {
         req.on('end', () => {
           let b; try { b = JSON.parse(raw || '{}'); } catch { return send(res, 400, { error: 'bad json' }); }
           const r = saveAnchor(b);
+          send(res, r.ok ? 200 : 422, r);
+        });
+        return;
+      }
+      if (req.method === 'POST' && u.pathname === '/__am_delete') {
+        let raw = '';
+        req.on('data', c => { raw += c; });
+        req.on('end', () => {
+          let b; try { b = JSON.parse(raw || '{}'); } catch { return send(res, 400, { error: 'bad json' }); }
+          const r = deleteAnchor(b);
           send(res, r.ok ? 200 : 422, r);
         });
         return;

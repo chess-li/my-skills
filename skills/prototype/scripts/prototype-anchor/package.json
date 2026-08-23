@@ -1,6 +1,6 @@
 {
   "name": "prototype-anchor",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "原型锚点 HTTP 服务：data-term-anchor 写盘与术语表同步，全项目共用单实例，空闲自动退出",
   "type": "module",
   "bin": {
