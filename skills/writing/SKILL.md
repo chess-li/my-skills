@@ -1,6 +1,6 @@
 ---
 name: writing
-description: 指导 agent 写作的表达层决策——词汇、语句、结构；撰写或修改任何成段文本（文档、报告、说明、消息回复等）时使用，中英皆用。不用于裁决写什么内容与断言（spec / design skill 的事）；不用于领域概念命名裁定（domains skill 的事）；不用于 SKILL.md 等 skill 文件措辞（skill-creator / skill-iteration-review 的事）。
+description: 指导 agent 写作的表达层决策——词汇、语句、结构；撰写或修改任何成段文本（文档、报告、说明、消息回复等）时使用，中英皆用。不用于裁决写什么内容与断言（spec / design skill 的事）；不用于领域概念命名裁定（domains skill 的事）；不用于 SKILL.md 等 skill 文件措辞（skill-creator 的事）。
 ---
 
 # 写作

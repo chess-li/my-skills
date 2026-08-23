@@ -59,9 +59,15 @@ name: bootstrap
 
 ### 5. codegraph 索引
 
-- `command -v codegraph` 检查 CLI；不存在 → 询问用户是否安装 CLI（`npm install -g @colbymchenry/codegraph`），拒绝则跳过本步
+```bash
+# invocation optional
+command -v codegraph                    # 无 CLI → 询问用户是否安装，拒绝则跳过本步
+npm install -g @colbymchenry/codegraph  # 仅用户同意安装后执行
+codegraph init <目录>                   # 仅对清单中用户同意的目录执行；已有 .codegraph/ 跳过
+```
+
 - 列出尚无 `.codegraph/` 的目录清单，一次性征求同意
-- 同意的目录执行 `codegraph init <目录>`；已有 `.codegraph/` 的一律跳过：不重建、不同步；不升级 CLI 版本
+- 已有 `.codegraph/` 的一律跳过：不重建、不同步；不升级 CLI 版本
 
 ### 6. 收尾
 

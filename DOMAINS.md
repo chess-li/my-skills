@@ -1,14 +1,14 @@
 # DOMAINS.md — 统一语言（领域术语表）
 
 单入口。讨论与命名前先查已有词条，不重复造词；出现歧义信号即沉淀，不等"稳定了再写"。
-当前两个限界上下文：**规格驱动开发**（源：2026-08-04 spec-skill 设计讨论）与 **skill 治理**（源：2026-08-06 观测基础设施落地；其产物在 `.agents/` 与根目录日志，无 spec/design 结构，故术语共置本文件而不拆 `docs/<限界上下文>/`）。
+当前两个限界上下文：**规格驱动开发**（源：2026-08-04 spec-skill 设计讨论）与 **skill 治理**（源：2026-08-06 观测基础设施落地；其产物在 `.agents/` 与根目录日志，无 spec/design 结构，故术语共置本文件而不拆 `docs/contexts/<限界上下文>/`）。
 
 ## 限界上下文：规格驱动开发（SDD）
 
 ### 限界上下文（Bounded Context, BC）
 
-- **定义**：统一语言的适用边界，也是 domains 与 spec 文件的组织单元：一个上下文对应一个 `docs/<限界上下文>/` 目录，内藏 `<限界上下文>-domains.md`（术语）、`<限界上下文>-spec.md`（断言）与 `<限界上下文>-design.md`（技术事实），术语与它支撑的断言、技术事实共置。划分以 `DOMAINS.md` 为单一信源，spec 不自己发明划分；上下文迁移/改名跟随 domains 的变更时刻。
-- **反例**：≠ 模块——模块私有术语就近放模块目录的 `DOMAIN.md`，不占 `docs/` 目录。
+- **定义**：统一语言的适用边界，也是 domains 与 spec 文件的组织单元：一个上下文对应一个 `docs/contexts/<限界上下文>/` 目录，内藏 `<限界上下文>-domains.md`（术语）、`<限界上下文>-spec.md`（断言）与 `<限界上下文>-design.md`（技术事实），术语与它支撑的断言、技术事实共置。划分以 `DOMAINS.md` 为单一信源，spec 不自己发明划分；上下文迁移/改名跟随 domains 的变更时刻。
+- **反例**：≠ 模块——模块私有术语就近放模块目录的 `DOMAIN.md`，不占 `docs/contexts/` 目录。
 
 ### spec（规格）
 
@@ -22,7 +22,7 @@
 
 ### design（设计文档）
 
-- **定义**：按限界上下文组织的持久文档，持续声称该上下文"如何被构建"的当前技术事实（how），与 spec 一一对应，共置 `docs/<限界上下文>/<限界上下文>-design.md`。写入判据：技术决策是否归属本上下文；跨上下文或项目级 → ARCHITECTURE.md，design 引用不复制。对应 SDD 的 Plan 阶段。
+- **定义**：按限界上下文组织的持久文档，持续声称该上下文"如何被构建"的当前技术事实（how），与 spec 一一对应，共置 `docs/contexts/<限界上下文>/<限界上下文>-design.md`。写入判据：技术决策是否归属本上下文；跨上下文或项目级 → ARCHITECTURE.md，design 引用不复制。对应 SDD 的 Plan 阶段。
 - **反例**：≠ spec（what/why 与 how 两层，不可互换）；≠ ARCHITECTURE.md（归属范围不同）。
 
 ### design 就绪
@@ -54,5 +54,5 @@
 
 ### 事件日志（event log）
 
-- **定义**：机制层无人值守的原始捕获——`skill-事件日志.jsonl`（工作区根目录，JSONL，一行一条），由 Codex hook 自动追加（捕获脚本 `scripts/skill-observe.py`，配置信源 `scripts/skill-observe.hooks.json`，安装于 `~/.codex/hooks.json`），只记机械事实：session.start/end、prompt.submit、skill.file（读/写粗判）。只捕获不判断：欠触发/过触发等语义归因由 skill-iteration-review 取证时完成（消费者：取证流程与 references/harness.md）。
+- **定义**：机制层无人值守的原始捕获——`skill-事件日志.jsonl`（工作区根目录，JSONL，一行一条），由 Codex hook 自动追加（捕获脚本 `scripts/skill-observe.py`，配置信源 `scripts/skill-observe.hooks.json`，安装于 `~/.codex/hooks.json`），只记机械事实：session.start/end、prompt.submit、skill.file（读/写粗判）。只捕获不判断：欠触发/过触发等语义归因由 skill-creator 迭代分路取证时完成（消费者：取证流程与 `skills/skill-creator/references/harness.md`）。
 - **反例**：≠ 证据日志（`skill-证据日志.md` 是策展后的治理记录，升格须用户一字批准；事件日志是原始捕获，本身不构成证据，只是取证原料）。

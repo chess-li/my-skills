@@ -4,6 +4,8 @@
 
 ## 观察名单
 
+- 锚点可视化 tooling 候选（2026-08-20 cake 会话）：术语→DOM 映射只保 agent 可 grep，人没有视图——用户报告「不知道哪个功能对应哪个锚点，无所适从」。原型内已落地锚点视图模式（A 覆盖标签/B 锚点清单/C 层级条 + 会话内手动添加与片段导出）供挑选 | 2026-08-20 补注：机制化由用户指令拉动——落成 `packages/prototype-anchor`（Node 无依赖，npx 分发：默认 stdio MCP 供 agent、serve 子命令 HTTP 供页面；写盘按绝对路径+白名单 ~/workspace+AM_ALLOW；项目根=向上找 docs/contexts，术语表自动同步）；页面探测链 同源→127.0.0.1:8420，file:// 传绝对路径；opencode 全局 MCP 配置已写入（npm link 本地等效，publish 待定）；HTTP/MCP/安全面均实测通过 | 待验证：变体 A/B/C 用户挑选后收编；npm publish 决策；prototype skill 正文是否引用此工具（一字批准）；cake 旧 serve.py 已被覆盖（同源兜底保留，去留待用户）
+
 - 差值原则假设模型先验恒定，跨模型/版本差值静默漂移 | 2026-08-04 审查讨论 | 待验证：换模型或模型升级后原测试通过的 skill 退化（harness 已记 model.change 事件行，证据会自动到场） | 2026-08-06 补注：model.change 通道当日实际接通（观测基础设施落地，见升格区）；此前"harness 已记"名存实亡——harness 当日才真正存在
 - 干净会话回归覆盖不了依赖累积上下文的退化（上下文臃肿、skill 间冲突类病灶） | 2026-08-04 审查讨论 | 待验证：测试集全绿但真实长会话翻车
 - 观察名单只进不出，无移出规则 | 2026-08-04 审查讨论 | 待验证：名单膨胀到取证困难
@@ -14,16 +16,28 @@
 - implement 与任务契约（验收卡）词条形态高度相似（均为一次性、记目标与验证），仅"是否驱动执行"分界 | 2026-08-04 implement 设计讨论 | 已结案：2026-08-04 术语表消费者审计，任务契约词条零消费者被删，混用不再有发生面
 - spec/design 的 description 未加指向 implement 的负向边界条款 | 2026-08-04 implement 设计讨论 | 待验证："开始实现"类输入出现误触发/欠触发再补 | 2026-08-05 真实使用："提交并进入design/进入实现"类转场触发正确；但 implement 本体在追加功能场景欠触发（见返工事件）
 - git 时机约定（2026-08-04 落地）：无返工证据，经设计讨论由用户裁定三个决策点（隔离单位=任务文件、提交粒度=每条验收标准、落点=各 skill 落盘步骤）批准 | 待验证：每条验收标准一提交在真实项目中是否过碎；"合回主干 vs 开 PR"默认是否误判；冒烟集欠账随真实语料偿还 | 2026-08-05 真实使用：每条验收标准一提交（13 切片）执行无过碎投诉、归档合入成功；implement 未触发时默认"未经要求不提交"生效引发用户疑问（见返工事件）
-- implement skill 质量缺口（2026-08-05 用户质疑+社区调研）：现有验收闭环只保功能正确，不保代码质量；对照 obra/superpowers、mattpocock/skills、genkovich/sdd 等社区 skill 集，共性纪律六道中 implement 缺四道半——测试先行、新鲜证据（本轮实跑）、断言质量、生成者≠评审者、项目级全量门禁、熔断均无强制 | 已结案：2026-08-05 用户裁定创建 tdd/code-review 两个 skill 并改 implement 接入（见升格区）；项目级全量门禁与熔断未落地，留待真实证据 | 2026-08-05 lint/typecheck 门禁随范围与整洁护栏落地 implement 完成步骤（见升格区）；熔断仍待证据
+- implement skill 质量缺口（2026-08-05 用户质疑+社区调研）：现有验收闭环只保功能正确，不保代码质量；对照 obra/superpowers、mattpocock/skills、genkovich/sdd 等社区 skill 集，共性纪律六道中 implement 缺四道半——测试先行、新鲜证据（本轮实跑）、断言质量、生成者≠评审者、项目级全量门禁、熔断均无强制 | 已结案：2026-08-05 用户裁定创建 tdd/code-review 两个 skill 并改 implement 接入（见升格区）；项目级全量门禁与熔断未落地，留待真实证据 | 2026-08-05 lint/typecheck 门禁随范围与整洁护栏落地 implement 完成步骤（见升格区）；熔断仍待证据 | 2026-08-18 熔断证据到场（CE脚本会话同类失败连犯 3 次才机制化），熔断规则落地为 tdd 验证信道条款（见升格区），熔断项结案
 - BDD 独立成 skill 之问（2026-08-05 用户提问）：结论暂不成立——测行为已在 tdd、验收可执行化已在 implement、仅剩 Given/When/Then 书写格式差值极小，且与 tdd 同时刻触发、无独立触发场景；社区亦无独立 BDD skill 先例 | 待验证：验收标准含糊导致返工、或结构化格式（Given/When/Then）实际降低歧义的真实案例；证据到场优先考虑并入 spec 验收标准书写约定，而非独立 skill
 - 过度设计缺口（2026-08-05 用户提问，未附真实案例）：现有护栏只拦范围外加法（implement 范围护栏、code-review「无未请求的额外功能」），验收标准之内的多余抽象、投机泛化、冗余配置/扩展点无人拦截；code-review「复杂度」仅清单词无判据 | 已结案：同日用户报告证据到场（多层代码/插入入口），用户批准 tdd+code-review 双落点（见升格区）
 - 追加型需求会话中 how 层执行计划先于 spec 更新发出（试运行会话），"spec 是变更第一现场"的顺序倒置，用户未指出 | 2026-08-05 真实会话观察 | 待验证：是否复发、是否值得立规则
 - 触发测试用例设计教训：正/负例分类隐含"上游产物完备"前提——追加型输入（新增能力）加载 spec 是正确先行行为，误列为 spec 负例会制造假缺陷信号；跨 skill 接续断言（spec 之后 implement 是否接续）单发会话测不了，需多轮或真实使用 | 2026-08-05 触发回归发现（spec-n1 误分类当场纠正） | 待验证：是否值得升入 testing-guide
 - design 层是否挣得独立（2026-08-05 用户质疑「design 很薄，可否并入 spec」）：结论暂不合并——implement 偏差路由对两层不对称（spec 偏差停下问用户 / BC design 偏差先改文件再实现）、debug 三层路由、不触行为的纯技术决策归宿、ARCHITECTURE.md 范畴归属均依赖分层；薄是设计形态（不产生值得固化的决策即空满足）非病灶 | 待验证：真实项目中 design 长期只空满足、偏差路由从未触发 → 证据到场再裁合并或移出 | 2026-08-05 真实使用：design 偏差路由当日两触发（Feign 命名修订、端口注入策略修订），"长期空满足"反例到场（单案）
 - writing 是否管 SKILL.md 等 skill 文件措辞（2026-08-17 用户提出"似乎也可以"）：现负向边界为有意划定——SKILL.md 措辞已有专属且更强的治理（design-principles 选词双闸、审计四问、祈使句/单一信源），writing 的招募顺序与双闸是两套机制，同载将规则打架、重复占上下文 | 待验证：编辑 SKILL.md 时出现 design-principles 管不住的措辞返工（套话、翻译腔、中英混排、em-dash 等纯表达层问题），证据到场再裁是否收窄负向边界（候选形态：仅「语言别条款」对 skill 文件适用）；writing 触发测试集已加 B2 观察用例
+- prototype skill 候选（2026-08-19 用户发起评估）… | 已结案：2026-08-19 用户裁定创建（见升格区）
+- 社区 engineering/prototype skill 调研（opensource/skills 仓，2026-08-20）：…候选移植机制：①生成侧锚定 ②throwaway capture ③每步操作后展示完整状态 | 部分结案：2026-08-20 用户批准移植①②（见升格区）；③LOGIC 支仍待真实逻辑原型场景拉动
+- skill-creator 移植纪律「合入后过双关」… | 已结案：2026-08-19 用户批准改「两道检查」（见升格区）
+- skill-creator 升格标准双表述… | 已结案：2026-08-19 用户批准统一为「一字批准」（见升格区）
+- skill-creator 迭代工作流步骤未写完成物… | 已结案：2026-08-19 用户批准四步各补完成物一句（见升格区）
+- skill-creator 诊断表仅列「错误修法」、无「正确方向」列 | 2026-08-19 审查 | 待验证：agent 把错误修法列当操作指南执行
+- skill-creator 冒烟 S2–S5 与触发测试集结果区仍空；统一 description 过/欠触发、分路是否被跳过仍属 2026-08-19 升格待验证 | 2026-08-19 审查 | 待验证：独立会话跑通 S2–S5 与 P/N/B 全表
 
 ## 返工事件
 
+- 2026-08-20 | spec+prototype+domains | cake 项目「为原型添加统一锚点」会话（ses_fe1c90e95ffeeJ4sjPTxierW1f）：spec 三条 UI 拓扑断言（侧栏分项目会话/对话会话两组、对话区下方 status bar、顶栏运行状态）在原型中无对应 DOM，锚定任务暴露差异，用户裁定「先按照现有原型来补充 spec」；spec 改写 + domains 4 个未落地术语移除、3 个随原型新增，双文档追原型返工 | 疑似病灶层：spec 边界自查只排除技术方案、不排除 UI 拓扑（抽象判据「悄悄变了有人受损吗」拦不住貌似可验证的拓扑断言），spec 与原型在断言级强关联，原型探索一落定就倒挂为 spec 追原型
+
+- 2026-08-19 | skill-creator（invocation-markers 规范）| 用户观察：有些模型调用 skill 自带脚本时以项目目录（会话 cwd）解析路径，而非 skill 目录 → 找不到脚本或跑错同名脚本 | 疑似病灶层：路径锚点缺失（规范未规定 scripts 调用的锚定基准；模型不知道 base directory 的存在与用法）
+
+- 2026-08-19 | skill-creator | 用户指出：创建 skill 时不应建测试集，因为不是基于真实场景 | 疑似病灶层：创建工作流把测试集建成当作交付物，与 testing-guide「真实语料」冲突，诱发假用例
 - 2026-08-04 | implement | 用户二轮审查再指出 git 约定两缺陷：worktree 目录未写死默认约定（用户未被确认）、基线漂移下的同步无防修复循环机制 | 疑似病灶层：默认值缺失 + 机制未闭环（需结构性无冲突不变量而非冲突解决策略）
 - 2026-08-04 | implement（含 spec/design git 行） | 用户审查指出当日落地的 git 约定三处缺陷：branch 切换与"docs 落主干、代码在任务分支"的双层结构冲突、合并目标（基线分支）无处记录、异分支上 spec 偏差无路径 | 疑似病灶层：机制选型（隔离载体应为 worktree；基线分支应锚定在任务文件这一交接介质上）
 
@@ -42,6 +56,9 @@
 - 2026-08-05 | spec | 真实项目（ey-timp-etl）给出完整详细需求文档（新限界上下文），spec 未触发，模型直接探索并出执行计划（全程未加载 skill），用户问"为什么不先建立spec?"后才加载 spec skill 补落 | 疑似病灶层：description 判别逻辑（会话内的详细需求输入被误判为"目标与验收标准已落纸面"；"完整可执行需求"形态不在"启动新功能/新需求"的判别面内）
 - 2026-08-05 | implement | 真实项目追加功能（智能体节点加"试运行"能力，触及 spec 断言、新增 spec 能力章节）未触发 implement：仅加载 spec/tdd/code-review，无任务文件、无按验收标准提交，用户问"为什么没有git提交"才补两个提交 | 疑似病灶层：触发边界（模型对追加型中等变更施加了 description 未写的比例性豁免；"spec 就绪进入实现"未覆盖"已有能力上追加新能力"类别锚点）
 - 2026-08-06 | code-review | 同一会话（智能体节点试运行）两轮评审裁决"可合入"后，用户仍发现两个约定一致性缺陷：EtlNodeAgentFormData 字段无层级（违反其他 *FormData 的 Properties*Config 结构约定）、异常抛魔法值（违反 EtlErrorEnum 枚举约定）；评审已查断言质量/死代码/范围面，惯例一致性无人查 | 疑似病灶层：code-review 评审维度盲区（缺「与代码库既有结构/命名约定的一致性」检查项；同类文件惯例需评审者主动 grep 同类，规格无此提示）
+- 2026-08-18 | spec+design+implement+domains | 用户反馈：docs/ 根层混置限界上下文目录与其他文档（tasks/ 等），同层混淆 | 疑似病灶层：存放约定缺父目录收编（docs/ 一级目录语义不单一）
+- 2026-08-18 | tdd | 会话 ses_fed5a3031（CE脚本过程日志下载排查）修复阶段：构建环境事实边撞边发现（运行时 JDK 与项目要求不符、版本管理工具环境变量干扰、父 pom relativePath 解析到错误分支），约 15 次失败排列组合后才发问用户；分支基线本身编译不过，TDD 中途才发现被迫排除文件；同一错误（构建命令忘设工作目录、跑在真实仓库而非隔离副本）连犯 3 次才写包装脚本机制化；`install` 写入共享本地依赖仓库，下游模块测到旧 jar 被迫重装重跑 | 疑似病灶层：tdd 只保"实际运行并读输出"，未保信道前提——跑的是对的代码/对的目录/未污染的依赖，RED/GREEN 的证据资格无人守护；观察名单第 17 行"熔断仍待证据"证据到场（同类失败第二次未触发机制化）
+- 2026-08-18 | debug | 同会话定位根因阶段：依赖（内部 jar）中的实现需要追读，先走 javap 反编译约 20 次工具调用、5 轮查找实现类，才发现本机就有该依赖的源码仓库可直接读；用户补充观察：自动反编译倾向取最新版本而非项目实际依赖的版本 | 疑似病灶层：私有知识缺失（依赖代码定位顺序：问用户/本机源码仓库 → 依赖自带 sources → 按项目实际解析版本反编译）——模型不知道，非知道而忘
 
 ## 升格 / 移出
 
@@ -79,6 +96,33 @@
 - 2026-08-06 | tdd 新增一条纪律：写与既有同类平行的代码（新 FormData、新枚举值、新组件）前先读 2–3 个同类，对齐其结构/命名/错误处理模式；≥2 个一致实例才算惯例，个例不强制对齐。code-review 代码质量维度同步加同类惯例一致性检查（实际读同类文件对比，不接受实现者自述）；场景入 tdd 冒烟集 T07、code-review 冒烟集 R03 | 依据：2026-08-06 返工事件（试运行评审两轮可合入后，用户仍发现 EtlNodeAgentFormData 无层级、异常魔法值两处同类惯例不一致），用户批准双落点；改动未跑回归对比，记为待验证（同类判定过宽误伤、过度对齐陈旧代码坏习惯）
 
 - 2026-08-06 | 观测基础设施落地（harness 落地顺序①②）：scripts/skill-observe.py + scripts/skill-observe.hooks.json（安装至用户级 ~/.codex/hooks.json，/hooks 信任后全面生效），捕获 SessionStart/SessionEnd/UserPromptSubmit/PostToolUse（matcher: Bash、apply_patch）→ skill-事件日志.jsonl（只捕获不判断）；session.start 行带 model slug，model.change 通道接通；周心跳 automation「skill-观测心跳」同批建；「事件日志」词条入 DOMAINS.md（新开限界上下文 skill 治理）；端到端冒烟通过（codex exec --dangerously-bypass-hook-trust 实跑，session.start/prompt.submit/session.end 三行到齐）| 依据：三次欠触发返工事件（2026-08-04 domains、2026-08-05 spec、2026-08-05 implement）暴露取证无现场记录；观察名单第 1 条证据通道名存实亡；用户批准四项裁定（用户级配置 / prompt 截断 4000 落盘 / 心跳同批 / 命名沉淀）| 待验证：桌面 app 会话的 hook 触发面（CLI exec 已验，app 未验，心跳兜底）；Bash 相对路径 scope 判定依赖会话 cwd；system/plugin skill 加载不在匹配面
+
+- 2026-08-18 | 限界上下文目录收编为 `docs/contexts/<限界上下文>/`（与 `docs/tasks/` 并列，docs/ 一级目录语义单一）；DOMAINS.md 限界上下文/design 词条及反例、spec/design/implement/domains 四 skill 正文与 spec/implement 触发测试集预置路径同步，`~/.agents/skills/` 安装副本已同步；升格区 2026-08-04「统一存放约定」条的路径表述被本条超越 | 依据：2026-08-18 返工事件（层级混淆），父目录命名 contexts 经讨论裁定（否决 domains——与术语表撞词且 domain≠bounded context；否决 specs——目录内藏 domains/spec/design 三种文档，以偏概全）；纯路径改名不涉触发与行为，回归以 rg 全量核查代替（无残留）
+
+- 2026-08-18 | tdd 新增验证信道三条纪律（跑测试前先立信道：环境版本/未改动基线/工作目录，任一不成立测试输出不算证据；同一命令第二次因环境/路径失败即机制化；写入共享本地状态即记账、模块间依赖优先同一构建进程内解析）+ 冒烟集 T08；debug 定位根因加依赖源码定位序（搜本机工作区 → 问用户 → 依赖自带 sources → 按构建工具依赖树确认实际解析版本后反编译，不取默认最新版）| 依据：2026-08-18 两条返工事件（CE脚本会话 ses_fed5a3031），用户批准并修订 debug 条款（问用户优先、反编译版本须锁定项目实际依赖版本）；环境具体技术（JDK/版本管理工具/父 pom/本地仓库）按用户裁定不进正文，仅作案例留证据日志；改动未跑正式回归，本次会话作真实使用佐证（同 T03–T06 先例），记为待验证
+
+- 2026-08-19 | 统一对外 skill-creator：合并原 `.agents/skills/` 私有对（skill-creator 创建 + skill-iteration-review 迭代）为 `skills/skill-creator/` 单 skill（创建/迭代两条分路）；references 收编 design-principles、testing-guide、harness；AGENTS.md 改指对外版；`.agents/skills/` 私有对删除改 README 指针；writing 负向边界与 DOMAINS/scripts 消费者路径同步；`scripts/install.sh` 已装至 `~/.agents/skills/skill-creator/` | 依据：2026-08-19 用户发起需求并裁定三项（形态=统一对外版接管、调用=model-invoked、范围=创建+迭代+原理+测试+移植+harness）；无返工证据，按 bootstrap/tdd 先例经设计讨论批准落地；S1 本会话自举；待验证：统一 description 是否过触发 writing/业务任务、创建与迭代分路是否被跳过、本项目 agent 发现是否只见新路径
+- 2026-08-19 | skill-creator 创建工作流：删「建创建期冒烟集」步骤（五步→四步）；意图锚点/交付判据改为「不造无真实语料的测试集」；testing-guide 文首加时机条款（使用期/返工再建，0 条真实不生成凑数）；skill-creator 自身冒烟集 S1 断言同步 | 依据：2026-08-19 返工事件（用户指出创建期无真实场景不应建测试集）；与既有证据日志多条「冒烟集欠账待真实语料」先例一致
+- 2026-08-19 | skill-creator 三处表述修缮：（1）移植纪律「双关」→「两道检查」；（2）升格门槛统一为「须用户一字批准」（删「一次本地确认」）；（3）迭代四步各补完成物一句（病灶层+机制句 / 模式+证据+破坏面或观察名单条目 / diff或无改动 / 对比结论+冒烟结果+加减对应）| 依据：2026-08-19 审查观察名单三项，用户指令「先执行2」一字批准；减法：模式句段与完成物合并，避免双写；未动诊断表「正确方向」、未跑 S2–S5（仍观察）
+- 2026-08-19 | 调用标记规范 v0.2 落成 references/invocation-markers.md：四种载体（<use-skill> / <mcp server tool> / <tool> / bash 首行 `# skill-run` 块）；经一轮方案审查修订四处硬问题——XML 区禁裸 <（占位符 {x}）、info string 改首行注释保 GitHub 高亮、<skill> 避 harness 同形异义改 <use-skill>、每载体单一写法；<function> 对齐宿主词表改 <tool> | 依据：2026-08-19 用户发起规范需求（要从正文代码解析依赖），经设计讨论与方案审查由用户批准整理成文；无返工证据，按 design/spec 先例；待验证：解析脚本落地、现有 10 skill 改写后抽取完整性、lint 防静默缺项；结构性张力记入观察（与 scripts/ 分工、标记膨胀）
+- 2026-08-19 | parse-skill-invocations.py 落地（scripts/，Python3 标准库，parse+lint 双模式）| 依据：用户指令「编写对应的解析脚本」；夹具验证通过（sudo -u 带参 flag、command -v 特判、管道右侧忽略、续行合并、旧式/畸形标记 lint error、inline code 不抽取）；`--all` 首跑 10 skill 全空（未迁移，符合预期），lint 即捕获 bootstrap×2 + implement×1 真实漏标内联命令——「防静默缺项」设计当场生效；规范文档 §5 同步由「待建」改实例 | 待验证：现有 skill 迁移标记后抽取完整性复跑
+- 2026-08-19 | bootstrap 试点迁移完成：§5 三条命令合一 skill-run optional 块；抽取结果精确命中预期（shell-optional=[codegraph, npm]，skills/tools/mcp/shell 全空）；全仓 lint 警告 3→1（余 implement 的 git 内联）。试点发现三条澄清升入 invocation-markers.md 规则 9–11：提及≠调用（归属提及不标）、<tool> 只标非默认工具、同步多命令可共块（条件放行内注释）| 依据：用户指令「进行试点」；首个真实迁移用例，验证规范可执行性与抽取正确性；规范 §5 例块顺带成为自证样本 | 待验证：implement 等其余 skill 迁移；规范文档自身被解析时的示例块噪音（warn 级，可接受）
+- 2026-08-19 | shell 块标记 `# skill-run` 改名 `# invocation`：用户指出 skill-run 易误读为「执行 skill」；候选过双闸（invocation=规范术语「调用标记」互证、invoke 偏祈使、executable 夹带 chmod 联想），用户裁定 invocation。同步三处：规范文档、解析器（MARKER_RE + 旧标记/旧 info string 双形态 lint error，修掉 FORBIDDEN 扫 cleaned 文本漏检 fence 内旧标记的缺陷）、bootstrap 试点块；回归通过 | 依据：2026-08-19 用户选词裁定（闸二：招来的不干净）
+- 2026-08-19 | implement 试点迁移完成：4 个 skill 调用打 `<use-skill>`（design×2/spec×2/tdd/code-review），`git worktree list` 转列表项内嵌 invocation optional 块；抽取精确命中（skills=[code-review, design, spec, tdd]、shell-optional=[git]）；**全仓 lint 首次清零**。两处有意不迁：§2 `git worktree add` 原文只写意图未写字面命令（迁移不新造命令）、完整示例节 skill 提及为场景叙述。试点发现升入规范规则 12–14（叙述不打标、不新造命令、列表项嵌 fence）| 依据：用户指令「进行下一个skill试点」；迁移原则「只转换、不新增」经本次验证可守住
+- 2026-08-19 | invocation-markers 补规则 15–16（路径锚点）：scripts 调用以 `<skill目录>` 占位锚定 harness base directory，禁 cwd 相对路径；scripts 自身 cwd 无关（`__file__` 推导）。实证：本仓库两脚本（skill-observe.py、parse-skill-invocations.py）天然满足规则 16，从 /tmp 实跑 `--all` 验证通过 | 依据：同日返工事件（用户观察模型用项目目录调脚本）；参考文件可逆采纳层直接落地；SKILL.md 诊断表行「脚本找不到/跑错同名 → 路径锚点缺失 → 硬编码绝对路径」同日经用户一字批准补入
+- 2026-08-19 | 脚本职责拆分：parse-skill-invocations.py 只抽取（静默），校验独立为 lint-skill.py；共享解析原语抽成 scripts/skill_md.py（正则/切块唯一信源，防双写漂移）。用户裁定「绝对路径不进正文规则（模型已知，写了是稀释）而进 lint（问 4：字节级检查归 scripts）」→ lint 新增可移植性检查（`/Users/`、`/home/` → error，`~/` 允许）。回归：两试点抽取结果不变、全仓 lint 清零、绝对路径与旧标记夹具命中 | 依据：2026-08-19 用户两裁定（职责单一；绝对路径归 lint 不归正文）
+- 2026-08-19 | 移出：lint-skill.py 删除，skill_md.py 折叠回 parse-skill-invocations.py（单消费者不保留共享层）。用户裁定理由链：lint 实证价值是迁移期的（首跑 3 处漏标已兑现），持续校验面随迁移完成消亡；「校验」承诺超出启发式所能兑现（绝对路径检查不可完备），挂 error 级制造虚假确定感——预防性门禁无事故拉动，犯 harness「猜出来的门禁最坏」之忌。残余缺口（静默漏标、绝对路径）回 review 层；持续校验待真实事故拉回再建。规范 §5 与 §4 兜底条同步改写 | 依据：2026-08-19 用户指令「我觉得应该删除lint-skill」；回归：两试点抽取结果不变、--all 通过
+- 2026-08-19 | 新建对外 skill：prototype（原型与界面效果对齐纪律）。主线「差异出自空白，先锚定再动手」；机制五件：差异分类路由（行为→spec / 效果→可观测断言）、锚定强度序（截图>DOM指认>数值>场景脚本>草图）、方位词消歧三选（区域命名/截图红框/复述指认）、术语→DOM 可 grep（类名即标签，样式导向才 data-region）、一次一区域当场对齐。语料与痛点来自 ses_fe5046c6dffejwDJNWf2iJ4tK3（4 轮原话留作种子，测试集待真实任务语料到场按冷启动建）。抽取验证：skills=[spec]，符合设计 | 依据：2026-08-19 评估（见观察名单结案条）后用户裁定创建；真实痛点+真实语料，证据等级高于既往纯讨论先例；待验证：触发边界（与 spec/domains 划界）、薄度保持、「类名即标签」在真实原型任务中的表现
+- 2026-08-20 | prototype 术语→DOM 映射改写：删「类名即标签」（原型持续演进 → 样式类名随重构漂移，零工作换来锚点静默失效，用户裁定一律专用属性）；属性名 data-region 词不达意（撞 ARIA role=region 与云 region 联想），用户裁定自造 `data-term-anchor`（term+anchor 双招募，定义已显式写入正文）；授权分档同步：补锚点属性降执行后告知，新增结构属性条款删 | 依据：2026-08-20 用户裁定两条（一律专用属性；命名 term-anchor）；同日升格条中「类名即标签」表述被本条超越
+- 2026-08-20 | prototype 移植社区版两机制（按移植纪律翻译不誊写）：①变体锚定——用户给不出锚点时同页造 3 个结构迥异变体对比挑选（含「结构级差异/非壁纸」「嵌真实骨架数据」两护栏），入第 2 步分支；②归宿节——结论沉淀 spec/任务文件、原型重写合入不照搬、落选变体与脚手架移除。不移植：LOGIC 支与 surface-state（无场景证据）、?variant=/浮动条等实现血肉。description 用户裁定放宽至创建+编辑（原型 HTML 创建修改、界面方向探索）；标题改「原型创建与对齐」；主线补「实物即锚」；分路步覆盖新建场景 | 依据：2026-08-20 用户批准移植（观察名单 ①② 拉动条件视为到场：社区调研+用户一字批准）；待验证：变体锚定在真实建造期任务的表现、description 放宽后是否过触发
+
+- 2026-08-20 | spec 边界自查新增排除项「不含 UI 拓扑（分组/方位/包含）；区域名作词汇引用，存在性可断言、结构关系不断言——拓扑是原型的探索面」；prototype 归宿分化为「行为结论沉淀 spec/任务文件，视觉/拓扑结论留原型（可观测断言）不进 spec」（顺带修掉与第 1 步差异路由的内部不一致）| 依据：2026-08-20 返工事件（cake 锚定会话 ses_fe1c90e95ffeeJ4sjPTxierW1f：spec 三条拓扑断言随原型落定全部改写/删除，domains 四删三增），用户一字批准；新旧对比：旧文本下「侧栏分两组」过自查（非技术方案即放行），新文本下被拓扑排除项拦截，骨架存在性断言（「主界面含侧栏」）按存在性条款保留；减法审查：无可删（spec 为并列新增，prototype 新句与旧笼统句同体替换）；安装副本已同步 | 待验证：UI 类 spec 是否过度变薄（存在性/拓扑边界误判）；cake 桌面-spec 现存拓扑残留（「项目选择与会话历史两组」「模型选择位于输入区」）按新规则属待清理，下次触及该 spec 时验证
+
+- 2026-08-20 | prototype 新增「锚点服务（自举）」节 + 授权分档补自举项：包从 packages/ 移入 `skills/prototype/scripts/prototype-anchor`（随 install.sh 分发，无第二信源）；自举三步 = npm link `<skill目录>` 安装 / 注册 MCP（command `["npx","-y","prototype-anchor"]`）/ 起 HTTP 面；npm 全局链接改指安装副本并实测 npx 链路、8420 服务经链接 bin 重启；不 publish（用户裁定，观察名单对应条已收窄）| 依据：2026-08-20 用户指令「先在 skill 里自动安装到本地 npm 并让 agent 自动注册该 mcp，目前先不 publish」；抽取验证：skills=[spec]、shell=[npm] 符合预期 | 待验证：他机/新项目首次自举是否顺畅（npm link 权限、opencode 重启提示）、cake 旧 serve.py 去留
+
+- 2026-08-20 | prototype-anchor 移出 MCP 面 + 落地生命周期机制：bin v0.2.0，serve 成唯一入口（anchor_list/anchor_save 工具随 MCP 一并移出，agent 侧有 Edit/grep 无差值）；单实例=启动前探活 /__am_ping，已存活退出 0、外部占用报错退出 1（端口即锁，无 pidfile）；自动消亡=页面 60s 心跳保活 + 无请求 AM_IDLE_MIN 分钟（默认 10）自动退出（服务无状态，消亡零损失）；skill 自举节删注册 MCP 步、改写为两步（npm link + nohup serve）并注明幂等/消亡；opencode 全局 mcp 条目撤出 | 依据：2026-08-20 用户复盘「功能本身似乎和 mcp 没什么关系」（确认 MCP 面零差值）+ 用户提问单实例与自动消亡；六项生命周期实测全过（单实例幂等/外部占用拒绝/空闲消亡/心跳保活后准时消亡/裸命令用法/保存回归）；8420 已跑 v0.2.0 且二次启动幂等验证 | 待验证：真实页面打开场景的心跳保活节奏；睡眠唤醒后服务已退的回退提示体验 | 2026-08-20 补注：默认空闲消亡 10 分钟改 2 分钟（用户裁定，v0.2.1），心跳 60s 间隔与 2 分钟窗口容一次丢拍
+
+- 2026-08-20 | prototype-anchor 起停收编为脚本：`skills/prototype/scripts/anchor-serve.sh start|stop|status`（幂等；人手与 skill 共用，AM_PORT 改端口）；服务端 v0.3.0 新增 POST /__am_shutdown 安全停机端点（stop 免 lsof、跨平台；仅监听 127.0.0.1）；skill 自举第 2 步改调脚本并注明手动用法；试点捕获一处真实 bug：bash 变量紧邻全角括号被吞进变量名（set -u 报 unbound），改 ${BASE} 花括号形态 | 依据：2026-08-20 用户指令「提供手动启动/停止的脚本，skill 里也可以直接调用」；六项脚本生命周期实测全过（start/幂等 start/status/stop/复停/未知参数），8420 经脚本重启于 v0.3.0；抽取验证 shell=[bash, npm]
 
 ## 冻结状态
 

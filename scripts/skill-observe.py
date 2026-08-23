@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # skill-observe.py — Codex hook 观测脚本（机制层）
 #
-# 设计来源：.agents/skills/skill-iteration-review/references/harness.md
-# 职责边界：只写原始事件行（JSONL），语义归因归 skill-iteration-review 取证时完成。
+# 设计来源：skills/skill-creator/references/harness.md
+# 职责边界：只写原始事件行（JSONL），语义归因归 skill-creator 迭代分路取证时完成。
 # 铁律：永不向 stdout 输出（避免注入上下文改变模型行为），永不非零退出（hook 失败会干扰会话）。
 #
 # 事件：session.start / session.end / prompt.submit / skill.file（op=read|write）

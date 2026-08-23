@@ -1,5 +1,5 @@
 {
-  "description": "skill 观测（机制层）：捕获原始事件行到 skill-事件日志.jsonl。判断归 skill-iteration-review，见 references/harness.md。安装：复制到 ~/.codex/hooks.json 后，在 CLI 用 /hooks 审查并信任。",
+  "description": "skill 观测（机制层）：捕获原始事件行到 skill-事件日志.jsonl。判断归 skill-creator 迭代分路，见 skills/skill-creator/references/harness.md。安装：复制到 ~/.codex/hooks.json 后，在 CLI 用 /hooks 审查并信任。",
   "hooks": {
     "SessionStart": [
       {
