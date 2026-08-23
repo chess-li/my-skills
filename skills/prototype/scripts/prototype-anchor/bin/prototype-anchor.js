@@ -98,7 +98,8 @@ function projectRootOf(file) {
   }
 }
 
-function syncDomains(file, term, anchor, def) {
+function syncDomains(file, term, anchor, def, attr) {
+  attr = attr || 'data-term-anchor';
   if (!term) return null;
   const root = projectRootOf(file);
   if (!root) return null;
@@ -116,16 +117,17 @@ function syncDomains(file, term, anchor, def) {
   if (hit.length !== 1) return null;
   const f = hit[0];
   const text = fs.readFileSync(f, 'utf8');
-  if (text.includes(`data-term-anchor="${anchor}"`)) return '术语表已存在';
+  if (text.includes(`${attr}="${anchor}"`)) return '术语表已存在';
   const lines = text.split('\n');
   let lastRow = -1;
   lines.forEach((l, i) => { if (l.startsWith('| **')) lastRow = i; });
   if (lastRow < 0) return null;
+  const label = attr === 'data-anchor-member' ? '原型组锚点' : '原型锚点';
   lines.splice(lastRow + 1, 0,
-    `| **${term}** | ${def || '（待补定义）'}，原型锚点 \`[data-term-anchor="${anchor}"]\` | — |`);
+    `| **${term}** | ${def || '（待补定义）'}，${label} \`[${attr}="${anchor}"]\` | — |`);
   const today = new Date().toISOString().slice(0, 10);
   while (lines.length && lines[lines.length - 1] === '') lines.pop();
-  lines.push(`- ${today} 锚点视图模式新增：${term}（${anchor}）`);
+  lines.push(`- ${today} 锚点视图模式新增${attr === 'data-anchor-member' ? '分组' : ''}：${term}（${anchor}）`);
   fs.writeFileSync(f, lines.join('\n') + '\n', 'utf8');
   return '术语表已同步';
 }
@@ -135,25 +137,37 @@ function saveAnchor(b) {
   if (!file.endsWith('.html') || !path.isAbsolute(file) || !allowed(file))
     return { error: 'file rejected' };
   if (!fs.existsSync(file)) return { error: 'file not found' };
+  const attr = b.attr === 'data-anchor-member' ? 'data-anchor-member' : 'data-term-anchor';
   const anchor = String(b.anchor || '');
   if (!/^[a-z0-9][a-z0-9-]*$/.test(anchor))
     return { error: 'anchor 值须为 kebab-case' };
   const text = fs.readFileSync(file, 'utf8');
-  let node;
-  try { node = findByPath(parseTree(text), String(b.path || '')); }
-  catch (e) { return { error: e.message }; }
-  const tagText = text.slice(node.start, node.end);
-  const m = /\sdata-term-anchor="[^"]*"/.exec(tagText);
-  let newTag;
-  if (m) {
-    newTag = tagText.slice(0, m.index) + ` data-term-anchor="${anchor}"` + tagText.slice(m.index + m[0].length);
-  } else {
-    let ins = tagText.length - 1;
-    if (tagText[ins - 1] === '/') ins--;
-    newTag = tagText.slice(0, ins) + ` data-term-anchor="${anchor}"` + tagText.slice(ins);
+  const paths = Array.isArray(b.paths) && b.paths.length ? b.paths.map(String) : [String(b.path || '')];
+  const root = parseTree(text);
+  const nodes = [];
+  for (const p of paths) {
+    try { nodes.push(findByPath(root, p)); }
+    catch (e) { return { error: e.message }; }
   }
-  fs.writeFileSync(file, text.slice(0, node.start) + newTag + text.slice(node.end), 'utf8');
-  return { ok: true, domains: syncDomains(file, b.term, anchor, b.def || '') };
+  // 起始标签区间互不相交：按 start 降序改写，先改后面的，前面的偏移不失效
+  nodes.sort((x, y) => y.start - x.start);
+  const re = new RegExp('\\s' + attr + '="[^"]*"');
+  let out = text;
+  for (const node of nodes) {
+    const tagText = out.slice(node.start, node.end);
+    const m = re.exec(tagText);
+    let newTag;
+    if (m) {
+      newTag = tagText.slice(0, m.index) + ` ${attr}="${anchor}"` + tagText.slice(m.index + m[0].length);
+    } else {
+      let ins = tagText.length - 1;
+      if (tagText[ins - 1] === '/') ins--;
+      newTag = tagText.slice(0, ins) + ` ${attr}="${anchor}"` + tagText.slice(ins);
+    }
+    out = out.slice(0, node.start) + newTag + out.slice(node.end);
+  }
+  fs.writeFileSync(file, out, 'utf8');
+  return { ok: true, count: nodes.length, domains: syncDomains(file, b.term, anchor, b.def || '', attr) };
 }
 
 function cors(res) {

@@ -58,9 +58,10 @@ description: 原型（界面/交互）的创建与效果对齐纪律：说不清
 
 区域名必须能 grep 到唯一 DOM。原型持续演进，样式类名随重构漂移，不作锚——锚点一律用专用属性：
 
-- 每个已命名区域打 `data-term-anchor="sidebar"`（属性值 = 术语表中的区域名）
-- 术语条目直接绑定选择器：侧栏 = `[data-term-anchor="sidebar"]`
-- 样式类名不参与锚定；样式重构时 `data-term-anchor` 不动
+- 每个已命名区域打 `data-term-anchor="sidebar"`（属性值 = 术语表中的区域名，全文件唯一）
+- 组锚点（N 个元素同属一组）打 `data-anchor-member="组锚值"`：属性可重复，每个成员各自携带；锚点视图模式「添加分组」多选批量标记
+- 术语条目直接绑定选择器：侧栏 = `[data-term-anchor="sidebar"]`；组 = `[data-anchor-member="组锚值"]`
+- 样式类名不参与锚定；样式重构时 `data-term-anchor` / `data-anchor-member` 不动
 
 ## 锚点服务（自举）
 
@@ -93,5 +94,5 @@ description: 原型（界面/交互）的创建与效果对齐纪律：说不清
 ## 授权分档
 
 - 直接执行：读原型代码、grep 锚点属性、起草断言
-- 执行后告知：按已锚定断言修改原型、生成/移除变体、为区域补 `data-term-anchor`、锚点服务自举（npm link、anchor-serve.sh 起停）
+- 执行后告知：按已锚定断言修改原型、生成/移除变体、为区域补 `data-term-anchor`、为元素组补 `data-anchor-member`、锚点服务自举（npm link、anchor-serve.sh 起停）
 - 必须先确认：整页或多区域重写
