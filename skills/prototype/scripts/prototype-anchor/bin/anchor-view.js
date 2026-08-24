@@ -98,7 +98,7 @@ function amBuild(){
     AM_TERMS.forEach(t=>{
       const el=document.querySelector('[data-term-anchor="'+t.anchor+'"]');
       const st=t.pend?'<span class="st pend">未落盘</span>':(el?'<span class="st">✓ 已锚定</span>':'<span class="st miss">✗ 缺失</span>');
-      rows+='<div class="am-row" data-a="'+t.anchor+'"><b>'+t.term+'</b><code>'+t.anchor+'</code><span class="am-del">删除锚点</span>'+st+'<p>'+t.def+'</p></div>';
+      rows+='<div class="am-row" data-a="'+t.anchor+'"><b>'+(t.term||t.anchor)+'</b><code>'+t.anchor+'</code><span class="am-del">删除锚点</span>'+st+'<p>'+t.def+'</p></div>';
     });
     p.innerHTML='<h3>锚点清单</h3><div class="am-note">点击条目定位对应区域。锚点模式下页面交互冻结，Esc 退出。'+(AM.saveUrl!==null?'已连接锚点服务，保存即写盘。':'未检测到锚点服务（npx prototype-anchor serve），保存仅会话内生效。')+'</div>'+rows+
       '<button class="am-btn" id="am-add">＋ 添加锚点（点选页面元素）</button>'+
@@ -155,7 +155,7 @@ function amInfo(el){
     html+='<div class="ops"><button class="ghost" id="am-c-del">'+(amIsGroupBox(el)?'删除并拆盒':'删除锚点')+'</button><button class="ghost" id="am-c-close">关闭</button></div>';
   }else{
     html+='<div class="kv" style="margin-top:6px">添加锚点：</div>';
-    html+='<input id="am-in-term" placeholder="术语名（如：消息列表）">';
+    html+='<input id="am-in-term" placeholder="术语名（可空，沉淀时 agent 推荐）">';
     html+='<input id="am-in-anchor" placeholder="锚点值（kebab，如：msg-list）">';
     html+='<input id="am-in-def" placeholder="一句话定义（可空，随新增片段导出）">';
     html+='<div class="ops"><button id="am-c-ok">保存</button><button class="ghost" id="am-c-close">取消</button></div>';
@@ -170,7 +170,7 @@ function amInfo(el){
     const term=card.querySelector('#am-in-term').value.trim();
     const anchor=card.querySelector('#am-in-anchor').value.trim();
     const def=card.querySelector('#am-in-def').value.trim();
-    if(!term||!anchor)return;
+    if(!anchor){ amToast('锚点值必填'); card.querySelector('#am-in-anchor').focus(); return; }
     amCloseCard();
     amSave(term,anchor,def,el);
   };
@@ -180,7 +180,7 @@ function amExport(){
   if(!AM.pending.length){ if(btn)btn.textContent='暂无新增'; return; }
   const lines=['锚点新增清单（交给 agent，由 prototype-anchor-sync 沉淀进术语表）：',''];
   AM.pending.forEach((pd,i)=>{
-    lines.push((i+1)+'. '+pd.term+' → data-term-anchor="'+pd.anchor+'"');
+    lines.push((i+1)+'. '+(pd.term||'（待命名）')+' → data-term-anchor="'+pd.anchor+'"');
     if(pd.def)lines.push('   定义：'+pd.def);
     lines.push('   grep 定位：'+pd.sig);
   });
@@ -266,7 +266,7 @@ function amGroupCard(){
   card.style.left=Math.max(8,innerWidth/2-145)+'px';
   card.style.top='80px';
   card.innerHTML='<h4>添加分组 <code style="color:var(--amber,#f59e0b)">'+els.length+' 个成员</code></h4>'
-    +'<input id="am-in-term" placeholder="组名（如：会话操作）">'
+    +'<input id="am-in-term" placeholder="组名（可空，沉淀时 agent 推荐）">'
     +'<input id="am-in-anchor" placeholder="锚点值（kebab，如：session-ops）">'
     +'<input id="am-in-def" placeholder="一句话定义（可空，随新增片段导出）">'
     +'<div class="ops"><button id="am-c-ok">保存</button><button class="ghost" id="am-c-close">取消</button></div>';
@@ -276,7 +276,7 @@ function amGroupCard(){
     const term=card.querySelector('#am-in-term').value.trim();
     const anchor=card.querySelector('#am-in-anchor').value.trim();
     const def=card.querySelector('#am-in-def').value.trim();
-    if(!term||!anchor)return;
+    if(!anchor){ amToast('锚点值必填'); card.querySelector('#am-in-anchor').focus(); return; }
     amCloseCard();
     amSaveGroup(term,anchor,def,els);
   };
