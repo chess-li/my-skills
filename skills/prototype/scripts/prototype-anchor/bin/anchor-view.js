@@ -57,7 +57,7 @@ const styleEl = document.createElement('style');
 styleEl.textContent = css;
 document.head.appendChild(styleEl);
 
-const AM = { on:false, variant:'a', picking:false, groupPicking:false, groupSel:[], pending:[], els:[], colors:['#6d5dfc','#3b82f6','#22c55e','#f59e0b'] };
+const AM = { on:false, variant:'a', picking:false, groupPicking:false, groupSel:[], pending:[], els:[], solo:new Set(), colors:['#6d5dfc','#3b82f6','#22c55e','#f59e0b'] };
 let AM_TERMS = Array.isArray(window.AM_TERMS) ? window.AM_TERMS.slice() : [];
 function amTermOf(a){ const t=AM_TERMS.find(t=>t.anchor===a); return t?t.term:null; }
 function amAnchored(){ return [...document.querySelectorAll('[data-term-anchor]')]; }
@@ -75,24 +75,46 @@ function amClearOverlays(){
   document.querySelectorAll('.am-gsel').forEach(e=>e.classList.remove('am-gsel'));
   amAnchored().forEach(e=>{ e.style.outline=''; e.style.outlineOffset=''; });
 }
+function amTagEl(el){
+  const a=el.getAttribute('data-term-anchor');
+  el.style.outline='2px solid #6d5dfc'; el.style.outlineOffset='-2px';
+  const o=document.createElement('div');
+  o.className='am-tag am-ui'; o.style.background='#6d5dfc';
+  o.textContent=(amTermOf(a)||a)+' · '+a;
+  o.onclick=(ev)=>{ ev.stopPropagation(); amInfo(el); };
+  o._for=el; o._solo=a;
+  document.body.appendChild(o); AM.els.push(o);
+}
+function amSolo(el){
+  const a=el.getAttribute('data-term-anchor');
+  if(AM.solo.has(a)){
+    AM.els.filter(o=>o._solo===a).forEach(o=>o.remove());
+    AM.els=AM.els.filter(o=>o._solo!==a);
+    AM.solo.delete(a);
+    el.style.outline=''; el.style.outlineOffset='';
+    return;
+  }
+  AM.solo.add(a); amTagEl(el); amSync();
+}
 function amBuild(){
   amClearOverlays();
-  if(AM.variant==='a'||AM.variant==='c'){
+  if(AM.variant==='c'){
     amAnchored().forEach(el=>{
       const a=el.getAttribute('data-term-anchor');
-      const col=AM.variant==='c'?AM.colors[amChain(el).length%AM.colors.length]:'#6d5dfc';
+      const col=AM.colors[amChain(el).length%AM.colors.length];
       el.style.outline='2px solid '+col; el.style.outlineOffset='-2px';
       const o=document.createElement('div');
-      o.className=(AM.variant==='a'?'am-tag':'am-bar')+' am-ui';
-      o.style.background=col;
-      o.textContent=AM.variant==='a'
-        ? ((amTermOf(a)||a)+' · '+a)
-        : ([...amChain(el).map(x=>amTermOf(x)||x), amTermOf(a)||a].join(' › '));
+      o.className='am-bar am-ui'; o.style.background=col;
+      o.textContent=[...amChain(el).map(x=>amTermOf(x)||x), amTermOf(a)||a].join(' › ');
       o.onclick=(ev)=>{ ev.stopPropagation(); amInfo(el); };
       o._for=el;
       document.body.appendChild(o); AM.els.push(o);
     });
-  }else{
+    return;
+  }
+  const shown=AM.variant==='a'?amAnchored():amAnchored().filter(el=>AM.solo.has(el.getAttribute('data-term-anchor')));
+  shown.forEach(amTagEl);
+  if(AM.variant==='a')return;
     const p=document.createElement('div'); p.className='am-panel am-ui';
     let rows='';
     AM_TERMS.forEach(t=>{
@@ -100,7 +122,7 @@ function amBuild(){
       const st=t.pend?'<span class="st pend">未落盘</span>':(el?'<span class="st">✓ 已锚定</span>':'<span class="st miss">✗ 缺失</span>');
       rows+='<div class="am-row" data-a="'+t.anchor+'"><b>'+(t.term||t.anchor)+'</b><code>'+t.anchor+'</code><span class="am-del">删除锚点</span>'+st+'<p>'+t.def+'</p></div>';
     });
-    p.innerHTML='<h3>锚点清单</h3><div class="am-note">点击条目定位对应区域。锚点模式下页面交互冻结，Esc 退出。'+(AM.saveUrl!==null?'已连接锚点服务，保存即写盘。':'未检测到锚点服务（npx prototype-anchor serve），保存仅会话内生效。')+'</div>'+rows+
+    p.innerHTML='<h3>锚点清单</h3><div class="am-note">点击条目显示/隐藏该锚点的标签（可多个并存）；A 覆盖标签=显示全部，切到本清单后保持并可逐个关闭。锚点模式下页面交互冻结，Esc 退出。'+(AM.saveUrl!==null?'已连接锚点服务，保存即写盘。':'未检测到锚点服务（npx prototype-anchor serve），保存仅会话内生效。')+'</div>'+rows+
       '<button class="am-btn" id="am-add">＋ 添加锚点（点选页面元素）</button>'+
       '<button class="am-btn" id="am-gadd" style="background:var(--amber,#f59e0b)">＋ 添加分组（点选多个元素）</button>'+
       '<button class="am-btn ghost" id="am-export">复制新增片段（'+AM.pending.length+'）</button>';
@@ -109,9 +131,11 @@ function amBuild(){
       row.onclick=()=>{
         const el=document.querySelector('[data-term-anchor="'+row.dataset.a+'"]');
         if(!el)return;
-        el.scrollIntoView({block:'center',behavior:'smooth'});
-        el.style.outline='2px solid var(--accent,#6d5dfc)'; el.style.outlineOffset='-2px';
-        el.classList.remove('am-flash'); void el.offsetWidth; el.classList.add('am-flash');
+        if(!AM.solo.has(row.dataset.a)){
+          el.scrollIntoView({block:'center',behavior:'smooth'});
+          el.classList.remove('am-flash'); void el.offsetWidth; el.classList.add('am-flash');
+        }
+        amSolo(el);
       };
       row.querySelector('.am-del').onclick=(ev)=>{
         ev.stopPropagation();
@@ -123,7 +147,6 @@ function amBuild(){
     p.querySelector('#am-add').onclick=()=>{ AM.picking=true; document.body.classList.add('am-picking'); };
     p.querySelector('#am-gadd').onclick=()=>{ AM.groupPicking=true; AM.groupSel=[]; document.body.classList.add('am-picking'); amGroupBar(); };
     p.querySelector('#am-export').onclick=amExport;
-  }
 }
 function amSync(){
   if(!AM.on)return;
@@ -222,6 +245,7 @@ function amIsGroupBox(el){ return el.tagName==='DIV' && el.attributes.length===1
 function amDeleteAnchor(el,btn){
   if(!btn.dataset.arm){ btn.dataset.arm='1'; btn.classList.add('arm'); btn.textContent='确认删除？'; return; }
   const anchor=el.getAttribute('data-term-anchor');
+  AM.solo.delete(anchor);
   const unwrap=amIsGroupBox(el);
   const path=amPath(el);
   if(unwrap){
@@ -315,9 +339,10 @@ function amToggle(force){
   document.querySelector('.am-switch').classList.toggle('on',AM.on);
   document.getElementById('am-fab').classList.toggle('cur',AM.on);
   if(AM.on){ amBuild(); amSync(); }
-  else{ amClearOverlays(); amCloseCard(); amGroupCancel(); AM.picking=false; document.body.classList.remove('am-picking'); }
+  else{ amClearOverlays(); AM.solo.clear(); amCloseCard(); amGroupCancel(); AM.picking=false; document.body.classList.remove('am-picking'); }
 }
 function amSetVariant(v){
+  if(AM.variant==='a'&&v==='b') AM.solo=new Set(amAnchored().map(el=>el.getAttribute('data-term-anchor')));
   AM.variant=v;
   document.querySelectorAll('.am-switch button[data-v]').forEach(b=>b.classList.toggle('cur',b.dataset.v===v));
   amBuild(); amSync();
@@ -327,9 +352,12 @@ document.addEventListener('click',(e)=>{
   if(e.target.closest('.am-ui'))return;
   e.preventDefault(); e.stopPropagation();
   if(AM.groupPicking){ amGroupToggle(e.target); return; }
-  const el=AM.picking?e.target:(e.target.closest('[data-term-anchor]')||e.target);
-  AM.picking=false; document.body.classList.remove('am-picking');
-  amInfo(el);
+  if(AM.picking){
+    AM.picking=false; document.body.classList.remove('am-picking');
+    amInfo(e.target);
+    return;
+  }
+  if(e.target.hasAttribute&&e.target.hasAttribute('data-term-anchor'))amInfo(e.target);
 },true);
 document.addEventListener('keydown',(e)=>{
   if(e.key!=='Escape')return;
