@@ -11,14 +11,19 @@
 // 在源码对应起始标签精确插入/替换 data-term-anchor；wrap 模式把 paths 指出的
 // 同父相邻兄弟包进一个 <div data-term-anchor> 盒。POST /__am_delete 删除锚点
 // 属性（unwrap 时连盒拆除、内容保留）。新术语同步进项目内唯一引用锚点的术
-// 语表。安全面：仅写白名单根目录（默认 ~/workspace，
+// 语表。分发面：GET /__am_client.js 出锚点视图客户端插件，GET /proto?abs=
+// 出自动注入客户端的页面（源码零改动），GET /__am_terms?file= 出项目术语。
+// 安全面：仅写白名单根目录（默认 ~/workspace，
 // AM_ALLOW 冒号分隔追加）内的 .html；术语表写入仅限项目 docs/contexts 下。
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { fileURLToPath } from 'node:url';
 
-const VERSION = '0.5.0';
+const CLIENT = fileURLToPath(new URL('./anchor-view.js', import.meta.url));
+
+const VERSION = '0.6.0';
 const ALLOW = [path.join(os.homedir(), 'workspace'),
   ...(process.env.AM_ALLOW ? process.env.AM_ALLOW.split(':') : [])]
   .map(p => path.resolve(p));
@@ -109,8 +114,8 @@ function projectRootOf(file) {
   }
 }
 
-function syncDomains(file, term, anchor, def) {
-  if (!term) return null;
+// 项目内唯一引用 data-term-anchor 的 *-domains.md（找不到或不唯一 = null）
+function domainsFileOf(file) {
   const root = projectRootOf(file);
   if (!root) return null;
   const ctx = path.join(root, 'docs', 'contexts');
@@ -124,8 +129,25 @@ function syncDomains(file, term, anchor, def) {
   }
   const hit = files.filter(f =>
     fs.readFileSync(f, 'utf8').includes('data-term-anchor'));
-  if (hit.length !== 1) return null;
-  const f = hit[0];
+  return hit.length === 1 ? hit[0] : null;
+}
+
+// 读术语表行：| **术语** | 定义前段，原型锚点 `[data-term-anchor="锚值"]`定义后段 | ... |
+function listTerms(file) {
+  const f = domainsFileOf(file);
+  if (!f) return { terms: [] };
+  const terms = [];
+  for (const l of fs.readFileSync(f, 'utf8').split('\n')) {
+    const m = /^\|\s*\*\*(.+?)\*\*\s*\|\s*(.*?)，原型锚点 `\[data-term-anchor="([^"]+)"\]`(.*?)\s*\|/.exec(l);
+    if (m) terms.push({ term: m[1], def: (m[2] + m[4]).trim(), anchor: m[3] });
+  }
+  return { terms };
+}
+
+function syncDomains(file, term, anchor, def) {
+  if (!term) return null;
+  const f = domainsFileOf(file);
+  if (!f) return null;
   const text = fs.readFileSync(f, 'utf8');
   if (text.includes(`data-term-anchor="${anchor}"`)) return '术语表已存在';
   const lines = text.split('\n');
@@ -279,11 +301,29 @@ function serve(port) {
         });
         return;
       }
+      if (req.method === 'GET' && u.pathname === '/__am_client.js') {
+        res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'no-cache' });
+        res.end(fs.readFileSync(CLIENT, 'utf8'));
+        return;
+      }
+      if (req.method === 'GET' && u.pathname === '/__am_terms') {
+        const f = u.searchParams.get('file') || '';
+        if (!f.endsWith('.html') || !path.isAbsolute(f) || !allowed(f))
+          return send(res, 403, { error: 'rejected' });
+        return send(res, 200, listTerms(f));
+      }
       if (req.method === 'GET' && u.pathname === '/proto') {
         const abs = u.searchParams.get('abs') || '';
         if (abs.endsWith('.html') && path.isAbsolute(abs) && allowed(abs) && fs.existsSync(abs)) {
+          let html = fs.readFileSync(abs, 'utf8');
+          if (!html.includes('/__am_client.js')) {
+            const tag = '<script src="/__am_client.js"></script>';
+            html = /<\/body\s*>/i.test(html)
+              ? html.replace(/<\/body\s*>/i, tag + '\n</body>')
+              : html + '\n' + tag + '\n';
+          }
           res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-          res.end(fs.readFileSync(abs));
+          res.end(html);
         } else send(res, 403, { error: 'rejected' });
         return;
       }
