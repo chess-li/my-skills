@@ -157,7 +157,7 @@ function amInfo(el){
     html+='<div class="kv" style="margin-top:6px">添加锚点：</div>';
     html+='<input id="am-in-term" placeholder="术语名（如：消息列表）">';
     html+='<input id="am-in-anchor" placeholder="锚点值（kebab，如：msg-list）">';
-    html+='<input id="am-in-def" placeholder="一句话定义（可空，落盘时同步术语表）">';
+    html+='<input id="am-in-def" placeholder="一句话定义（可空，随新增片段导出）">';
     html+='<div class="ops"><button id="am-c-ok">保存</button><button class="ghost" id="am-c-close">取消</button></div>';
   }
   card.innerHTML=html;
@@ -178,9 +178,10 @@ function amInfo(el){
 function amExport(){
   const btn=document.getElementById('am-export');
   if(!AM.pending.length){ if(btn)btn.textContent='暂无新增'; return; }
-  const lines=['锚点新增清单（原型会话内添加，未落盘；应用后请沉淀术语表）：',''];
+  const lines=['锚点新增清单（交给 agent，由 prototype-anchor-sync 沉淀进术语表）：',''];
   AM.pending.forEach((pd,i)=>{
     lines.push((i+1)+'. '+pd.term+' → data-term-anchor="'+pd.anchor+'"');
+    if(pd.def)lines.push('   定义：'+pd.def);
     lines.push('   grep 定位：'+pd.sig);
   });
   navigator.clipboard.writeText(lines.join('\n'));
@@ -207,15 +208,15 @@ function amSave(term,anchor,def,el){
   el.setAttribute('data-term-anchor',anchor);
   const entry={term,anchor,def:def||'（会话内新增，待沉淀术语表）',pend:true};
   AM_TERMS.push(entry);
-  const fallback=(hint)=>{ AM.pending.push({term,anchor,sig}); amToast(hint); amBuild(); amSync(); };
-  if(AM.saveUrl===null){ fallback('会话内生效（未落盘）— npx prototype-anchor serve 启动后保存即写盘'); return; }
+  AM.pending.push({term,anchor,def,sig});
+  if(AM.saveUrl===null){ amToast('会话内生效（未落盘）— npx prototype-anchor serve 启动后保存即写盘'); amBuild(); amSync(); return; }
   fetch(AM.saveUrl+'/__am_save',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({file:AM.file,path:amPath(el),anchor,term,def})})
   .then(r=>r.json()).then(res=>{
-    if(res.ok){ entry.pend=false; if(def)entry.def=def; amToast('已落盘：'+sig+(res.domains?'（'+res.domains+'）':'')); }
-    else fallback('服务拒绝：'+(res.error||'未知错误'));
+    if(res.ok){ entry.pend=false; if(def)entry.def=def; amToast('锚点已写盘：'+sig); }
+    else amToast('服务拒绝：'+(res.error||'未知错误'));
     amBuild(); amSync();
-  }).catch(()=>{ AM.saveUrl=null; fallback('写入失败，转为未落盘'); });
+  }).catch(()=>{ AM.saveUrl=null; amToast('写入失败，转为未落盘'); amBuild(); amSync(); });
 }
 function amIsGroupBox(el){ return el.tagName==='DIV' && el.attributes.length===1 && el.hasAttribute('data-term-anchor'); }
 function amDeleteAnchor(el,btn){
@@ -267,7 +268,7 @@ function amGroupCard(){
   card.innerHTML='<h4>添加分组 <code style="color:var(--amber,#f59e0b)">'+els.length+' 个成员</code></h4>'
     +'<input id="am-in-term" placeholder="组名（如：会话操作）">'
     +'<input id="am-in-anchor" placeholder="锚点值（kebab，如：session-ops）">'
-    +'<input id="am-in-def" placeholder="一句话定义（可空，落盘时同步术语表）">'
+    +'<input id="am-in-def" placeholder="一句话定义（可空，随新增片段导出）">'
     +'<div class="ops"><button id="am-c-ok">保存</button><button class="ghost" id="am-c-close">取消</button></div>';
   document.body.appendChild(card);
   card.querySelector('#am-c-close').onclick=amCloseCard;
@@ -299,15 +300,15 @@ function amSaveGroup(term,anchor,def,els){
   const entry={term,anchor,def:def||'（会话内新增分组，待沉淀术语表）',pend:true};
   AM_TERMS.push(entry);
   const sig='box × '+els.length+'（'+amSig(els[0])+' 等）';
-  const fallback=(hint)=>{ AM.pending.push({term,anchor,sig}); amToast(hint); amBuild(); amSync(); };
-  if(AM.saveUrl===null){ fallback('会话内生效（未落盘）— npx prototype-anchor serve 启动后保存即写盘'); return; }
+  AM.pending.push({term,anchor,def,sig});
+  if(AM.saveUrl===null){ amToast('会话内生效（未落盘）— npx prototype-anchor serve 启动后保存即写盘'); amBuild(); amSync(); return; }
   fetch(AM.saveUrl+'/__am_save',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({file:AM.file,paths,anchor,term,def,wrap:true})})
   .then(r=>r.json()).then(res=>{
-    if(res.ok){ entry.pend=false; amToast('已落盘：'+anchor+' 盒（'+els.length+' 个成员）'+(res.domains?'（'+res.domains+'）':'')); }
-    else fallback('服务拒绝：'+(res.error||'未知错误'));
+    if(res.ok){ entry.pend=false; amToast('已落盘：'+anchor+' 盒（'+els.length+' 个成员）'); }
+    else amToast('服务拒绝：'+(res.error||'未知错误'));
     amBuild(); amSync();
-  }).catch(()=>{ AM.saveUrl=null; fallback('写入失败，转为未落盘'); });
+  }).catch(()=>{ AM.saveUrl=null; amToast('写入失败，转为未落盘'); amBuild(); amSync(); });
 }
 function amToggle(force){
   AM.on=(force!==undefined)?force:!AM.on;

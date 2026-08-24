@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// prototype-anchor — 原型锚点 HTTP 服务：data-term-anchor 写盘与术语表同步，全项目共用。
+// prototype-anchor — 原型锚点 HTTP 服务：data-term-anchor 写盘，全项目共用。
+// 术语表只读不写——写入权归 agent（prototype-anchor-sync skill）。
 //
 // 用法：prototype-anchor serve [端口]   （默认 8420）
 //
@@ -10,11 +11,10 @@
 // 写盘面：POST /__am_save 按 DOM 路径（html:0/body:0/div:1，同标签兄弟序号）
 // 在源码对应起始标签精确插入/替换 data-term-anchor；wrap 模式把 paths 指出的
 // 同父相邻兄弟包进一个 <div data-term-anchor> 盒。POST /__am_delete 删除锚点
-// 属性（unwrap 时连盒拆除、内容保留）。新术语同步进项目内唯一引用锚点的术
-// 语表。分发面：GET /__am_client.js 出锚点视图客户端插件，GET /proto?abs=
-// 出自动注入客户端的页面（源码零改动），GET /__am_terms?file= 出项目术语。
-// 安全面：仅写白名单根目录（默认 ~/workspace，
-// AM_ALLOW 冒号分隔追加）内的 .html；术语表写入仅限项目 docs/contexts 下。
+// 属性（unwrap 时连盒拆除、内容保留）。分发面：GET /__am_client.js 出锚点
+// 视图客户端插件，GET /proto?abs= 出自动注入客户端的页面（源码零改动），
+// GET /__am_terms?file= 出项目术语（只读）。
+// 安全面：仅写白名单根目录（默认 ~/workspace，AM_ALLOW 冒号分隔追加）内的 .html。
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -144,25 +144,6 @@ function listTerms(file) {
   return { terms };
 }
 
-function syncDomains(file, term, anchor, def) {
-  if (!term) return null;
-  const f = domainsFileOf(file);
-  if (!f) return null;
-  const text = fs.readFileSync(f, 'utf8');
-  if (text.includes(`data-term-anchor="${anchor}"`)) return '术语表已存在';
-  const lines = text.split('\n');
-  let lastRow = -1;
-  lines.forEach((l, i) => { if (l.startsWith('| **')) lastRow = i; });
-  if (lastRow < 0) return null;
-  lines.splice(lastRow + 1, 0,
-    `| **${term}** | ${def || '（待补定义）'}，原型锚点 \`[data-term-anchor="${anchor}"]\` | — |`);
-  const today = new Date().toISOString().slice(0, 10);
-  while (lines.length && lines[lines.length - 1] === '') lines.pop();
-  lines.push(`- ${today} 锚点视图模式新增：${term}（${anchor}）`);
-  fs.writeFileSync(f, lines.join('\n') + '\n', 'utf8');
-  return '术语表已同步';
-}
-
 function saveAnchor(b) {
   const file = String(b.file || '');
   if (!file.endsWith('.html') || !path.isAbsolute(file) || !allowed(file))
@@ -197,7 +178,7 @@ function saveAnchor(b) {
     const out = text.slice(0, first.start) + `<div data-term-anchor="${anchor}">`
       + text.slice(first.start, last.fullEnd) + '</div>' + text.slice(last.fullEnd);
     fs.writeFileSync(file, out, 'utf8');
-    return { ok: true, count: nodes.length, domains: syncDomains(file, b.term, anchor, b.def || '') };
+    return { ok: true, count: nodes.length };
   }
   let node;
   try { node = findByPath(root, String(b.path || '')); }
@@ -213,7 +194,7 @@ function saveAnchor(b) {
     newTag = tagText.slice(0, ins) + ` data-term-anchor="${anchor}"` + tagText.slice(ins);
   }
   fs.writeFileSync(file, text.slice(0, node.start) + newTag + text.slice(node.end), 'utf8');
-  return { ok: true, domains: syncDomains(file, b.term, anchor, b.def || '') };
+  return { ok: true };
 }
 
 function deleteAnchor(b) {
