@@ -189,7 +189,7 @@ function amExport(){
 }
 function amToast(msg){
   const t=document.createElement('div'); t.className='am-toast am-ui'; t.textContent=msg;
-  document.body.appendChild(t); setTimeout(()=>t.remove(),2600);
+  document.body.appendChild(t); setTimeout(()=>t.remove(),Math.min(9000,2400+msg.length*90));
 }
 function amPath(el){
   const segs=[];

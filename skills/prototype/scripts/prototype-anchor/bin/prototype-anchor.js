@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 
 const CLIENT = fileURLToPath(new URL('./anchor-view.js', import.meta.url));
 
-const VERSION = '0.6.0';
+const VERSION = '0.6.1';
 const ALLOW = [path.join(os.homedir(), 'workspace'),
   ...(process.env.AM_ALLOW ? process.env.AM_ALLOW.split(':') : [])]
   .map(p => path.resolve(p));
@@ -93,11 +93,17 @@ function parseTree(text) {
 
 function findByPath(root, domPath) {
   let node = root;
+  const walked = [];
   for (const seg of domPath.split('/')) {
     const k = seg.lastIndexOf(':');
     const tag = seg.slice(0, k), idx = +seg.slice(k + 1);
     const same = node.children.filter(c => c.tag === tag);
-    if (!(idx >= 0 && idx < same.length)) throw new Error('path not found: ' + domPath);
+    if (!(idx >= 0 && idx < same.length)) {
+      throw new Error('元素不在源码中（页面脚本运行时生成，或磁盘文件已变动）'
+        + '——请先刷新页面重试；仍失败则改为锚定其静态容器'
+        + (walked.length ? '（最近可锚祖先：' + walked.join('/') + '）' : ''));
+    }
+    walked.push(seg);
     node = same[idx];
   }
   return node;
