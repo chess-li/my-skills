@@ -185,6 +185,7 @@
 
 - 2026-08-26 | 移出：hook 观测能力全拆——scripts/skill-observe.py、skill-observe.hooks.json、skill-事件日志.jsonl 删除；harness.md 三节（hook 迁移边界/落地顺序/落地实例）移除，改写为机制层现状与重建判据；skill-creator SKILL.md 冷启动/证据体系/Resources 三处同步；DOMAINS.md 事件日志词条与 skill 治理上下文移除；invocation-markers 规则 16 示例同步 | 依据：部署 20 天零真实捕获（事件日志仅 2026-08-06 冒烟 3 行），~/.codex/hooks.json 已不存在（安装静默丢失，harness 自预言的心跳防御同失、无人察觉）——机制死于静默失效，用户裁定「并没有实际用处」；同日两周任务审阅顺带发现 | 观察名单 #14（差值漂移）的 model.change 取证通道随本次删除关闭，已补注；外部面无残留（codex config 无心跳 automation 痕迹）
 - 2026-08-26 | prototype-anchor package.json 元数据对齐：version 0.6.0→0.6.1（对齐 bin 内 VERSION 常量），description「写盘与术语表同步」改「写盘，术语表只读解析」 | 依据：同日全量 review 取证——v0.6.1（2026-08-24 findByPath 可读诊断升格）后 package.json 未 bump，同日术语表写入权收归升格（服务删 syncDomains 转只读）后描述未同步，元数据与已裁定事实双重失实；~/.agents 副本已同步，md5 一致
+- 2026-08-26 | debug×3、design×1 处 skill 路由补打 `<use-skill>` 标记（debug 判层路由 design/spec、修复节 tdd；design 入口路由 spec） | 依据：同日全量 review 跑 parse-skill-invocations.py 实测——debug/design 抽取结果 clean 与正文路由指令矛盾，invocation-markers v0.2 规则 9（真实加载才打标）在 spec/tdd/implement/prototype/prototype-anchor-sync 已执行、此两 skill 欠账；2026-08-19「现有 10 skill 改写后抽取完整性」待验证项随本次清偿（全仓抽取现已与正文一致）；纯元数据无行为变化（规范 §4：标记是元数据不是行为），~/.agents 与 ~/.claude 三副本已同步，md5 一致
 
 ## 冻结状态
 
