@@ -1,3 +1,0 @@
-{"event": "session.start", "session": "019fd5b5-5fae-7c40-998a-0b41d6ef41ee", "model": "kimi/k3[1m]", "cwd": "/Users/chess/workspace/skills", "source": "startup", "ts": "2026-08-06T14:14:24+08:00"}
-{"event": "prompt.submit", "session": "019fd5b5-5fae-7c40-998a-0b41d6ef41ee", "turn": "019fd5b5-603d-7362-bbfe-06ca1b8aa2f6", "model": "kimi/k3[1m]", "cwd": "/Users/chess/workspace/skills", "prompt": "Reply with exactly: ok", "ts": "2026-08-06T14:14:24+08:00"}
-{"event": "session.end", "session": "019fd5b5-5fae-7c40-998a-0b41d6ef41ee", "cwd": "/Users/chess/workspace/skills", "reason": "other", "ts": "2026-08-06T14:14:27+08:00"}

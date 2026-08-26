@@ -1,7 +1,7 @@
 # DOMAINS.md — 统一语言（领域术语表）
 
 单入口。讨论与命名前先查已有词条，不重复造词；出现歧义信号即沉淀，不等"稳定了再写"。
-当前两个限界上下文：**规格驱动开发**（源：2026-08-04 spec-skill 设计讨论）与 **skill 治理**（源：2026-08-06 观测基础设施落地；其产物在 `.agents/` 与根目录日志，无 spec/design 结构，故术语共置本文件而不拆 `docs/contexts/<限界上下文>/`）。
+当前限界上下文：**规格驱动开发**（源：2026-08-04 spec-skill 设计讨论）。
 
 ## 限界上下文：规格驱动开发（SDD）
 
@@ -61,10 +61,3 @@
 - **定义**：判管辖的结论之一——本次变更无需 spec 变更：不改变能力行为且不触及 spec 断言的改动（纯实现细节、重构、格式调整），或 spec 已断言该行为的对齐型 bug 修复。豁免的是 spec 文档义务，不豁免其他纪律（tdd 等仍适用）。
 - **反例**：≠ 跳过 SDD 后续流程（豁免后该走的 design/implement/tdd 照走）；≠ 加载前自判豁免（判断必须发生在 spec 正文内，加载前自判是已废止的反模式）。
 - **消费者**：spec 正文「豁免判断」步；tdd 入口路由（spec 判豁免后路由回 tdd）。
-
-## 限界上下文：skill 治理
-
-### 事件日志（event log）
-
-- **定义**：机制层无人值守的原始捕获——`skill-事件日志.jsonl`（工作区根目录，JSONL，一行一条），由 Codex hook 自动追加（捕获脚本 `scripts/skill-observe.py`，配置信源 `scripts/skill-observe.hooks.json`，安装于 `~/.codex/hooks.json`），只记机械事实：session.start/end、prompt.submit、skill.file（读/写粗判）。只捕获不判断：欠触发/过触发等语义归因由 skill-creator 迭代分路取证时完成（消费者：取证流程与 `skills/skill-creator/references/harness.md`）。
-- **反例**：≠ 证据日志（`skill-证据日志.md` 是策展后的治理记录，升格须用户一字批准；事件日志是原始捕获，本身不构成证据，只是取证原料）。

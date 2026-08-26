@@ -124,7 +124,7 @@ description: 创建、修改与审查 agent skill 的纪律与流程。当用户
 1. 投诉即第一份证据，已满足证据闸
 2. 从投诉与历史对话摘 3–5 条输入建冒烟集，预置固定目录
 3. 回归：失败用例 + 冒烟集；全量等测试集长大
-4. 证据日志从一个追加式 markdown 起步（见「证据体系」）；hook 等被咬过再建（[references/harness.md](references/harness.md)）
+4. 证据日志从一个追加式 markdown 起步（见「证据体系」）；捕获机制等真实取证缺口拉动再建（[references/harness.md](references/harness.md)）
 
 ## 证据体系
 
@@ -141,7 +141,7 @@ description: 创建、修改与审查 agent skill 的纪律与流程。当用户
 3. 升格 / 移出：内容 + 依据，引用返工日期
 4. 冻结状态：skill | 日期与判据
 
-观测分工：用户只看结果；过程记录与取证是 agent 的活。基础设施见 harness.md。
+观测分工：用户只看结果；过程记录与取证是 agent 的活。机制层现状与重建判据见 harness.md。
 
 ## 移植纪律
 
@@ -174,5 +174,5 @@ description: 创建、修改与审查 agent skill 的纪律与流程。当用户
 
 - [references/design-principles.md](references/design-principles.md)：触发与调用方式、差值原则、授权与默认值、workflow 结构、措辞与组织
 - [references/testing-guide.md](references/testing-guide.md)：语料采集、覆盖结构、用例模板、触发测试集、回归对比、运行成本、防过拟合
-- [references/harness.md](references/harness.md)：观测三层分工、hook 迁移边界与落地顺序、拆分判据
+- [references/harness.md](references/harness.md)：观测三层分工、机制层现状与重建判据、拆分判据
 - [references/invocation-markers.md](references/invocation-markers.md)：正文调用标记规范（v0.2）——skill/MCP/tool/shell 四种载体的书写与抽取规则，供代码从正文解析依赖

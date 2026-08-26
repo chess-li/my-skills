@@ -54,7 +54,7 @@ command -v codegraph
 13. 迁移不新造字面命令：原文刻意留白给模型推导的命令保持散文，标记只转换已写出的字面命令
 14. 列表项内可嵌 fence（缩进对齐列表项），解析器兼容
 15. **skill 自带 scripts 的调用以 skill 目录为锚**：路径占位写 `<skill目录>`（= skill 加载时 harness 注入的 base directory），禁以会话 cwd 相对路径调用——模型cwd 是项目目录，相对路径会解析到项目下。例：`python3 "<skill目录>/scripts/foo.py"`
-16. **scripts 自身必须 cwd 无关**：脚本内部路径一律从 `__file__` 推导（如本仓库 `skill-observe.py`、`parse-skill-invocations.py` 的 `SCRIPT_DIR`/`WORKSPACE` 模式），不读 cwd
+16. **scripts 自身必须 cwd 无关**：脚本内部路径一律从 `__file__` 推导（如本仓库 `parse-skill-invocations.py` 的 `SCRIPT_DIR`/`WORKSPACE` 模式），不读 cwd
 
 ## 3. 抽取规则
 
