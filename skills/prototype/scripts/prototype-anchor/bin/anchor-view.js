@@ -16,9 +16,10 @@ const css = `
   .am-switch.on{display:flex}
   .am-switch button{background:transparent;color:var(--fg2,#c9c9d6);border:none;padding:5px 10px;border-radius:7px;cursor:pointer;font-size:12px}
   .am-switch button.cur{background:var(--accent,#6d5dfc);color:#fff}
+  .am-switch button.am-act{background:var(--accent,#6d5dfc);color:#fff;margin-left:6px}
+  .am-switch button.am-act.grp{background:var(--amber,#f59e0b)}
   .am-switch span{color:var(--fg3,#8b8b9a);font-size:11px;padding:0 6px}
   .am-tag{position:fixed;z-index:10000;color:#fff;font-size:11px;line-height:1.6;padding:1px 8px;border-radius:0 0 8px 0;cursor:pointer;white-space:nowrap}
-  .am-bar{position:fixed;z-index:10000;height:18px;color:#fff;font-size:11px;line-height:18px;padding:0 8px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .am-panel{position:fixed;top:0;right:0;bottom:0;width:300px;z-index:10002;background:var(--bg2,#1f1f2a);color:var(--fg,#e8e8f0);border-left:1px solid var(--bg4,#3b3b4d);padding:14px;overflow:auto}
   .am-panel h3{font-size:13px;margin-bottom:4px}
   .am-panel .am-note{font-size:11px;color:var(--fg3,#8b8b9a);margin-bottom:10px;line-height:1.5}
@@ -57,7 +58,7 @@ const styleEl = document.createElement('style');
 styleEl.textContent = css;
 document.head.appendChild(styleEl);
 
-const AM = { on:false, variant:'a', picking:false, groupPicking:false, groupSel:[], pending:[], els:[], solo:new Set(), colors:['#6d5dfc','#3b82f6','#22c55e','#f59e0b'] };
+const AM = { on:false, variant:'a', picking:false, groupPicking:false, groupSel:[], pending:[], els:[], solo:new Set() };
 let AM_TERMS = Array.isArray(window.AM_TERMS) ? window.AM_TERMS.slice() : [];
 function amTermOf(a){ const t=AM_TERMS.find(t=>t.anchor===a); return t?t.term:null; }
 function amAnchored(){ return [...document.querySelectorAll('[data-term-anchor]')]; }
@@ -98,20 +99,6 @@ function amSolo(el){
 }
 function amBuild(){
   amClearOverlays();
-  if(AM.variant==='c'){
-    amAnchored().forEach(el=>{
-      const a=el.getAttribute('data-term-anchor');
-      const col=AM.colors[amChain(el).length%AM.colors.length];
-      el.style.outline='2px solid '+col; el.style.outlineOffset='-2px';
-      const o=document.createElement('div');
-      o.className='am-bar am-ui'; o.style.background=col;
-      o.textContent=[...amChain(el).map(x=>amTermOf(x)||x), amTermOf(a)||a].join(' › ');
-      o.onclick=(ev)=>{ ev.stopPropagation(); amInfo(el); };
-      o._for=el;
-      document.body.appendChild(o); AM.els.push(o);
-    });
-    return;
-  }
   const shown=AM.variant==='a'?amAnchored():amAnchored().filter(el=>AM.solo.has(el.getAttribute('data-term-anchor')));
   shown.forEach(amTagEl);
   if(AM.variant==='a')return;
@@ -122,9 +109,7 @@ function amBuild(){
       const st=t.pend?'<span class="st pend">未落盘</span>':(el?'<span class="st">✓ 已锚定</span>':'<span class="st miss">✗ 缺失</span>');
       rows+='<div class="am-row" data-a="'+t.anchor+'"><b>'+(t.term||t.anchor)+'</b><code>'+t.anchor+'</code><span class="am-del">删除锚点</span>'+st+'<p>'+t.def+'</p></div>';
     });
-    p.innerHTML='<h3>锚点清单</h3><div class="am-note">点击条目显示/隐藏该锚点的标签（可多个并存）；A 覆盖标签=显示全部，切到本清单后保持并可逐个关闭。锚点模式下页面交互冻结，Esc 退出。'+(AM.saveUrl!==null?'已连接锚点服务，保存即写盘。':'未检测到锚点服务（npx prototype-anchor serve），保存仅会话内生效。')+'</div>'+rows+
-      '<button class="am-btn" id="am-add">＋ 添加锚点（点选页面元素）</button>'+
-      '<button class="am-btn" id="am-gadd" style="background:var(--amber,#f59e0b)">＋ 添加分组（点选多个元素）</button>'+
+    p.innerHTML='<h3>锚点清单</h3><div class="am-note">点击条目显示/隐藏该锚点的标签（可多个并存）；A 覆盖标签=显示全部，切到本清单后保持并可逐个关闭。添加锚点/分组用右下角工具条的 ＋ 按钮。锚点模式下页面交互冻结，Esc 退出。'+(AM.saveUrl!==null?'已连接锚点服务，保存即写盘。':'未检测到锚点服务（npx prototype-anchor serve），保存仅会话内生效。')+'</div>'+rows+
       '<button class="am-btn ghost" id="am-export">复制新增片段（'+AM.pending.length+'）</button>';
     document.body.appendChild(p); AM.els.push(p);
     p.querySelectorAll('.am-row').forEach(row=>{
@@ -144,8 +129,6 @@ function amBuild(){
         amDeleteAnchor(el,ev.target);
       };
     });
-    p.querySelector('#am-add').onclick=()=>{ AM.picking=true; document.body.classList.add('am-picking'); };
-    p.querySelector('#am-gadd').onclick=()=>{ AM.groupPicking=true; AM.groupSel=[]; document.body.classList.add('am-picking'); amGroupBar(); };
     p.querySelector('#am-export').onclick=amExport;
 }
 function amSync(){
@@ -154,7 +137,6 @@ function amSync(){
     if(!o._for)return;
     const r=o._for.getBoundingClientRect();
     o.style.left=r.left+'px'; o.style.top=r.top+'px';
-    if(o.classList.contains('am-bar'))o.style.width=Math.min(r.width,420)+'px';
     o.style.display=(r.width===0||r.bottom<0||r.top>innerHeight)?'none':'';
   });
 }
@@ -386,8 +368,10 @@ function amInit(){
   fab.id='am-fab'; fab.className='am-fab am-ui'; fab.textContent='⬦ 锚点'; fab.title='锚点视图模式';
   fab.onclick=()=>amToggle();
   const sw=document.createElement('div'); sw.className='am-switch am-ui';
-  sw.innerHTML='<button data-v="a" class="cur">A 覆盖标签</button><button data-v="b">B 锚点清单</button><button data-v="c">C 层级条</button><span>Esc 退出</span>';
-  sw.querySelectorAll('button').forEach(b=>b.onclick=()=>amSetVariant(b.dataset.v));
+  sw.innerHTML='<button data-v="a" class="cur">A 覆盖标签</button><button data-v="b">B 锚点清单</button><button class="am-act" id="am-add" title="添加锚点（点选页面元素）">＋ 锚点</button><button class="am-act grp" id="am-gadd" title="添加分组（点选多个元素）">＋ 分组</button><span>Esc 退出</span>';
+  sw.querySelectorAll('button[data-v]').forEach(b=>b.onclick=()=>amSetVariant(b.dataset.v));
+  sw.querySelector('#am-add').onclick=()=>{ AM.picking=true; document.body.classList.add('am-picking'); };
+  sw.querySelector('#am-gadd').onclick=()=>{ AM.groupPicking=true; AM.groupSel=[]; document.body.classList.add('am-picking'); amGroupBar(); };
   document.body.appendChild(fab); document.body.appendChild(sw);
   AM.saveUrl=null;
   AM.file=(location.protocol==='file:')?decodeURIComponent(location.pathname)
