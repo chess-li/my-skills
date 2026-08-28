@@ -200,6 +200,8 @@
 - 2026-08-26 | prototype-anchor package.json 元数据对齐：version 0.6.0→0.6.1（对齐 bin 内 VERSION 常量），description「写盘与术语表同步」改「写盘，术语表只读解析」 | 依据：同日全量 review 取证——v0.6.1（2026-08-24 findByPath 可读诊断升格）后 package.json 未 bump，同日术语表写入权收归升格（服务删 syncDomains 转只读）后描述未同步，元数据与已裁定事实双重失实；~/.agents 副本已同步，md5 一致
 - 2026-08-26 | debug×3、design×1 处 skill 路由补打 `<use-skill>` 标记（debug 判层路由 design/spec、修复节 tdd；design 入口路由 spec） | 依据：同日全量 review 跑 parse-skill-invocations.py 实测——debug/design 抽取结果 clean 与正文路由指令矛盾，invocation-markers v0.2 规则 9（真实加载才打标）在 spec/tdd/implement/prototype/prototype-anchor-sync 已执行、此两 skill 欠账；2026-08-19「现有 10 skill 改写后抽取完整性」待验证项随本次清偿（全仓抽取现已与正文一致）；纯元数据无行为变化（规范 §4：标记是元数据不是行为），~/.agents 与 ~/.claude 三副本已同步，md5 一致
 
+- 2026-08-28 | implement 新增「归档合并」节（同 spec 多份归档用户发起合并时：逐条与 spec/design/现有代码核对、过期已完成与被替代待办安全删除、按 spec 当前断言组织当前状态视图而非历史流水、删除留备查节原始文件靠 git 历史）+ description 用于段加锚点「合并同一 spec 的任务归档」 | 依据：2026-08-28 ey-timp-lab ses_fb91594feffe 真实使用（6 份归档合并为 archive/agent-skills.md）——第一轮理解被用户纠正（"我的意思是整合本地的task archive到一个文件"），核心纪律由用户口述补充（"应该与spec和design和现有代码进行核对…不应该是直接按照任务历史直接合并的汇总文档，而是一个能够反映已完成/未完成的汇总"），模型默认合并行为与期望差值实锤；措辞以用户原话为底，用户批准落点=并入 implement 而非独立 skill（触发面=显式命令无自动触发判别需求，同 BDD/refactor 先例）| 减法审查：无可删（第 6 步管单任务归档动作，新节管多份归档合并维护，不重叠）；N=1 单案有意不固化汇总文件完整模板（历程/已知边界等节留个案判断），防过拟合 | 待验证：第二次合并现场（spec 大改/删除后的归档合并、其他项目目录约定）
+
 ## 冻结状态
 
 （暂无）
