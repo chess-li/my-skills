@@ -4,6 +4,8 @@
 
 ## 观察名单
 
+- meta 讨论形态（关于 spec/skill 设计的概念讨论）下 domains description 层被相邻 skill 竞争吸收：2026-09-01 回归 P3（「我们在讨论 spec 文档的设计…」原话）两轮分别加载 spec、skill-creator，domains 均未触发——对照组（改前 description）同样未触发，归因=08-26 spec description 定稿后竞争场漂移，非当日追加条款；设计中此类讨论由常备层（项目 AGENTS.md 指针）覆盖，而该指针恰是 09-01 冷启动改动后才会被创建——无指针项目的 meta 讨论仍是 domains 盲区 | 2026-09-01 回归取证 | 待验证：真实歧义信号复现场（用户纠正理解偏移达反复门槛）domains 是否到场；修法候选=观察，不动 description（触发必达化成本见 09-01 升格条诊断）
+
 - S1 常备层门禁正确版与 S4 hook 延后：双层概率网（spec 请求级 description + tdd 动作级 description/B 条款）已覆盖全部三场真实翻车路径（tdd 在 fc7d3316、fc6c1074 待核、18:12 ses_fc27145a 中均先于写码加载，旧 B 条款存在性条件静默、修复后会截回 spec）；S1 残面=两层同漏（暂无实例），S4 拦截面与 tdd 覆盖面重叠 | 2026-08-26 用户裁定延后 | 拉动条件：真实会话出现「spec 与 tdd 双双未加载」的写码翻车
 - tdd 动作级触发对「小重构」形态概率性 + 加载前自判豁免：trigger-N4-final 中模型 reasoning 显示判断事件发生但自判跳过（"this is a pure refactoring, so tdd might not strictly apply"，随后按项目 AGENTS.md 计划优先模板走）——与 spec 已废止的「加载前自判豁免」同构缺口，tdd 无对应条款（其无行为变化分支要求前后全绿，并未豁免加载本身）| 2026-08-26 取证（该 mock 无测试设施，模型判断有局部合理性）| 待验证：真实会话中小重构绕过 tdd 的实例；修法候选=tdd 正文加同款「加载前不自判」
 
@@ -51,6 +53,8 @@
 - squash 同一 spec 本地任务提交的安全协议（2026-08-28 ey-timp-lab ses_fb91594feffe，用户手动实践成功）：patch 式 squash——生成 patch、原分支改名 -back 保留、从远程重新检出、应用 patch、新旧分支等价比对为空才提交并删 back | 复发性结构性保证（implement 每验收标准一提交，本案 56 碎提交），但无返工证据（用户手动执行成功，agent 仅做等价比对与删除判断），不满足证据闸 | 待验证：第二次 squash 现场 agent 默认行为是否偏离协议（如直接 rebase -i 原地改写不留 back、无等价比对即删原分支）；证据到场 → 落入 implement git 节
 
 ## 返工事件
+
+- 2026-09-01 | domains+spec/design 链路 | ey-timp-lab 两周 35 会话（2026-08-26~09-01，opencode.db 取证）domains 零加载（spec×14/code-review×14/tdd×10/design×8/implement×6/debug×1/customize-opencode×1），DOMAINS.md 与项目 AGENTS.md 始终未建（git 全历史零触及）；同项目 spec 08-26 升触发必达后正常触发 14 次，对照证明 description 触发必达架构不依赖项目常备层。会话原文两处实锤绕行：ses_fa896dbe3「没有 DOMAINS.md/AGENTS.md，上下文命名跟随现有 agent-skills」（spec 正文「没有 → 按直觉命名」被执行）；design 8 次归属路由均判单上下文（「无跨上下文决策，不动 ARCHITECTURE.md」，ARCHITECTURE.md 未建属正确输出非遗漏）。唯一理解偏移信号（08-28 ses_fb91594feffe 用户纠正「我的意思是整合本地的task archive到一个文件」）指向工作流概念且单次，未达沉淀门槛 | 疑似病灶层：触发架构代差——domains 仍停在 08-04 架构（被动信号 description + 项目 AGENTS.md 常备指针双腿，升格区 08-04 条），ey-timp-lab 无项目 AGENTS.md 缺常备腿，命名又被 spec 流程静默消化、description 信号无可抓；「无 DOMAINS.md 现场」全链路无属主：spec 正文把该现场写成可绕行分支（「没有 → 按直觉命名」），design 读现状静默跳过。同模式第三起（08-04 #91 spec-skill 会话未触发、08-24 ey-timp-etl 常备层无指针零加载）
 
 - 2026-08-27 | prototype-anchor | 用户报「添加锚点/添加组按钮提出和锚点清单同一层级不生效」；考证：当前生效客户端两按钮始终在清单面板内部（h3+rows+按钮同属 am-panel），git 全历史（759f6ad 插件化起 5 提交）无移出记录，工作区干净无 stash，仓库与 ~/.agents 副本 md5 一致，8420 服务分发即此版——非被改回，而是该改动从未进入生效资产，最可能丢失于 8-23 插件化（cake 内嵌 250 行拷贝换一行接入，会话内改动随内嵌块消失，cake 非 git 不可考），证据日志亦无此需求记录；用户裁定落点=A/B/C 切换工具条，anchor-view.js 三处改动（CSS am-act/grp、面板移除两按钮+note 补指引、工具条加按钮+绑定选择器收窄 button[data-v] 防误绑模式切换），jsdom 冒烟 24/24（旧 16 回归+新 8：工具条在场、面板无残留、A 视图无面板可直接添加、点选/分组流程通），双副本同步 md5 一致，8420 stop/start 后 curl /__am_client.js 实测新版本在场 | 疑似病灶层：改动不落生效资产即不可追溯——插件化抽取时内嵌拷贝的会话内改动未带入新信源，且需求未沉淀（无证据日志/无测试断言），失联后无人察觉
 
@@ -103,6 +107,8 @@
 - 2026-08-18 | debug | 同会话定位根因阶段：依赖（内部 jar）中的实现需要追读，先走 javap 反编译约 20 次工具调用、5 轮查找实现类，才发现本机就有该依赖的源码仓库可直接读；用户补充观察：自动反编译倾向取最新版本而非项目实际依赖的版本 | 疑似病灶层：私有知识缺失（依赖代码定位顺序：问用户/本机源码仓库 → 依赖自带 sources → 按项目实际解析版本反编译）——模型不知道，非知道而忘
 
 ## 升格 / 移出
+
+- 2026-09-01 | domains 冷启动接入 SDD 主链路（四项，双副本 md5 一致）：①spec 正文「分解与读现状」无 DOMAINS.md 分支由「按直觉命名」改为「先走 domains 冷启动判管辖（建不建由 domains 正文判定），再回来命名」；②design 正文「读现状」对称补同款路由行；③domains 冷启动补豁免出口与常备层落地——「每次需求讨论都有领域语言可落地或对齐，『提不出关键概念』不是豁免理由；仅用户明确不需要 → 不建，告知后返回原流程」（用户原句定稿豁免收窄）、AGENTS.md 引用行「不存在则创建」；④domains description 补可达性条款「spec/design 判到项目无 DOMAINS.md 时路由过来冷启动」 | 依据：2026-09-01 返工事件（ey-timp-lab 两周 35 会话 domains 零加载、DOMAINS.md/AGENTS.md 未建，opencode.db 取证）——触发架构代差诊断：spec 08-26 升触发必达后同项目正常触发 14 次（对照组），domains 停 08-04 架构（被动信号 description+项目 AGENTS.md 常备指针）缺常备腿失声，同模式第三起；用户裁定「下一次需求到来时 DOMAINS.md 也应该被自动建立」并四项全批，③豁免措辞按用户断言「每次需求讨论中应该都有领域语言可以落地或对齐」收窄 | 回归：P8（ey-timp-lab 改前副本 141b80a，08-26 原话）✓——spec→domains 依序加载，建 DOMAINS.md（5 关键概念含技能编码/技能文件编码反例辨析）+AGENTS.md 引用行，零生产代码写入；domains 过触发防线 N1/N2/N3 ✓ 均未误触；P3 行为变化经对照组归因竞争场漂移（入观察名单），非本次条款；spec/domains 触发测试集同步维护（P8 预期扩展+R1 路由触发区） | 待验证：下一真实需求会话中冷启动端到端（含落盘即提交）执行度；豁免出口「用户明确不需要」形态出现频次；第二次冷启动后 AGENTS.md 常备指针在 meta 讨论中的防御效果
 
 - 2026-08-27 | prototype-anchor 视图按钮文案改名：「A 覆盖标签」→「显示所有锚点」、「B 锚点清单」→「查看锚点清单」（data-v 内部标识不变），清单面板 note 联动说明同步 | 依据：2026-08-27 用户指令 | 回归：jsdom 冒烟 25/25（新增按钮文案断言）；双副本 md5 一致，服务重启 curl 实测新文案在场 | 待验证：真实页面观感
 

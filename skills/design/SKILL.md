@@ -36,7 +36,7 @@ description: 维护按限界上下文组织的工程技术设计文档（how 层
 ### 3. 读现状
 
 - 读对应 spec（what/why 的来源）、已有 design 与 ARCHITECTURE.md
-- 项目已有 `DOMAINS.md` → 先读，上下文划分跟随它
+- 项目已有 `DOMAINS.md` → 先读，上下文划分跟随它；没有 → 先走 <use-skill>domains</use-skill> 冷启动判管辖，再回来
 
 ### 4. 写决策
 
