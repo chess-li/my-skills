@@ -55,6 +55,8 @@
 
 ## 返工事件
 
+- 2026-09-04 | implement+code-review | ey-timp-lab：用户开任务修代码事实与文档不一致。c30e601 无任务文件修三处——spec 只写缺 name、代码已拒缺 description；DTO javadoc 称失败进 results、代码走聚合异常；类注释写 WARN、代码打 ERROR。script-scan-log-cause：spec/design 把 shfmt 非零退出算工具链 ERROR，改判脚本错 WARN。7e20f55：解压写失败补 ERROR、shell 无效 AST 复用 fileFailure。用户裁定应在开发流程或 review 避免，一字批准双落 | 疑似病灶层：完成定义与评审范围均只盯本任务验收清单；code-review「只读代码」不读已有断言；所及类型上的注释不在核对面
+
 - 2026-09-04 | tdd+implement+code-review | ey-timp-lab ses_f9446b0a7ffe：用户要求修复 ses_f97eac052ffe 评审标为 Minor 的死参数（ShellCommandRules.record 的 embeddedScripts 方法体未引用）与测试专用构造器（ScriptDependencyReport 双参仅测试消费）。开发会话 ses_fa896dbe3 已加载 tdd/implement/code-review 仍引入；模块评审找到但标 Minor 放行 | 疑似病灶层：空钩子+分级默认——「死代码」不含签名面未引用参数；发现后无分级钉死，默认 Minor 待办
 
 - 2026-09-03 | domains | my-harness ses_f99b92013ffedz2wDNdXgzCebM 用 dogfood 当下一步选项；溯源 ses_f99b73513ffe：用户从未用过该词。最早写入产品语言=ses_fa3ba5c7（2026-09-01）自拟「每阶段都能 dogfood」并落入 `docs/00-总体架构与技术选型.md`；ses_f9fc993d8 起草内核-spec 时造「作为 dogfood 使用者」。用户裁定「这不是一个业务相关的词汇」，并一字批准「禁止招募俚语」 | 疑似病灶层：选词优先级只有来源顺序、没有负向边界，圈内习惯说法被当成社区共识招入术语表与文档
@@ -120,6 +122,8 @@
 - 2026-08-18 | debug | 同会话定位根因阶段：依赖（内部 jar）中的实现需要追读，先走 javap 反编译约 20 次工具调用、5 轮查找实现类，才发现本机就有该依赖的源码仓库可直接读；用户补充观察：自动反编译倾向取最新版本而非项目实际依赖的版本 | 疑似病灶层：私有知识缺失（依赖代码定位顺序：问用户/本机源码仓库 → 依赖自带 sources → 按项目实际解析版本反编译）——模型不知道，非知道而忘
 
 ## 升格 / 移出
+
+- 2026-09-04 | implement 完成定义改为验收通过且未让已有声称失真；第 6 步归档前读所涉 spec/design（不在 diff 里也要读），失真走第 5 步；所及类型/方法 javadoc 与类注释行为事实与代码不一致则改注释或改代码；不把 design 写成代码镜像、不补写新注释。code-review 派发补所涉 spec/design 路径，评审者读代码与断言；规格符合度补断言仍为真；所及注释与代码矛盾 = Important。冒烟 S5/R05 | 依据：2026-09-04 返工（c30e601 / script-scan-log-cause / 7e20f55）+ 用户一字批准双落 | 回归：对照改后正文——旧稿完成=验收通过、评审只读代码只对任务清单，新稿失真走偏差路由、注释矛盾 Important；description 未改，触发集不跑；减法审查：「只读代码」「只给三样」被替换为读断言/四项输入，完成定义「只有验收标准通过」被放宽，无可另删 | 待验证：下一真实归档/评审是否读所涉章节、所及注释失真是否仍被标 Minor 放行
 
 - 2026-09-04 | tdd 最小实现补签名面（方法参数须被方法体引用，未引用则不加）；implement 整洁「死代码」列举补方法体未引用的参数；code-review「死代码」同补，发现与裁决钉死本任务引入的死代码、测试专用物 = Important。冒烟 T09/S4/R04 | 依据：2026-09-04 返工 ses_f9446b0a（用户：应在开发与 review 中避免）+ ses_f97eac 评审实锤找到后标 Minor | 回归：对照改后正文——旧稿死参数可被标 Minor 放行、开发无签名面唤醒；新稿开发不加未引用参数、评审 Important 修复后重审；description 未改，触发集不跑；减法审查：无可删（旧「死代码」空钩子保留作类名，补操作信息） | 待验证：下一真实编码/评审是否拦未引用参数、测试专用物是否仍被标 Minor
 

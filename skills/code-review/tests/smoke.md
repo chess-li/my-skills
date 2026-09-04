@@ -44,7 +44,17 @@
 验收标准:
   - 硬性: 该死参数与测试专用构造器列为 Important 并附 file:line，裁决修复后重审
   - 硬性: 不标 Minor、不以可合入放行
-来源: 2026-09-04 返工（ses_f97eac 找到后标 Minor → ses_f9446b0a 用户要求修复）
+  来源: 2026-09-04 返工（ses_f97eac 找到后标 Minor → ses_f9446b0a 用户要求修复）
+```
+
+```
+用例 ID: R05
+用户处境: 评审含 spec 断言与代码不一致、所及类型 javadoc 与代码矛盾的变更
+真实输入: review ey-timp-lab-ai-infra（2026-09-04 现场：parseZip 已拒缺 description 而 spec 只写缺 name；AiRuntimeDependencySyncResultDTO javadoc 称失败进 results、类注释称 WARN，代码走聚合异常打 ERROR）
+验收标准:
+  - 硬性: 评审者拿到变更所涉 spec/design 路径并对照断言，spec 只写缺 name/代码已拒 description 列为发现
+  - 硬性: 所及 javadoc/类注释与代码矛盾列为 Important 并附 file:line，裁决修复后重审，不标 Minor、不以可合入放行
+来源: 2026-09-04 返工（c30e601 fix docs；用户：应在开发流程或 review 避免）
 ```
 
 ## 触发测试集
@@ -69,3 +79,4 @@
 |---|---|---|---|---|
 | 2026-08-05 | 现版 | R01/R02 | 真实使用佐证 | 智能体节点两次真实评审（新鲜上下文、分级发现、scoped 重审）；非正式回归 |
 | 2026-09-04 | 死代码含未引用参数；本任务死代码/测试专用物=Important | R04 | ✓ | 对照改后正文：旧稿 ses_f97eac 找到死参数与测试专用构造器后标 Minor 放行；新稿两者=Important、修复后重审；description 未改，触发集不跑 |
+| 2026-09-04 | 所涉断言仍为真；所及注释矛盾=Important | R05 | ✓ | 对照改后正文：旧稿只读代码、规格符合度只对任务清单，c30e601 类问题可合入；新稿派发含 spec/design 路径、断言失真与注释矛盾 Important；R04 分级句保留死代码/测试专用物，触发集不跑 |
