@@ -31,11 +31,11 @@ description: 已完成代码变更的独立评审：新鲜上下文评审者、�
 
 ### 3. 发现与裁决
 
-每条发现分级 Critical / Important / Minor 并附 file:line；本任务引入的死代码、测试专用物、所及类型/方法上与代码矛盾的 javadoc/类注释 = Important。必须给出明确裁决：可合入 / 修复后重审。不写没有依据的"看起来不错"。
+每条发现分级 Critical / Important / Minor 并附 file:line；本任务引入的死代码、测试专用物、所及类型/方法上与代码矛盾的 javadoc/类注释 = Important。可合入仅当无未处理发现；有发现（含 Minor）→ 修复后重审。不写没有依据的"看起来不错"。
 
 ### 4. 修复循环
 
-Critical 立即修；Important 合入前必须修；Minor 记录待办。每轮修复后对修复差异做一次 scoped 重审。重审两轮仍不过 → 停下问用户。
+Critical 立即修；Important 与 Minor 合入前必须修（Minor 默认自动修，不询问）。每轮修复后对修复差异做一次 scoped 重审。重审两轮仍不过 → 停下问用户。
 
 ## 护栏
 

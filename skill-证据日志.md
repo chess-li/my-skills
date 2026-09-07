@@ -55,6 +55,8 @@
 
 ## 返工事件
 
+- 2026-09-07 | implement+code-review | ey-timp-etl ses_f863478c：评审仅 Minor、裁决可合入后归档任务文件并报告「尚未合入」；用户问遗留、要求修复后再独立评审，后又修第二轮 Minor。用户裁定：Minor 自动修→scoped 重审→无未处理发现才算完成，不能因可合入视为任务完成。上周任务同样多次 Minor 后用户要求修 | 疑似病灶层：授权与默认值缺失——Minor 写成「记录待办」，implement 归档门只拦 Critical/Important，「可合入」被当成完成
+
 - 2026-09-07 | implement | 用户核对上周任务后裁定：任务结束后合并 commit 总是批准，squash 收口不再要求审批、改为自动合并。上周 ey-timp-lab reflog：09-06 连续 patch 式 squash（skill-code-format / skill-code-add-validate / skill-mcp-whitelist / skill-deps-query 等均 -back 后压单提交），用户均批是 | 疑似病灶层：授权与默认值缺失——「是否压缩」写成必须先确认，决策点已有稳定默认「压」
 
 - 2026-09-06 | implement | ey-timp-lab ses_f8b4637e3ffe：两次任务归档（skill-mcp-whitelist / skill-deps-query）均 merge 后只 `git worktree remove`，reasoning 写 "Branch … still exists locally after worktree remove - that's OK"；squash 只删 `-back`。用户报「两个本地的 skill-deps-query skill-mcp-whitelist 分支似乎没有删除」，随后才 `git branch -D`。用户裁定：移除 worktree 的含义也包括移除本地分支 | 疑似病灶层：归档条「移除 worktree」未把删除本地任务分支写成同一完成物；模型按 git 默认（worktree remove 不删分支）自判残留 OK
@@ -130,6 +132,8 @@
 - 2026-08-18 | debug | 同会话定位根因阶段：依赖（内部 jar）中的实现需要追读，先走 javap 反编译约 20 次工具调用、5 轮查找实现类，才发现本机就有该依赖的源码仓库可直接读；用户补充观察：自动反编译倾向取最新版本而非项目实际依赖的版本 | 疑似病灶层：私有知识缺失（依赖代码定位顺序：问用户/本机源码仓库 → 依赖自带 sources → 按项目实际解析版本反编译）——模型不知道，非知道而忘
 
 ## 升格 / 移出
+
+- 2026-09-07 | implement 完成定义与归档门补「无未处理评审发现」；第 6 步「有 Critical/Important → 修复」改为「有发现（含 Minor）→ 按 code-review 修复循环」。code-review：可合入仅当无未处理发现；Minor 默认自动修、不询问、不记待办。冒烟 S7/R06 | 依据：2026-09-07 返工 ses_f863478c + 用户裁定「Minor 自动修→scoped 重审→无未处理发现才算完成」 | 回归：对照改后正文——旧稿可合入即归档、Minor 待办；新稿仅 Minor 也修复后重审、无未处理发现才归档；S1–S6/R01/R03–R05 未触；description 未改，触发集不跑；减法审查：删「Minor 记录待办」与 implement「有 Critical/Important」子集列举，分级仍三档、修复循环仍 scoped 重审 | 待验证：下一真实任务仅 Minor 时是否自动修且不归档
 
 - 2026-09-07 | implement squash 收口「询问是否压缩」改为默认压缩、执行后告知该序列；已推送仍须明示。冒烟 S3 | 依据：2026-09-07 用户裁定（核对上周任务，总是批准结束后合并 commit）+ 同日返工（ey-timp-lab 09-06 连续 squash 均批是） | 回归：对照改后 squash 条——旧稿列出序列询问、确认后五步，新稿默认五步、执行后告知；S1/S2/S4–S6 未触；description 未改，触发集不跑；减法审查：删「询问是否」「确认后」，授权从必须先确认降为执行后告知，五步与已推送明示保留 | 待验证：下一真实归档是否不问直接压、已推送分支是否仍停下
 
