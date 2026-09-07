@@ -35,7 +35,7 @@ description: 已完成代码变更的独立评审：新鲜上下文评审者、�
 
 ### 4. 修复循环
 
-Critical 立即修；Important 与 Minor 合入前必须修（Minor 默认自动修，不询问）。每轮修复后对修复差异做一次 scoped 重审。重审两轮仍不过 → 停下问用户。
+Critical 立即修；Important 与 Minor 合入前必须修（Minor 默认自动修，不询问）。每轮修复后对修复差异做一次 scoped 重审。重审两轮仍不过 → 停下问用户。完整评审看工作分支相对基线的差异；scoped 重审只看本轮修复差异。
 
 ## 护栏
 
