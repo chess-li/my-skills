@@ -63,6 +63,8 @@
 
 ## 返工事件
 
+- 2026-09-13 | handoff | 用户指令创建会话交接 skill：写临时目录交接文档、生成提示词；能拉起可交互新会话则启动。避免新会话再查源会话。现场=ses_f66842526ffe 按会话 id 查库才拿到修法 | 疑似病灶层：无会话接力产物——任务文件只管 SDD 执行状态，会话间只有口头「按 ses_xxx 执行」
+
 - 2026-09-13 | debug+implement | 用户审阅当日任务：fixbug 移交给新会话后不自动本地测试、不找根因。现场=ses_f66b32d4dffe 已定位推荐失败根因并给出修法；ses_f66842526ffe 首条「按照任务ses_f66b32d4dffepvqllLJ0aR6Wto的建议修改结论执行」加载 implement/spec/tdd，零 debug/local-env，0 次打本地接口，单测绿后合入。同日 ses_f697be333ffe「在本地环境中验证…testrun接口」亦零加载 debug | 疑似病灶层：description 判别逻辑 + 授权缺失——本地测试锚点写成「给出访问地址」，无地址则判断事件不发生；「按结论执行」无 bug 锚点被 implement 吸收；正文无「前会话根因只当线索」
 
 - 2026-09-13 | debug→local-env | 用户补裁定：目录改为 `.local-env`；缺目录或 start/url 不可用应自动引导创建；独立成 skill。现场=刚把契约内嵌 debug 且缺入口只停下要两件 | 疑似病灶层：完成物错锚 + 拆分——立通道/引导创建与 bug 诊断不同触发面，内嵌 debug 则缺入口不会引导、建立目录请求被 debug 吞噬
@@ -164,6 +166,8 @@
 - 2026-08-18 | debug | 同会话定位根因阶段：依赖（内部 jar）中的实现需要追读，先走 javap 反编译约 20 次工具调用、5 轮查找实现类，才发现本机就有该依赖的源码仓库可直接读；用户补充观察：自动反编译倾向取最新版本而非项目实际依赖的版本 | 疑似病灶层：私有知识缺失（依赖代码定位顺序：问用户/本机源码仓库 → 依赖自带 sources → 按项目实际解析版本反编译）——模型不知道，非知道而忘
 
 ## 升格 / 移出
+
+- 2026-09-13 | 创建 handoff skill（model-invoked）：交接文档 `{tmpdir}/opencode/handoff/<yyyyMMdd>-<topic>.md`；写完生成可粘贴提示词；可交互新会话 API 才启动（`opencode run` 不算）。接手只读文档、不查源会话。debug/implement description 负向补会话间交接。创建期不建测试集 | 依据：2026-09-13 用户指令 + 同日 ses_f66842526ffe 查源会话返工 | 回归：对照无此产物时新会话必查库；新稿路径由 scripts/path.py 钉死。debug/implement 触发集对照负向成立、干净会话未跑 | 减法审查：不改 implement 任务文件机制，只划界 | 待验证：下一场「移交给新会话」是否加载 handoff 且新会话不查库
 
 - 2026-09-13 | 创建 local-env skill（model-invoked）：契约项目根 `.local-env/start`+`url`（可软链）；缺则引导创建（一次一问，url 本轮已给则写入不问，补 gitignore）；有则执行 start 立通道。debug 第 1/5 步立通道改为 `<use-skill>local-env</use-skill>`，删内嵌路径与「缺则要两件」；description 负向补建立/补齐 `.local-env`。debug 冒烟 S1/S3/S7 改路由；触发 N3 新。创建期不建 local-env 测试集 | 依据：2026-09-13 用户指令（`.local-env` + 引导创建 + 独立 skill） | 回归：对照 debug 旧稿内嵌 `local-env/` 且缺则停下；新稿只路由。S2/S4/S5/S6 未触；description 已改，触发集对照成立、干净会话待跑 | 减法审查：debug 立通道操作信息整段迁出，无双写 | 待验证：下一场通道不立是否加载 local-env 并引导/启动；建立 `.local-env` 请求是否不触发 debug（N3）
 

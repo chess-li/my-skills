@@ -1,6 +1,6 @@
 ---
 name: debug
-description: bug 诊断与修复的纪律：先复现，再定位根因，判定根因属期望/设计/实现哪一层，然后分路修复。用于：用户报告 bug、错误、意外行为；调试、测试或本地验证接口/服务（不要求给出访问地址）；接手修 bug 或按已有结论执行修复。不用于写生产代码时的测试先行（tdd skill 的事）；不用于验收闭环与执行状态落盘（implement skill 的事）；不用于已完成变更的独立评审（code-review skill 的事）；不用于建立或补齐 `.local-env`（local-env skill 的事）。
+description: bug 诊断与修复的纪律：先复现，再定位根因，判定根因属期望/设计/实现哪一层，然后分路修复。用于：用户报告 bug、错误、意外行为；调试、测试或本地验证接口/服务（不要求给出访问地址）；接手修 bug 或按已有结论执行修复。不用于写生产代码时的测试先行（tdd skill 的事）；不用于验收闭环与执行状态落盘（implement skill 的事）；不用于已完成变更的独立评审（code-review skill 的事）；不用于建立或补齐 `.local-env`（local-env skill 的事）；不用于会话间交接（handoff 的事）。
 ---
 
 # Bug 诊断与修复
