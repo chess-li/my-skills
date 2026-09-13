@@ -22,6 +22,7 @@ description: 按验收标准实现就绪的 spec：派生验收清单、逐条�
 
 ### 1. 入口判断
 
+- 消除已观察到的失败（含按诊断/修法/修改结论执行）→ 先 <use-skill>debug</use-skill> 复现并定位根因，再回来；本会话未定位根因不建任务文件
 - 新实现：有就绪的 spec？ → 第 2 步
   - design 就绪：本次改动触及的值得固化的 how 问题未落定（BC design 或 ARCHITECTURE.md）→ 先走 <use-skill>design</use-skill> 落定再回来；改动不产生值得固化的决策 → 空满足
 - 续写：`docs/tasks/` 下有未归档的任务文件？ → 读它，按"当前位置"恢复执行。scoped 重审已无未处理发现 → 第 6 步再派完整评审，不得停
