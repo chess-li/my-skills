@@ -9,41 +9,49 @@
 
 - **定义**：统一语言的适用边界，也是 domains 与 spec 文件的组织单元：一个上下文对应一个 `docs/contexts/<限界上下文>/` 目录，内藏 `<限界上下文>-domains.md`（术语）、`<限界上下文>-spec.md`（断言）与 `<限界上下文>-design.md`（技术事实），术语与它支撑的断言、技术事实共置。划分以 `DOMAINS.md` 为单一信源，spec 不自己发明划分；上下文迁移/改名跟随 domains 的变更时刻。
 - **反例**：≠ 模块——模块私有术语就近放模块目录的 `DOMAIN.md`，不占 `docs/contexts/` 目录。
+- **消费者**：spec/design/domains/implement/frontend-api-doc 的 `docs/contexts/<限界上下文>/` 路径约定与「上下文划分跟随 domains」条款。
 
 ### spec（规格）
 
 - **定义**：按限界上下文组织的持久文档，持续声称描述该上下文内能力的当前事实（what/why 与验收标准），能力以章节存在。任何触及已有 spec 覆盖行为的改动，先更新 spec 再动手——spec 是变更的第一现场。更新判据：改动是否改变 spec 已有断言，与任务大小无关。
 - **反例**：≠ 需求文档（锚定一次性事件，事件过后即失去意义）。
+- **消费者**：spec skill 正文（单一信源）；tdd 入口路由、debug 判层路由、implement/design 偏差路由的引用条款。
 
 ### spec 就绪
 
 - **定义**：spec 可作为 design/implement 输入的状态，相对改动判定：① 质量——每个用户故事至少一条可验证的验收标准（spec skill 边界自查产出时保证）；② 覆盖——本次改动触及的行为被 spec 断言覆盖。未覆盖 → 先走 spec skill 补全 what/why，再进入 design/implement。
 - **反例**：≠ spec 文件存在——存在不蕴含覆盖本次改动。
+- **消费者**：implement 第 1 步入口判断（「有就绪的 spec？」）；design 第 1 步入口判断。
 
 ### design（设计文档）
 
 - **定义**：按限界上下文组织的持久文档，持续声称该上下文"如何被构建"的当前技术事实（how），与 spec 一一对应，共置 `docs/contexts/<限界上下文>/<限界上下文>-design.md`。写入判据：技术决策是否归属本上下文；跨上下文或项目级 → ARCHITECTURE.md，design 引用不复制。对应 SDD 的 Plan 阶段。
 - **反例**：≠ spec（what/why 与 how 两层，不可互换）；≠ ARCHITECTURE.md（归属范围不同）。
+- **消费者**：design skill 正文（单一信源）；debug 判层路由、implement 偏差路由、code-review 评审维度。
 
 ### design 就绪
 
 - **定义**：design 可作为 implement 输入的状态，相对改动判定：① 质量——每条固化的决策都写有约束/取舍理由（design skill 边界自查产出时保证）；② 覆盖——本次改动触及的值得固化的 how 问题都已落定（BC design 或 ARCHITECTURE.md）。改动不产生值得固化的决策 → design 不触发，空满足就绪。
 - **反例**：≠ design 文件存在——存在不蕴含覆盖本次改动；≠ 所有 how 问题都有答案——代码可读出的细节由 implement 决定，不是就绪条件。
+- **消费者**：implement 第 1 步（design 就绪空满足分支）；spec 第 7 步（「design 就绪由其入口自判」）。
 
 ### ARCHITECTURE.md
 
 - **定义**：项目根目录单文件，持续声称项目/系统级架构的当前事实：技术栈、部署形态、跨上下文契约与集成方式。不归属任何单一上下文的决策的归宿；BC design 引用不复制。与 DOMAINS.md 同级（根级单文件）。
 - **反例**：≠ design（归属 BC）；≠ DOMAINS.md（术语 vs 技术事实）。
+- **消费者**：design 第 2 步归属路由；implement 意图锚点与第 5 步偏差路由；bootstrap 第 4 步。
 
 ### 能力（capability）
 
 - **定义**：限界上下文内 spec 与 design 的组织单元：用户可识别、可独立演进的完整能力，在 spec 中以章节存在。同一上下文内的多个能力合在一份 spec；一次需求触及 N 个上下文 → 更新 N 份 spec，跨上下文**引用**不复制断言（复制即制造双信源）。分合判据：各按各自节奏演化 → 分；必须同进同退 → 合。
 - **反例**：≠ 特性（feature，已废弃，统一为能力）；≠ 限界上下文（上下文是组织边界，能力是边界内的章节）；≠ 需求（需求是触发任务的一次性事件，不作为文档锚点）。
+- **消费者**：spec 第 2 步分解与文件模板（能力 = 章节）；spec/design 拆分命名条款。
 
 ### 任务文件（tasks file）
 
 - **定义**：每需求一份的一次性执行产物，实现开始时创建，归档后移入 `docs/tasks/archive/`。落 `docs/tasks/<需求名>.md`（不归属任何限界上下文；跨上下文需求共用一份，目标分别引用各 spec）。只承载四件事：需求目标（引用 spec）、从 spec 派生的验收清单、每条的验证状态（验证手段 + 结果）、范围外问题（顺手发现、本次不修）。SDD 执行状态的唯一交接介质：任何接手者只读此文件与 spec/design 即可续写实现。任务拆分留在会话内，不落盘。另锚定执行位置：基线分支与提交区间（起终点 commit），供评审圈定范围与归档后回溯。
 - **反例**：≠ spec/design（持久真相文档 vs 一次性消耗品，无"与事实脱节"问题）；≠ 合入（见下）；≠ 交接文档（会话接力、不进版本库）。
+- **消费者**：implement 第 2 步模板与提交区间；code-review 第 1 步变更范围圈定；debug 第 1 步（任务文件结论只当线索）。
 
 ### 交接文档（handoff file）
 
@@ -73,6 +81,7 @@
 
 - **定义**：spec 是单一事实源，靠四个机制贯穿生命周期：① 派生方向单向（Specify→Plan→Tasks→Implement，代码从 spec 派生，不从代码反推）；② 验收标准是 spec 的可执行形式——每条验收标准对应一个验证手段，spec 写不出验收标准说明需求还没想清楚，完成的定义是"验收标准通过"而非"代码写完了"；③ 变更传播以 spec 为入口；④ 可追溯性——每条验收标准有可复核的验证记录，经验收标准指回 spec 条款（任务拆分留在会话内，不做逐任务回溯）。
 - **反例**：≠ "写了一份需求文档"（写完即烂恰是 SDD 反对的反模式）；≠ 记录工具。
+- **消费者**：本体系全 skill 的流程衔接——四机制落点分别为 spec（Specify）、design（Plan）、implement 任务文件（Tasks/Implement）。
 
 ### 判管辖（jurisdiction judgment）
 
