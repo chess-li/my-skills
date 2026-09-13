@@ -63,6 +63,8 @@
 
 ## 返工事件
 
+- 2026-09-14 | debug+tdd | ey-timp-etl Codex 线程 01a09a63-73ad（「验证并修复 ETL 智能体闭环场景」，rollout jsonl 取证）：入口「自动使用本地环境验证,自动修复」验证修复命令形态，全程唯一 skill 加载=local-env（10:52，立通道合规），debug（description 自称管「本地验证接口/服务」）与 tdd 均未加载；修复三批次均「测试先写、实现后写、中间不跑」——①15:15:09 写 AgentReadGuardFilesystemTest+AgentModelFactoryTest（timeout wiring），15:16:22 起连写 4 个生产文件（ReadGuard/Properties/Executor/GatewayFactory），15:22:18 首次跑测 BUILD FAILURE→Errors: 6（测试自身问题），15:23:17 改测试转绿；②15:45:03 写 AgentFileToolsTest，15:45:47 新建 LocalAgentWorkspace+改 AgentFileReadTool/WriteTool，15:47:44 全量 install 绿，中间零运行；③16:10:52/16:11:21 写 3 个测试，16:12:42 改 2 个生产类（截断标记），16:14:01 断言从 assertEquals(MAX) 放宽为 ≤MAX+marker（实现后适配），16:14:29 绿——RED 全程未以「功能缺失」形态被观察；reasoning 15:14:48 原文 "Plans TDD: new tests, extend agent factory test, create AgentReadGuardFilesystem…"——测试先行判断事件在场，缺席的是 skill 正文纪律（RED 实跑观察/一次一个垂直切片/断言不随实现改）；11:11 把 AgentNodePropertiesTest 断言 20→40 未向用户确认（上一会话遗留失同步，实质合理但确认程序缺席）；项目 AGENTS.md「计划优先」模板第 3 步「补充单元测试」=tests-last 框架反向引导。GREEN 侧无剧院：mvn install 441+ 全绿、E2E 六场景 curl 实测、产物逐一下载验证 | 疑似病灶层：①debug description 未认领「验证+自动修复」命令形态；②tdd 动作级触发在「修复动作发生」时刻未开火（请求面无编码信号，与 08-25 ses_fc6c1074 新能力命令同构、入口形态不同，09-07 description 修复未覆盖本形态）；③执行层缺正文纪律约束——自绘 "TDD" 只有「先写测试」没有「观察失败」；④项目常备层 tests-last 措辞（08-24「无 skill 指针」条目之外新增反向引导证据）
+
 - 2026-09-13 | handoff | 用户纠正：不同 harness 有不同临时文件夹，不应固定 opencode 临时目录。现场=刚把路径钉成 `{tmpdir}/opencode/handoff/` | 疑似病灶层：完成物错锚——把某一 harness 的临时目录名写进契约
 
 - 2026-09-13 | handoff | 用户指令创建会话交接 skill：写临时目录交接文档、生成提示词；能拉起可交互新会话则启动。避免新会话再查源会话。现场=ses_f66842526ffe 按会话 id 查库才拿到修法 | 疑似病灶层：无会话接力产物——任务文件只管 SDD 执行状态，会话间只有口头「按 ses_xxx 执行」
@@ -168,6 +170,10 @@
 - 2026-08-18 | debug | 同会话定位根因阶段：依赖（内部 jar）中的实现需要追读，先走 javap 反编译约 20 次工具调用、5 轮查找实现类，才发现本机就有该依赖的源码仓库可直接读；用户补充观察：自动反编译倾向取最新版本而非项目实际依赖的版本 | 疑似病灶层：私有知识缺失（依赖代码定位顺序：问用户/本机源码仓库 → 依赖自带 sources → 按项目实际解析版本反编译）——模型不知道，非知道而忘
 
 ## 升格 / 移出
+
+- 2026-09-14 | debug description 用于段补连体命令锚点：「调试、测试或本地验证接口/服务（不要求给出访问地址），含『验证并修复/自动修复』连体命令」 | 依据：2026-09-14 返工事件（Codex 线程 01a09a63「自动使用本地环境验证,自动修复」全程仅加载 local-env，debug 零加载→第 4 步修复节 tdd 路由链断）；用户裁定 A | 双向对照：连体命令=本地验证入口形态非新类别，不吞 local-env（立通道仍路由）、不动 tdd 负向边界 | 回归：触发测试集补 P6（该线程首条原话）；P6/N2 干净会话探针结果见测试集结果记录 | 待验证：下一次「验证+自动修复」连体命令真实现场
+
+- 2026-09-14 | tdd description 用于段封闭「自认已会」豁免：「无论从哪个流程环节进入；自认已会测试先行同样加载，凭记忆自绘纪律不算数」 | 依据：2026-09-14 返工事件 reasoning 取证（"Plans TDD: new tests, extend agent factory test…" 后零加载，三批修复 RED 全程未观察——豁免路径非「不适用」（09-07 已封闭）而是「自认已会」）；用户裁定 B | 减法审查：「无论从哪个流程环节进入」管进入路径、新句管豁免路径，不重叠，无可删 | 回归：动作级时刻单发触发测试不可达，smoke.md 边界对补「tdd vs 自绘 TDD」对照 | 待验证：下一次流程中途转修复且模型自绘 TDD 的真实现场
 
 - 2026-09-13 | handoff 路径改本会话临时目录：交接文档 `{本会话临时目录}/handoff/<yyyyMMdd>-<topic>.md`；`path.py` 接收临时目录参数，删写死的 `opencode`。DOMAINS 词条同步。冷启动冒烟 S1–S3 | 依据：2026-09-13 用户原话 | 回归：对照旧稿 `{tmpdir}/opencode/handoff`；新稿不拼接 harness 名。S2/S3 未触。description 未改，触发集不跑 | 减法审查：删 path.py 内 `opencode` 段 | 待验证：下一场交接是否写到当前 harness 临时目录
 
