@@ -171,6 +171,8 @@
 
 ## 升格 / 移出
 
+- 2026-09-14 | implement 触发测试集补 P4（合并同一 spec 的任务归档）：语料=2026-08-28 ey-timp-lab ses_fb91594feffe 用户纠正原话「我的意思是整合本地的task archive到一个文件」；结果表加 P4 列，存量两行标 — | 依据：2026-09-14 全量 review P4（08-28 description 加归档合并锚点后触发集未补未跑）+ 用户指令「全部 fix」| 待验证：干净会话实跑 P4
+
 - 2026-09-14 | 9 个测试文件跑法去 opencode 硬编码：code-review/tdd smoke、debug/domains/implement/interview/spec/writing 触发集与 spec 冒烟集的跑法行改 harness 中立（机制=干净会话发输入+查该 harness 加载记录；opencode 命令与 Codex 子代理探针并列为例示）；历史结果行内的 opencode 字样为事实记录不动 | 依据：2026-09-14 全量 review P4 + 用户指令「全部 fix」；实践已先行（debug 触发集 2026-09-14 结果行自述 Codex 子代理 rollout 取证）| 回归：仅跑法说明，用例与断言零改动
 
 - 2026-09-14 | handoff 第 4 步去 harness 专有引用：「`opencode run` 无 TUI 不算」改「无交互界面的拉起方式不算（一次性批处理执行拿不到后续输入）」——09-13 去 harness 化（path.py 删写死 opencode、DOMAINS 词条不写死 harness）在正文的遗漏句 | 依据：2026-09-14 全量 review P3 + 用户指令「全部 fix」，挂 2026-09-13 用户纠正（harness 不写死）同向 | 回归：冒烟 S1–S3 不触第 4 步，对照改后正文断言仍成立 | 减法审查：同义替换，无可删
