@@ -10,7 +10,7 @@ description: 会话间任务交接：写出交接文档并生成新会话提示�
 本 skill 守护一条主线：**新会话只读交接文档即可开工，不查询源会话。**
 
 护栏：
-- 交接文档落 `{tmpdir}/opencode/handoff/<yyyyMMdd>-<topic>.md`，不进版本库
+- 交接文档落 `{本会话临时目录}/handoff/<yyyyMMdd>-<topic>.md`，不进版本库。临时目录取本会话环境声明的临时工作目录，不写死 harness 名
 - 有任务文件/spec/design 只写路径，不复制正文
 - 前会话根因/修法写入「线索」，接手后仍按目标 skill 自己复现
 - 接手禁止查源会话 id、禁止翻会话库
@@ -28,7 +28,7 @@ topic：用户指定则用；否则从目标压一行（去空白，≤40 字）
 
 ```bash
 # invocation
-python3 "<skill目录>/scripts/path.py" "{topic}"
+python3 "<skill目录>/scripts/path.py" "{本会话临时目录}" "{topic}"
 ```
 
 写入该路径：
