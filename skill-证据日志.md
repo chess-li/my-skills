@@ -171,6 +171,8 @@
 
 ## 升格 / 移出
 
+- 2026-09-14 | 9 个测试文件跑法去 opencode 硬编码：code-review/tdd smoke、debug/domains/implement/interview/spec/writing 触发集与 spec 冒烟集的跑法行改 harness 中立（机制=干净会话发输入+查该 harness 加载记录；opencode 命令与 Codex 子代理探针并列为例示）；历史结果行内的 opencode 字样为事实记录不动 | 依据：2026-09-14 全量 review P4 + 用户指令「全部 fix」；实践已先行（debug 触发集 2026-09-14 结果行自述 Codex 子代理 rollout 取证）| 回归：仅跑法说明，用例与断言零改动
+
 - 2026-09-14 | handoff 第 4 步去 harness 专有引用：「`opencode run` 无 TUI 不算」改「无交互界面的拉起方式不算（一次性批处理执行拿不到后续输入）」——09-13 去 harness 化（path.py 删写死 opencode、DOMAINS 词条不写死 harness）在正文的遗漏句 | 依据：2026-09-14 全量 review P3 + 用户指令「全部 fix」，挂 2026-09-13 用户纠正（harness 不写死）同向 | 回归：冒烟 S1–S3 不触第 4 步，对照改后正文断言仍成立 | 减法审查：同义替换，无可删
 
 - 2026-09-14 | debug description 用于段补连体命令锚点：「调试、测试或本地验证接口/服务（不要求给出访问地址），含『验证并修复/自动修复』连体命令」 | 依据：2026-09-14 返工事件（Codex 线程 01a09a63「自动使用本地环境验证,自动修复」全程仅加载 local-env，debug 零加载→第 4 步修复节 tdd 路由链断）；用户裁定 A | 双向对照：连体命令=本地验证入口形态非新类别，不吞 local-env（立通道仍路由）、不动 tdd 负向边界 | 回归：触发测试集补 P6（该线程首条原话）；P6/N2 干净会话探针结果见测试集结果记录 | 待验证：下一次「验证+自动修复」连体命令真实现场
