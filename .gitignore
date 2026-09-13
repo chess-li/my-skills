@@ -1,39 +1,17 @@
-HELP.md
-target/
-.flattened-pom.xml
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**
-!**/src/test/**
+# macOS
+.DS_Store
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
+# IDE
 .idea
 *.iws
 *.iml
 *.ipr
-/logs/
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-
-### VS Code ###
 .vscode/
-.worktrees/
 
-.codegraph/
-
-### Node ###
+# Node
 node_modules/
-.DS_Store
+
+# 本仓工作产物
+/logs/
+.worktrees/
+.codegraph/
