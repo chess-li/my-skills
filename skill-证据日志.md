@@ -61,6 +61,12 @@
 - tdd「加载前不自判」与请求级不抢入口对冲：2026-09-12 干净会话 spec N4 原话 tdd 先于 spec 加载（与 08-26 T1 目标相反），随后 B 条款截回 spec、未跳过 tdd。拉动条件：真实小重构会话 tdd 抢在 spec 前写码
 - 「无未处理发现」一语两读：DOMAINS.md 归档/合入词条与 implement 意图锚点按字面读 = 零发现放行；code-review 2026-09-11 起裁决门槛 = 无未处理的 P4 及以上（P5 经报告不阻断）。09-11 升格条自述按 code-review 处置语义解读、词条未改——单读前两处者得到更严的完成定义 | 2026-09-11 全量 review 发现 | 待验证：P5 放行与字面完成定义冲突引发的真实争议（如归档/合入时对 P5 处置的分歧）
 
+- eli5 缺「没讲懂」修复路径：用户反馈没看懂时缺省行为只是原样重讲一遍，无降档/换类比/借用项目统一语言（DOMAINS.md）的机制 | 来源：2026-09-14 移植分析 matt-skills wait-what（re-pitch 机制：补上下文 + 简化语言 + CONTEXT.md 统一语言）| 拉动条件：真实使用出现一次「没看懂 / 讲的什么」类反馈返工
+- eli5 四档完成判据无检验机制：「能复述/能跑通/能指出动哪里」是 aspiration，产物本身不含检索练习或反馈环——teach 的 fluency vs storage strength 机制：知识类降难度、技能类靠 effortful retrieval（quiz + 即时反馈）| 来源：2026-09-14 移植分析 matt-skills teach | 拉动条件：出现「当时讲懂了、之后又不会」类返工
+- eli5 判档不锚定学习目的：同一主题对「明天要做技术选型」与「纯好奇」应产出不同讲解；会用档场景未锚定用户真实目的，易滑向教科书式泛化场景（teach 的 MISSION.md 机制）| 来源：同上 | 拉动条件：出现「讲的场景跟我没关系」类返工
+- eli5 高档产物（会用/所以然/改造）在对话内、会话结束即不可复习：teach 区分 lesson（一次性）与 reference（压缩参考卡，供日后查阅，术语表一旦建立各课遵守）| 来源：同上 | 拉动条件：出现「把刚才讲的整理成可查的东西」类返工
+- eli5 概念类主题讲解无溯源要求：teach 明确 never trust parametric knowledge + RESOURCES.md 登记高信源 + 课内引用背书 | 来源：同上 | 拉动条件：出现讲解事实性错误返工
+
 ## 返工事件
 
 - 2026-09-14 | agents-md | 创建当日用户即指出覆盖缺口：存量 AGENTS.md 与已安装 skill 冲突时无裁决纪律。现场=ey-timp-etl/AGENTS.md（395 行前 skill 时代 monolith，项目已具 DOMAINS/ARCHITECTURE/docs-contexts 全套）——「禁止提交 git commit」正面对抗 implement 提交区间机制与 skill-creator 落盘即提交；「计划优先·确认后再输出代码」+ Execution Plan Template 与 SDD 任务文件构成平行仪式，模板第 3 步 tests-last 措辞（同日 debug+tdd 条目已记其反向引导实锤）；Architecture Guidelines/Quick Reference 常量枚举/缓存 API 文档誊写 design 与代码（缓存节甚至誊写另一仓库 spring-cloud-ey）；另有 08-24 条目记其「无 skill 指针」 | 疑似病灶层：审计标准缺冲突检查维度——尺子只问「会过时吗」，不问「与已安装 skill 打架吗」；改造分类缺「显式覆盖」档
