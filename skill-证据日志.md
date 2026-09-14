@@ -69,6 +69,8 @@
 
 ## 返工事件
 
+- 2026-09-14 | implement | 两个 worktree 任务合入同一基线撞车：任务A（试运行对齐，thread 01a09eca）归档前 merge 基线时才暴露与任务B（无上游不返回自身，thread 01a09f59，已先合入 d18db13f）同改 `EtlChainConfigServiceImpl.java` 与 `EtlChainConfigServiceImplTest.java`（A 抽走 138 行成新类、B 加方法；B 测试经评审建议并入 A 正在 +84 行的同一测试类），merge commit 0aba50d6 临场解冲突；squash 走 patch 式五步（压缩起点即基线顶端，重建基线于同点再应用 patch）实为只前进场景，等价 merge --squash 却付出改名/临时 patch/-back 成本；两任务合入顺序（小任务 +59 行先落）侥幸最优但无规则保证 | 疑似病灶层：①建任务节无在途任务文件足迹检查——撞车预判缺失，冲突成本后置到归档前；②合入节无多任务排序默认值；③squash 单一路径——patch 式为改写场景设计，常规场景机制错配
+
 - 2026-09-14 | agents-md | 创建当日用户即指出覆盖缺口：存量 AGENTS.md 与已安装 skill 冲突时无裁决纪律。现场=ey-timp-etl/AGENTS.md（395 行前 skill 时代 monolith，项目已具 DOMAINS/ARCHITECTURE/docs-contexts 全套）——「禁止提交 git commit」正面对抗 implement 提交区间机制与 skill-creator 落盘即提交；「计划优先·确认后再输出代码」+ Execution Plan Template 与 SDD 任务文件构成平行仪式，模板第 3 步 tests-last 措辞（同日 debug+tdd 条目已记其反向引导实锤）；Architecture Guidelines/Quick Reference 常量枚举/缓存 API 文档誊写 design 与代码（缓存节甚至誊写另一仓库 spring-cloud-ey）；另有 08-24 条目记其「无 skill 指针」 | 疑似病灶层：审计标准缺冲突检查维度——尺子只问「会过时吗」，不问「与已安装 skill 打架吗」；改造分类缺「显式覆盖」档
 
 - 2026-09-14 | debug+tdd | ey-timp-etl Codex 线程 01a09a63-73ad（「验证并修复 ETL 智能体闭环场景」，rollout jsonl 取证）：入口「自动使用本地环境验证,自动修复」验证修复命令形态，全程唯一 skill 加载=local-env（10:52，立通道合规），debug（description 自称管「本地验证接口/服务」）与 tdd 均未加载；修复三批次均「测试先写、实现后写、中间不跑」——①15:15:09 写 AgentReadGuardFilesystemTest+AgentModelFactoryTest（timeout wiring），15:16:22 起连写 4 个生产文件（ReadGuard/Properties/Executor/GatewayFactory），15:22:18 首次跑测 BUILD FAILURE→Errors: 6（测试自身问题），15:23:17 改测试转绿；②15:45:03 写 AgentFileToolsTest，15:45:47 新建 LocalAgentWorkspace+改 AgentFileReadTool/WriteTool，15:47:44 全量 install 绿，中间零运行；③16:10:52/16:11:21 写 3 个测试，16:12:42 改 2 个生产类（截断标记），16:14:01 断言从 assertEquals(MAX) 放宽为 ≤MAX+marker（实现后适配），16:14:29 绿——RED 全程未以「功能缺失」形态被观察；reasoning 15:14:48 原文 "Plans TDD: new tests, extend agent factory test, create AgentReadGuardFilesystem…"——测试先行判断事件在场，缺席的是 skill 正文纪律（RED 实跑观察/一次一个垂直切片/断言不随实现改）；11:11 把 AgentNodePropertiesTest 断言 20→40 未向用户确认（上一会话遗留失同步，实质合理但确认程序缺席）；项目 AGENTS.md「计划优先」模板第 3 步「补充单元测试」=tests-last 框架反向引导。GREEN 侧无剧院：mvn install 441+ 全绿、E2E 六场景 curl 实测、产物逐一下载验证 | 疑似病灶层：①debug description 未认领「验证+自动修复」命令形态；②tdd 动作级触发在「修复动作发生」时刻未开火（请求面无编码信号，与 08-25 ses_fc6c1074 新能力命令同构、入口形态不同，09-07 description 修复未覆盖本形态）；③执行层缺正文纪律约束——自绘 "TDD" 只有「先写测试」没有「观察失败」；④项目常备层 tests-last 措辞（08-24「无 skill 指针」条目之外新增反向引导证据）
@@ -386,6 +388,8 @@
 
 
 - 2026-09-14 | teach 移植入 skills/（matt-skills productivity/teach，MIT，SKILL.md 内注释署名）：缺口句=本仓库无跨会话课程式学习品类，eli5 管一次性讲懂、长期学会无归属；机制全量提取（MISSION 锚定/最近发展区/课与参考卡分产物/知识技能难度分治/RESOURCES 高信源+Gaps/学习记录四时机/见识→社区/assets 复用/NOTES），四个格式文件同译；调用方式=user-invoked 去 description——自动触发会与 eli5 抢「讲学」入口（matt disable-model-invocation 同意图）；agents/openai.yaml 未移（本仓库 frontmatter 惯例，无 description 即不自动触发）；house style 重排为意图锚点+六步工作流 | 依据：2026-09-14 用户指令「引入 matt 的 teach 到本仓库」| 两道检查：审计四问过（正文均为私有约定与压缩提醒）；触发测试集 N/A（user-invoked 无触发面）；无测试集——待真实使用按冷启动补
+- 2026-09-14 | implement 合入三机制升格：①第 2 步建任务补撞车预判——同基线在途任务 worktree 的文件足迹（`git diff --name-only <基线>...<在途任务分支>`）与本任务计划触碰文件求交，非空报用户定夺（串行/划分范围/仍并行），不静默并行；②合入节补多任务排序默认——`git diff --stat` 小者优先，冲突只由最大任务解一次；③squash 分路——常规（基线顶端为任务分支祖先）走 `git merge --squash` + `git diff <任务分支>` 为空比对，patch 式收缩为改写场景（要压入的序列含已落在基线上的提交）专用；移除 worktree 移到 squash 比对通过后（merge 式需任务分支在场）；附项目仓库建议句（rerere.enabled / merge-tree 预判，非流程步骤）；DOMAINS 合入词条顺序同步 | 依据：同日返工事件（thread 01a09eca × 01a09f59）；用户一字批准「把第 1、2、3 条固化进 implement skill（第 4 条写为建议）」；新旧对比：旧文本建任务无在途检查、合入无排序、squash 单一 patch 式且移除 worktree 在 squash 前，新文本撞车前置暴露、冲突成本定向、常规 squash 三步化 | 减法审查：常规场景 patch 式五步义务删除（被 merge 式吸收），无其他可删 | 冒烟：S3 修订（限定改写场景）+ 补 S12/S13/S14
+
 
 ## 冻结状态
 
