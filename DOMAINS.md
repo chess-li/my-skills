@@ -61,7 +61,7 @@
 
 ### 归档
 
-- **定义**：issue 从 `docs/issues/<限界上下文>/` 移入 `docs/issues/<限界上下文>/archive/`（status 改 archived，同步 guide 状态表）。条件：验收通过、声称未失真、最近一次完整评审无未处理发现。scoped 可合入不够。
+- **定义**：issue 从 `docs/issues/<限界上下文>/` 移入 `docs/issues/<限界上下文>/archive/`（status 改 archived，同步 guide 状态表）。条件：验收通过、声称未失真、最近一次完整评审无未处理发现；母 issue 还须派新鲜上下文全量评审（变更范围 = 母 issue 提交区间，对照 spec 全文）无未处理发现。scoped 可合入不够。
 - **反例**：≠ 合入。
 - **消费者**：implement 第 7 步；debug 第 5 步（bug issue 闭环归档）；issues 第 3 步。
 
