@@ -21,9 +21,10 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 ### 1. 创建
 
 - 落 `docs/issues/<需求名>.md`（项目已有任务存放约定则跟随），模板见下
-- spec 收口的需求：验收标准逐条抄入验收清单，status: open 即入队列；验证手段留执行方预填
+- spec 收口的需求：先对照 spec/design 排查代码现状差距，排查结论随创建消息呈现；验收标准逐条抄入验收清单，status: open 即入队列；验证手段留执行方预填
+- 单 spec 拆出多份 issue → 建一份母 issue：承载排查结论、spec 节 × 子 issue 覆盖对账（每节有归属，或标注已满足/出界）与拆分理由；依赖只写各子 issue 的 blockedBy，母 issue 不复制依赖、不跟踪子 issue 执行状态；母 issue 验收清单 = 子 issue 全部归档
 - bug：category: bug；已知根因或修法只当线索写入「当前位置」，不作结论
-- 有依赖：blockedBy 列阻塞方的 issue 文件相对路径。爆炸半径大的机械性改动（wide refactor）不塞进功能 issue——单独立 issue 走 expand–contract（先并存、分批迁移、最后删除），每批一份
+- 有依赖：blockedBy 列阻塞方 issue 相对 `docs/issues/` 的文件名（含 .md）。爆炸半径大的机械性改动（wide refactor）不塞进功能 issue——单独立 issue 走 expand–contract（先并存、分批迁移、最后删除），每批一份
 
 ### 2. 队列与抓取
 
@@ -43,7 +44,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 ---
 status: open          # open / doing / archived / wontfix
 category: enhancement # enhancement / bug
-blockedBy: []         # 阻塞本 issue 的 issue 文件相对路径
+blockedBy: []         # 阻塞方 issue 文件名（相对 docs/issues/）
 ---
 
 # <需求名>
@@ -79,7 +80,7 @@ blockedBy: []         # 阻塞本 issue 的 issue 文件相对路径
 
 ## 冷启动
 
-项目没有 `docs/issues/` → 随第一份 issue 创建，`archive/` 首次归档时创建；不预建空目录、不建索引。现场存在 `docs/tasks/` 未归档任务文件（被取代的老布局）→ 列出并提议迁入 `docs/issues/`（补 frontmatter），用户同意后执行；已归档历史留原处，git 历史可查。
+项目没有 `docs/issues/` → 随第一份 issue 创建，`archive/` 首次归档时创建；不预建空目录、不建索引。现场存在 `docs/tasks/` 未归档任务文件（被取代的老布局）→ 列出并提议迁入 `docs/issues/`（补 frontmatter），用户同意后执行；任务已完成未归档 → 迁入即归档（status: archived、移 `archive/`、记变更历史）；已归档历史留原处，git 历史可查。
 
 ## 完整示例（spec 收口到另一会话抓取）
 
