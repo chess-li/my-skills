@@ -23,6 +23,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 - 落 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（NN = 01–99，按上下文内创建顺序；跨上下文需求落主导上下文目录，目标分别引用各 spec；项目已有任务存放约定则跟随），模板见下
 - spec 收口的需求：先对照 spec/design 排查代码现状差距，排查结论随创建消息呈现；验收标准逐条抄入验收清单，status: open 即入队列；验证手段留执行方预填
 - 单 spec 拆出多份 issue → 同目录建 `guide_issue.md`（母 issue）：承载排查结论、spec 节 × 子 issue 覆盖对账（每节有归属，或标注已满足/出界）、拆分理由与子 issue 状态表；依赖只写各子 issue 的 blockedBy；状态表只镜像各子 issue status（一行一 issue），子 issue frontmatter 是状态唯一事实源，状态流转（抓取/归档/拒绝）时同步状态表、与子 issue 改动同一提交；母 issue 验收清单 = 子 issue 全部归档；同上下文一份进行中 guide，第二次拆分先告知用户
+- 创建完成后（单份或拆分整批）在当前上下文中做对比评审：issue 与现有 spec/design/代码逐面核对——验收清单抄录无失真、覆盖对账无遗漏（拆分场景）、现状描述与代码一致；发现失真当场修正再提交
 - bug：category: bug；已知根因或修法只当线索写入「当前位置」，不作结论
 - 有依赖：blockedBy 列阻塞方 issue 相对 `docs/issues/` 的路径（如 `插件化/01_代次地基_issue.md`）。爆炸半径大的机械性改动（wide refactor）不塞进功能 issue——单独立 issue 走 expand–contract（先并存、分批迁移、最后删除），每批一份
 
@@ -35,6 +36,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 ### 3. 归档与拒绝
 
 - 实现任务：由 <use-skill>implement</use-skill> 第 7 步归档（条件在那边：验收通过、声称未失真、最近一次完整评审无未处理发现）
+- 母 issue（guide_issue.md）归档：除子 issue 全部归档外，先派新鲜上下文全量评审（<use-skill>code-review</use-skill>，变更范围 = 母 issue 提交区间，对照 spec 全文），无未处理发现才置 archived
 - debug 修复闭环后：status 改 archived、移入 `docs/issues/<限界上下文>/archive/`、记变更历史并同步 guide 状态表（有则），git 仓库并提交
 - 拒绝：status 改 wontfix 归档（同样移入 `<限界上下文>/archive/` 并同步 guide 状态表），理由写入变更历史——归档即拒绝记忆，供创建前检索
 
