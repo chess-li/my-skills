@@ -7,7 +7,7 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 ## 意图锚点（每次使用前必读）
 
-本 skill 守护一条主线：**目标与验收标准已在纸面，实现的职责是让每条验收标准通过，并让执行状态随时可被任何接手者续写。** 完成的定义是验收标准通过、已有声称未失真、且最近一次完整评审无未处理发现，不是"代码写完了"，不是 scoped 可合入。归档是 issue 移入 docs/issues/archive/；合入基线是另一件事。
+本 skill 守护一条主线：**目标与验收标准已在纸面，实现的职责是让每条验收标准通过，并让执行状态随时可被任何接手者续写。** 完成的定义是验收标准通过、已有声称未失真、且最近一次完整评审无未处理发现，不是"代码写完了"，不是 scoped 可合入。归档是 issue 移入 docs/issues/<限界上下文>/archive/；合入基线是另一件事。
 
 实现护栏：
 - 验收强制：每条验收标准对应一个验证手段，验一条记一条；未验证的验收标准 = 未完成
@@ -39,7 +39,7 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 ### 2. 建/接管 issue
 
-写入 `docs/issues/<需求名>.md`（项目已有任务存放约定则跟随；现场存在 `docs/tasks/` 老布局 → 按 <use-skill>issues</use-skill> 冷启动迁移），模板与生命周期归 <use-skill>issues</use-skill>：spec 收口已发布 issue → 接管（预填验证手段、补足迹与当前位置）；没有 → 按其模板创建（status: doing）。本步规则：
+写入 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（项目已有任务存放约定则跟随；现场存在 `docs/tasks/` 或平铺老布局 → 按 <use-skill>issues</use-skill> 冷启动迁移），模板与生命周期归 <use-skill>issues</use-skill>：spec 收口已发布 issue → 接管（预填验证手段、补足迹与当前位置）；没有 → 按其模板创建（status: doing）。本步规则：
 
 - 逐条抄录 spec 的验收标准，为每条预填验证手段，优先级：可落成测试 → 该测试；其他可自动化的命令 → 命令；皆否 → 人工确认步骤
 - 全称断言（无论/任意/所有/每个）按分支全集拆成逐项验证，一个实例测试不得给全称断言标绿；列不出分支全集 → 回 <use-skill>spec</use-skill> 补失败面枚举
@@ -47,7 +47,7 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 - 写不出验证手段 = 验收标准不可执行——回 <use-skill>spec</use-skill> 修正，不用模糊条目充数
 - 跨上下文需求共用一份 issue，目标分别引用各 spec
 - git 仓库：从基线分支（当前检出的分支）建 worktree：默认 `<项目根目录>/.worktrees/<需求名>`（首次把 `.worktrees/` 写入 `.gitignore`），分支名 = 需求名，基线分支与起点 commit（建任务时基线顶端）记入 issue；此后实现在 worktree 内进行；跨仓库任务在每个触及的 git 仓库同样建 worktree（分支名 = 需求名），卫星仓库清单记入 issue「足迹」
-- 撞车预判（git 仓库）：三查——① `git worktree list` 同基线在途任务 worktree，`git diff --name-only <基线>...<在途任务分支>` 求文件足迹交集；② 在途 issue 的「足迹」清单（`docs/issues/*.md`，含卫星仓库）与本任务计划触碰文件求交；③ 同基线 checkout 的未提交变更与未推送提交（他方裸作业信号）。任一面交集非空 → 重叠清单报用户定夺（串行 / 划分范围 / 仍并行），不静默并行；交集触及同一构建 artifact 的接口契约（如 dubbo api 模块）→ 默认串行
+- 撞车预判（git 仓库）：三查——① `git worktree list` 同基线在途任务 worktree，`git diff --name-only <基线>...<在途任务分支>` 求文件足迹交集；② 在途 issue 的「足迹」清单（递归 `docs/issues/`，含卫星仓库）与本任务计划触碰文件求交；③ 同基线 checkout 的未提交变更与未推送提交（他方裸作业信号）。任一面交集非空 → 重叠清单报用户定夺（串行 / 划分范围 / 仍并行），不静默并行；交集触及同一构建 artifact 的接口契约（如 dubbo api 模块）→ 默认串行
 - 共享构建产物（`~/.m2` 等）不被 worktree 隔离：改他仓库 artifact 接口契约与同 artifact 在途任务不并行；确需并行 → 该任务用独立本地仓库（`-Dmaven.repo.local=<worktree>/.m2`）；install 前记录该 artifact 来源 commit，暂停/收尾时从基线重装还原
 
 ### 3. 拆分与执行
@@ -80,7 +80,7 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 ### 7. 归档
 
 - 前端对接面刷新：本次改动触及前端对接面（前端可见的对外接口、字段、错误码增删改）→ 从 spec 断言与代码刷新 `docs/contexts/<限界上下文>/<限界上下文>-前端对接.md`（模板见下），随归档一并提交；未触及 → 跳过
-- 补记终点 commit（任务分支顶端），issue 置 archived、移入 `docs/issues/archive/` 并提交，告知用户并附各条验证结果。不合入基线、不移除 worktree、不 squash
+- 补记终点 commit（任务分支顶端），issue 置 archived、移入 `docs/issues/<限界上下文>/archive/`、同步 guide 状态表（有则）并提交，告知用户并附各条验证结果。不合入基线、不移除 worktree、不 squash
 
 **前端对接文档模板**（派生视图，不新立断言）：
 
@@ -120,13 +120,13 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 ## 冷启动
 
-项目没有 `docs/issues/` 时，随第一份 issue 创建（格式归 <use-skill>issues</use-skill>）；`archive/` 首次归档时创建。不预建空目录、不建索引。项目无前端对接文档而存量接口多 → 全量生成走 <use-skill>frontend-api-doc</use-skill>，不靠逐任务收尾补建。
+项目没有 `docs/issues/` 时，随第一份 issue 创建（格式归 <use-skill>issues</use-skill>）；`<限界上下文>/archive/` 首次归档时创建。不预建空目录、不建索引。项目无前端对接文档而存量接口多 → 全量生成走 <use-skill>frontend-api-doc</use-skill>，不靠逐任务收尾补建。
 
 ## 完整示例（一次带偏差的实现）
 
 - **现场**：用户说"spec 就绪了，开始实现企业下单"
-- **入口判断**：`docs/contexts/订单/订单-spec.md` 有"企业下单"章节，`docs/issues/` 无对应 issue → 建 `docs/issues/企业下单.md`（status: doing），抄录三条验收标准并预填验证手段（两条跑命令，一条请用户人工确认审批流）
+- **入口判断**：`docs/contexts/订单/订单-spec.md` 有"企业下单"章节，`docs/issues/` 无对应 issue → 建 `docs/issues/订单/01_企业下单_issue.md`（status: doing），抄录三条验收标准并预填验证手段（两条跑命令，一条请用户人工确认审批流）
 - **执行**：会话内拆成四步；实现中发现 design 的订单状态流转未覆盖审批分支 → 只触及订单上下文：先改 `docs/contexts/订单/订单-design.md` 再实现
 - **验证**：两条命令验证通过并落盘；一条边缘标准（审批拒绝时订单自动取消）按字面不可实现——spec 未定义退款去向 → 停下问用户，spec 更新后继续
 - **归档前核对**：所涉 spec/design 仍为真；完整评审无未处理发现（scoped 清零后再评一次）；可合入则问三选一
-- **归档**：用户选合入或保留后，issue 置 archived 移入 `docs/issues/archive/`，告知用户三条验证结果。不合入（选合入则随后走合入节）
+- **归档**：用户选合入或保留后，issue 置 archived 移入 `docs/issues/订单/archive/`，告知用户三条验证结果。不合入（选合入则随后走合入节）

@@ -20,23 +20,23 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 
 ### 1. 创建
 
-- 落 `docs/issues/<需求名>.md`（项目已有任务存放约定则跟随），模板见下
+- 落 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（NN = 01–99，按上下文内创建顺序；跨上下文需求落主导上下文目录，目标分别引用各 spec；项目已有任务存放约定则跟随），模板见下
 - spec 收口的需求：先对照 spec/design 排查代码现状差距，排查结论随创建消息呈现；验收标准逐条抄入验收清单，status: open 即入队列；验证手段留执行方预填
-- 单 spec 拆出多份 issue → 建一份母 issue：承载排查结论、spec 节 × 子 issue 覆盖对账（每节有归属，或标注已满足/出界）与拆分理由；依赖只写各子 issue 的 blockedBy，母 issue 不复制依赖、不跟踪子 issue 执行状态；母 issue 验收清单 = 子 issue 全部归档
+- 单 spec 拆出多份 issue → 同目录建 `guide_issue.md`（母 issue）：承载排查结论、spec 节 × 子 issue 覆盖对账（每节有归属，或标注已满足/出界）、拆分理由与子 issue 状态表；依赖只写各子 issue 的 blockedBy；状态表只镜像各子 issue status（一行一 issue），子 issue frontmatter 是状态唯一事实源，状态流转（抓取/归档/拒绝）时同步状态表、与子 issue 改动同一提交；母 issue 验收清单 = 子 issue 全部归档；同上下文一份进行中 guide，第二次拆分先告知用户
 - bug：category: bug；已知根因或修法只当线索写入「当前位置」，不作结论
-- 有依赖：blockedBy 列阻塞方 issue 相对 `docs/issues/` 的文件名（含 .md）。爆炸半径大的机械性改动（wide refactor）不塞进功能 issue——单独立 issue 走 expand–contract（先并存、分批迁移、最后删除），每批一份
+- 有依赖：blockedBy 列阻塞方 issue 相对 `docs/issues/` 的路径（如 `插件化/01_代次地基_issue.md`）。爆炸半径大的机械性改动（wide refactor）不塞进功能 issue——单独立 issue 走 expand–contract（先并存、分批迁移、最后删除），每批一份
 
 ### 2. 队列与抓取
 
-- frontier = status: open 且 blockedBy 全部已归档（或路径不存在）；「还有什么可做」= 列 frontier，各附一句话目标
-- 抓取 = status 改 doing + 变更历史记一笔；一个会话抓一份，抓完即开始：enhancement 走 <use-skill>implement</use-skill>，bug 走 <use-skill>debug</use-skill>
+- frontier = 递归 `docs/issues/` 全部 issue：status: open 且 blockedBy 全部已归档（或路径不存在）；「还有什么可做」= 列 frontier，各附一句话目标
+- 抓取 = status 改 doing + 变更历史记一笔 + 同步 guide 状态表（有则）；一个会话抓一份，抓完即开始：enhancement 走 <use-skill>implement</use-skill>，bug 走 <use-skill>debug</use-skill>
 - 并行会话各抓 frontier 中的不同项；被阻塞项随阻塞方归档自动放行
 
 ### 3. 归档与拒绝
 
 - 实现任务：由 <use-skill>implement</use-skill> 第 7 步归档（条件在那边：验收通过、声称未失真、最近一次完整评审无未处理发现）
-- debug 修复闭环后：status 改 archived、移入 `docs/issues/archive/`、记变更历史，git 仓库并提交
-- 拒绝：status 改 wontfix 归档，理由写入变更历史——归档即拒绝记忆，供创建前检索
+- debug 修复闭环后：status 改 archived、移入 `docs/issues/<限界上下文>/archive/`、记变更历史并同步 guide 状态表（有则），git 仓库并提交
+- 拒绝：status 改 wontfix 归档（同样移入 `<限界上下文>/archive/` 并同步 guide 状态表），理由写入变更历史——归档即拒绝记忆，供创建前检索
 
 **Issue 模板**（frontmatter 与未标注小节由创建者填；标注「执行期」的小节由执行方填与更新）：
 
@@ -44,7 +44,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 ---
 status: open          # open / doing / archived / wontfix
 category: enhancement # enhancement / bug
-blockedBy: []         # 阻塞方 issue 文件名（相对 docs/issues/）
+blockedBy: []         # 阻塞方 issue 相对 docs/issues/ 的路径
 ---
 
 # <需求名>
@@ -80,11 +80,11 @@ blockedBy: []         # 阻塞方 issue 文件名（相对 docs/issues/）
 
 ## 冷启动
 
-项目没有 `docs/issues/` → 随第一份 issue 创建，`archive/` 首次归档时创建；不预建空目录、不建索引。现场存在 `docs/tasks/` 未归档任务文件（被取代的老布局）→ 列出并提议迁入 `docs/issues/`（补 frontmatter），用户同意后执行；任务已完成未归档 → 迁入即归档（status: archived、移 `archive/`、记变更历史）；已归档历史留原处，git 历史可查。
+项目没有 `docs/issues/` → 随第一份 issue 创建，`<限界上下文>/archive/` 首次归档时创建；不预建空目录、不建索引。现场存在 `docs/tasks/` 未归档任务文件或 `docs/issues/*.md` 平铺老布局 → 列出并提议按上下文归位迁入（补 frontmatter），用户同意后执行；任务已完成未归档 → 迁入即归档（status: archived、移 `<限界上下文>/archive/`、记变更历史）；已归档历史留原处，git 历史可查。
 
 ## 完整示例（spec 收口到另一会话抓取）
 
 - **现场**：订单 spec 更新收口，用户说"先记下来，下午让另一个会话做"
-- **创建**：检索无重复 → 写 `docs/issues/企业下单.md`（status: open，三条验收标准抄入验收清单，显式出界：退款对接）
+- **创建**：检索无重复 → 写 `docs/issues/订单/01_企业下单_issue.md`（status: open，三条验收标准抄入验收清单，显式出界：退款对接）
 - **下午新会话**：用户说"看看有什么能做的" → frontier 只有企业下单（open、无阻塞）
 - **抓取**：status 改 doing、记变更历史，走 <use-skill>implement</use-skill> 预填验证手段、补足迹

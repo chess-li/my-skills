@@ -54,5 +54,5 @@ description: bug 诊断与修复的纪律：先复现，再定位根因，判定
 - 复现测试转绿，相关测试通过
 - 复现是对本地地址的请求时：同一条请求再打到符合承诺或用户目标。本变更若被该地址上的进程经本地依赖仓库加载 → 先刷新该仓库再重启，刷新不留给用户。需要重启 → <use-skill>local-env</use-skill> 立通道，不留给用户。探测到可连或用户说已重启后立刻再打，不等「继续」
 - 对照定位根因时预测的"其他症状"逐一检查：均已消除
-- 该 bug 的 issue 归档：status 改 archived、移入 `docs/issues/archive/`、记变更历史（git 仓库并提交）；走了 implement 流程的由那边归档，不重复
+- 该 bug 的 issue 归档：status 改 archived、移入 `docs/issues/<限界上下文>/archive/`、记变更历史并同步 guide 状态表（有则）（git 仓库并提交）；走了 implement 流程的由那边归档，不重复
 - 告知用户结论：根因一句话、属哪一层、修了什么
