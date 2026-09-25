@@ -88,9 +88,9 @@
 - spec-kit 工作流引擎化两件：YAML workflow gate（人工审批断点可暂停恢复）与 CLI-as-engine 分层（状态判定/校验进工具，skill 只做编排）| 来源：同上 | 均需建工具，当前纯文本纪律无对应失败证据 | 拉动条件：格式类校验（checkbox/frontmatter/模板槽位）反复被违反到值得建确定性工具
 - spec-kit 澄清上限与免问清单（[NEEDS CLARIFICATION] 最多 3 个 + 「合理默认免问区」清单）| 来源：同上 | 候选落点 interview 第 3 步；现行「一次一问」管节奏不管总量 | 拉动条件：访谈滥问/追问过多的真实投诉
 
-- 2026-09-24 implement description「合并同一 spec 的任务归档」锚点欠触发：干净会话探针 P4 原话 0/2（ses_f2d715496ffe…P4b / P4c），两次均未加载 implement 且直接把 archive 散文件合并、删除 archive 目录——绕过归档合并核对/备查纪律的有害行为；锚点比请求表面（「整合 task archive」）抽象一层，分类时刻判断事件不发生 | 来源：09-24 欠账清偿实跑 | 拉动条件：真实归档合并会话再演绕过，或复跑仍 0 命中 → description 锚点改写为可观察面（docs/issues/archive 多份归一），措辞改动须用户一字批准
+- 2026-09-24 implement description「合并同一 spec 的任务归档」锚点欠触发：干净会话探针 P4 原话 0/2（ses_f2d715496ffe…P4b / P4c），两次均未加载 implement 且直接把 archive 散文件合并、删除 archive 目录——绕过归档合并核对/备查纪律的有害行为；锚点比请求表面（「整合 task archive」）抽象一层，分类时刻判断事件不发生 | 来源：09-24 欠账清偿实跑 | 2026-09-25 补注：ey-timp-etl 真实归档合并会话再演（78063e87 及 任务视图.md/README.md 现场，implement 零加载，产物落进 issues 与 implement 两 skill 条款的夹缝）——拉动条件达成，description 锚点改写为可观察面（docs/issues/archive 多份归一）待用户一字批准；另「汇总视图归属、archive 常驻 vs 合并后删除」与 issues 条款正面冲突（issues：不另立平行产物 + 归档即常驻检索记忆；implement 归档合并：产出汇总、原始 issue 由 git 历史保留），需用户同案裁定
 - 2026-09-24 implement description「任务中断需要续写」锚点漂移：干净会话 P2 原话 1/2（P2b 预置 doing issue 仍零加载直接读文件作答、P2c ✓）| 来源：同上 | 拉动条件：真实续写会话不加载，或复跑仍漂移 → 与归档合并锚点一并处理
-- 2026-09-24 issues 冒烟集欠账：09-24 创建至今无 tests/（冷启动惯例：无真实语料不建集），原挂升格条待验证尾巴，评审指出后迁本区 | 拉动条件：首用 docs/issues/ 的真实语料到场（创建/frontier 抓取/归档/wontfix 检索各面）
+- 2026-09-24 issues 冒烟集欠账：09-24 创建至今无 tests/（冷启动惯例：无真实语料不建集），原挂升格条待验证尾巴，评审指出后迁本区 | 拉动条件：首用 docs/issues/ 的真实语料到场（创建/frontier 抓取/归档/wontfix 检索各面）| 已结案：2026-09-25 归档合并返工事件语料建冒烟集 S1–S4（skills/issues/tests/冒烟集.md）——覆盖迁入拆分/archive 内容物/一份一事/不建索引四面；frontier 抓取与 wontfix 检索语料待真实使用再补
 
 - 2026-09-24 writing description「任何成段文本（文档、报告、说明、消息回复等）」触发面对 eli5/teach 无划界：讲解与课文同为成段文本，「给我讲讲 X」类输入可双声称 | 来源：2026-09-24 全仓评审 | 拉动条件：真实过触发（讲解/教学场景 writing 抢触发或双加载打架）→ 负向边界补划
 - 2026-09-24 触发回归周期化候选：现行「改 description 才跑触发集」——返工事件区约半数病灶在触发/description 层，17 个 model-invoked description 常驻上下文，竞争场随每次新增漂移，无改动时漂移不可捕获 | 来源：2026-09-24 全仓评审 | 拉动条件：下一次无 description 改动却发生触发漂移事故 → 立周期（如每周）全量触发回归
@@ -98,6 +98,8 @@
 - 2026-09-24 install.sh 只管种不管收：rsync 逐 skill 同步但不清理仓外孤儿（ij-debugger 即以此滞留至评审发现）| 来源：2026-09-24 全仓评审 | 拉动条件：第二个仓外孤儿出现 → install.sh 加 prune 或白名单机制
 
 ## 返工事件
+
+- 2026-09-25 | issues | 用户要求 agent 归档合并 ey-timp-etl 历史 issue（docs/issues/智能体节点/），产物三处违规：①老布局 mega 任务文件（docs/tasks/智能体节点.md，413 行跨能力汇总视图）原样平移为 任务视图.md 留在 issues 树内（78063e87，0 内容改动）——冷启动只写「归位迁入补 frontmatter」，无单文件多任务须拆分、树内终态只余 issue 与 archive 的断言；②archive/ 混入非 issue 文件（01_*_issue_design.md 设计文档、01_*_spike1.md spike 报告）——归档节无 archive 内容物断言，「已归档历史留原处」被读成保留许可证，污染创建前检索；③case1 Issue 1/2 合并为一份 01 号单（「两者联动且由同一设计修复，合并跟踪」）——意图锚点「一个需求或 bug」未被执行成禁止合并，归档检索无法区分两个根因各自闭环证据。另建 README.md 索引（「不建索引」明文被违，属违规非规则缺口）。同日建 issues 冒烟集 S1–S4（本事件语料）| 疑似病灶层：冷启动/归档节缺产物断言与拆分规则（格式层）+ 与 implement「归档合并」汇总条款的跨 skill 冲突未裁（汇总视图归属、archive 常驻 vs 合并后删除——见观察名单补注）
 
 - 2026-09-24 | issues | 用户审阅 ses_f2ebfca21ffe（smooth 插件化 spec→design→issues 会话）报告两问题，查证后实为五缺口：①spec/design 转 issue 不自动排查代码与设计差距——用户显式下令「先排查…然后走 issues 建任务」才发生；②五路 explore 排查结论未向用户呈现、未落盘，直接切 9 份 issue，差距证据仅以一句话散在各 issue 变更历史；③spec 14 节无覆盖对账——5 个排查代理覆盖约 11 节，「全能力可替换与安全内核」「一次性命令性能预算」两节无代理排查、无 issue 引用、p1a/p1b 任务文件未提及；④冷启动偏离——docs/tasks/ p1a/p1b 已完成未归档，skill 约定迁入 docs/issues/，agent 提议移 docs/tasks/archive/；⑤blockedBy 写裸文件名，skill 原文「issue 文件相对路径」含糊（依赖关系其实已记入各 issue frontmatter 且 frontier 已算，用户「无依赖管理」报告此点不成立）| 疑似病灶层：创建流程缺现状对照步骤与产物锚定（流程假定差距已知，实际无人负责排查）+ 格式/终态默认值缺失；另「评审计数口径漂移」无机制可修，转观察名单同日条
 

@@ -12,6 +12,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 护栏：
 
 - 创建前检索：`docs/issues/` 与 `docs/issues/archive/`（含 wontfix）按概念检索，不只按请求措辞；命中 open → 更新既有 issue，不重复立项；命中 wontfix → 告知用户曾被拒绝及理由，用户坚持才新建
+- 一份一事：一份 issue 只承载一个需求/bug；相关但独立的问题各立一份（blockedBy 或正文互链），不因「联动、同一修复」合并为一份
 - 书写三原则：耐久性优于精确性——issue 可能挂数周，创建期写行为契约与接口语义，不写会过期的文件路径与行号（模板标注「执行期」的小节允许精确，生命周期短）；行为式不过程式——写 what 不写 how，执行者自己重新探索；验收标准独立可验证，配「显式出界」清单
 - 状态即事实：status 字段、所在目录、实际进展三者一致；流转即记变更历史，git 仓库改动即提交
 - 本 skill 只管格式与生命周期：执行实现归 <use-skill>implement</use-skill>，bug 诊断修复归 <use-skill>debug</use-skill>
@@ -39,6 +40,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 - 母 issue（guide_issue.md）归档：除子 issue 全部归档外，先派新鲜上下文全量评审（<use-skill>code-review</use-skill>，变更范围 = 母 issue 提交区间，对照 spec 全文），无未处理发现才置 archived
 - debug 修复闭环后：status 改 archived、移入 `docs/issues/<限界上下文>/archive/`、记变更历史并同步 guide 状态表（有则），git 仓库并提交
 - 拒绝：status 改 wontfix 归档（同样移入 `<限界上下文>/archive/` 并同步 guide 状态表），理由写入变更历史——归档即拒绝记忆，供创建前检索
+- archive/ 只收 issue 文件（含 guide_issue.md）：设计文档归 `docs/contexts/<限界上下文>/` 的 design，spike/验证报告折入对应 issue 或 design——非 issue 文件不入 archive，创建前检索整目录会扫到
 
 **Issue 模板**（frontmatter 与未标注小节由创建者填；标注「执行期」的小节由执行方填与更新）：
 
@@ -82,7 +84,7 @@ blockedBy: []         # 阻塞方 issue 相对 docs/issues/ 的路径
 
 ## 冷启动
 
-项目没有 `docs/issues/` → 随第一份 issue 创建，`<限界上下文>/archive/` 首次归档时创建；不预建空目录、不建索引。现场存在 `docs/tasks/` 未归档任务文件或 `docs/issues/*.md` 平铺老布局 → 列出并提议按上下文归位迁入（补 frontmatter），用户同意后执行；任务已完成未归档 → 迁入即归档（status: archived、移 `<限界上下文>/archive/`、记变更历史）；已归档历史留原处，git 历史可查。
+项目没有 `docs/issues/` → 随第一份 issue 创建，`<限界上下文>/archive/` 首次归档时创建；不预建空目录、不建索引。现场存在 `docs/tasks/` 未归档任务文件或 `docs/issues/*.md` 平铺老布局 → 列出并提议按上下文归位迁入（补 frontmatter），用户同意后执行；任务已完成未归档 → 迁入即归档（status: archived、移 `<限界上下文>/archive/`、记变更历史）；单文件承载多份任务的 → 拆为多份 issue 迁入，不保留合并/汇总形态；迁入后 `docs/issues/` 下只余 issue 文件与 archive/；已归档历史留原处，git 历史可查。
 
 ## 完整示例（spec 收口到另一会话抓取）
 
