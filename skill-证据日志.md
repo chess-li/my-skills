@@ -4,6 +4,7 @@
 
 ## 观察名单
 
+- 2026-09-26 spec/design 触发集干净会话补跑欠账（同日 description 动作级锚点升格自述「待补跑」）| 拉动条件：下次 spec/design description 改动或真实触发翻车 → 连同本次一并补跑
 - 2026-09-26 guide 归档时顺带清点同上下文 archive（B2 讨论候选④）：归档合并清点机制（09-25 升格）真实缺口=无人发起 | 拉动条件：archive 腐化（过期 issue 误导创建前检索）第二次发生 → 立触发点
 
 - 2026-09-26 implement/interview 动作级锚点缺口（ses_f23207130ffe 同日取证）：implement 有「抓取待办 issue（frontier）」锚点但「审阅现在插件化改造的完成情况，然后安排后续任务」未触发之；interview 在多决策呈裁定现场（question 三问齐发）未触发之；smooth 项目 AGENTS.md 零 skill 指针（常备层结构干预缺位）| 拉动条件：下一次同类入口（进度审阅/多决策呈裁定）仍不加载 → 补对应锚点或推常备层指针
@@ -102,6 +103,8 @@
 - 2026-09-24 install.sh 只管种不管收：rsync 逐 skill 同步但不清理仓外孤儿（ij-debugger 即以此滞留至评审发现）| 来源：2026-09-24 全仓评审 | 拉动条件：第二个仓外孤儿出现 → install.sh 加 prune 或白名单机制
 
 ## 返工事件
+
+- 2026-09-26 | skill-creator（评审缺位）| 用户指出「现在似乎不会 review skill 的变更」，派新鲜上下文独立评审当日五提交（ef3495b..e5ece34），捞出 P1×1 + P2×2：①issues「环境到位后 follow-up issue 自然进 frontier」与自身 frontier 定义冲突（follow-up 创建即 open 无 blockedBy，本就在 frontier；与同批「以 open 形态留 frontier」自相矛盾）；②归档节两条新规（追溯拆分/瘦身）无执行入口——归档执行者跑 implement 第 6/7 步，无任何指针指向 issues 归档节，新鲜上下文执行者看不到；③「改判」无定义，改判 vs 迁出边界只在证据日志不在正文；另 P3/P4：description 双向对照未记录、spec 新句豁免语不覆盖、环境枚举两版本（live 模型缺）、pending/re-scope/已硬阻塞未定义 | 疑似病灶层：skill-creator 迭代工作流第 4 步只有写者自查（新旧对比/减法审查），无新鲜上下文独立评审环节——09-24 裁定覆盖项目 spec/design 文档，SKILL.md 变更落两不管地带
 
 - 2026-09-26 | issues（膨胀与冲突）| 同会话（ses_f23207130ffe）取证：smooth guide_issue.md 累积 800+ 行——审计快照、容量门、裁定记录超出 sanctioned 四件承载（排查结论/覆盖对账/拆分理由/状态表）；状态表并行会话汇聚合并冲突已真实发生，解法（以各子 issue frontmatter 重派生）仅存 guide 自记未入规则；归档后过程脚手架（当前位置、计划触碰）原样留存 | 疑似病灶层：guide 承载无排他约束（没说「只」）、状态表冲突解法未成规则、归档无瘦身步
 
@@ -252,6 +255,8 @@
 - 2026-09-24 | issues | 用户发起 smooth 插件化 spec 对应 12 份 issue 评审（ses_f2d05ce22，两级评审机制升格后的首个自然发生现场），14 节 × 12 issue 逐条对账仍捞出四类 17+ 缺口：A 13 条 spec 验收断言无任何 issue 认领（节级对账粒度漏节内单条断言，如灰度默认态、kill -9 结算、quarantine 摘除）；B 批内归属矛盾（03 清单认领四端确认 UI、08 出界又写只做 TUI/Desktop 确认界面）；C 依赖过宽与缺失（05 blockedBy 04 阻塞无关安全收口、09 blockedBy 漏 01 代次地基）；D 断言歧义照抄（01 清单 `session.pin_plugins=true` 布尔与「钉在指定 stamp」语义张力照抄 design L76，标注「执行期需澄清」蒙混进队列）| 疑似病灶层：①覆盖对账粒度=节非断言，节有归属即过闸；②对比评审清单只核 issue↔spec/design/代码，无批内子 issue 间交叉一致面（认领/出界互撞、blockedBy 宽度）；③创建无歧义清零门禁——歧义断言可照抄并以「执行期澄清」合法化，违反「issue 是任务交接唯一面」的意图锚点
 
 ## 升格 / 移出
+
+- 2026-09-26 | 评审发现修复批（双副本同步）：①issues 分家条 frontier 声称改如实——「follow-up issue 以 open 入队列即进 frontier，环境未到位前由 implement 抓取前核拦下交用户裁定」；②implement 第 7 步加指针「归档时的条目核对与瘦身按 issues 归档节执行」（规则本体不复制）；③issues 分家条补「改判 = 勾掉/降级条目；迁出为 open issue 续存不算改判，见归档节」；④spec description 豁免语扩括号覆盖新锚点；⑤环境枚举两处对齐（implement 补 live 模型）；⑥措辞：已硬阻塞→被 blockedBy 卡死、re-scope→缩减范围、留 pending→保持 open 暂不抓取、不留 pending 不归零→不在原清单勾销 | 依据：2026-09-26 新鲜上下文评审（同日返工事件 skill-creator 条，P1×1+P2×2+P3/P4）| 回归：对照改前——frontier 声称自相矛盾、归档新规死文字、改判靠猜；新稿三处钉死。双向对照补记（6c44e89 欠账）：*-spec.md/*-design.md/ARCHITECTURE.md 不吞 agents-md/domains/frontend-api-doc/skill-creator；与 writing 同形双声称但其负向边界已划、双加载分工清晰，可接受；typo 触发成本=一次空加载，由正文豁免判断吸收 | 减法审查：spec 新独立句删除（并入豁免括号）；余无可删 | 待验证：归档节指针在真实归档会话被走到；「改判」定义化后边界零猜测
 
 - 2026-09-26 | issues 防腐四件（双副本同步）：①存量追溯拆分（归档节）——归档前核对发现验收条目验证依赖当前不可用环境/外部资源 → 不勾不标绿，迁出为独立 open issue（目标引用同一 spec 节），变更历史记迁出指向，剩余条目全绿才归档；条目以 open 形态留 frontier，不留 pending 不归零；②guide 瘦身——guide 只承载四件（排查结论/覆盖对账/拆分理由/状态表），审计快照/容量评估等临时累积物随对应裁定或子 issue 归档删除，裁定结论归 spec/design 变更历史（断言层）或子 issue 变更历史（执行层）；③状态表重派生——与 frontmatter 漂移或合并冲突时以各子 issue frontmatter 重派生；④归档瘦身——归档时过程脚手架（当前位置、计划触碰清单）压为一行闭环结论，验证记录/范围外问题/变更历史原样保留 | 依据：2026-09-26 返工事件两起（16 条墙死锁；guide 800+ 行 + 状态表冲突在案）+ 用户裁定（B1-c-1、B2 按推荐落地）| 回归：对照改前——归档期门禁条目无合法出路（改判被禁、维持=永不归档）、guide 承载无排他、冲突解法靠现场记忆、archived 脚手架原样腐烂；新稿四面补齐。①与「门禁条目创建期分家，不在归档期改判」（同日 B1-b 升格）并读：改判=勾掉/降级，禁；迁出=条目以 open issue 续存，允许 | 减法审查：无可删（四处均为空白填补；implement 不动——归档条件援引 issues 生命周期，单一信源）| 待验证：smooth 存量追溯拆分首用（10 份 doing/open 含门禁项）；guide 累积物删除随下次归档执行；archived 瘦身不毁证据
 

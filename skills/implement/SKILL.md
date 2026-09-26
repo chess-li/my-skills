@@ -24,8 +24,8 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 ### 1. 入口判断
 
 - 消除已观察到的失败（含按诊断/修法/修改结论执行）→ 先 <use-skill>debug</use-skill> 复现并定位根因，再回来；本会话未定位根因不改代码
-- 进度审阅与任务安排（「看看完成情况」「安排后续任务」类）→ 先盘点再排程：整批列出在途阻塞与未决决策（验收项的环境/外部依赖门禁、blockedBy 未解、待裁定设计），按 已硬阻塞 / 进行中 / 级联风险 / 待用户裁定 四层呈交，用户裁定后再排执行顺序；阻塞与裁定未清前，推荐推进方向是清阻塞与澄清，不是继续执行
-- 抓取：`docs/issues/` 有 frontier issue（open 且无未归档阻塞，归 <use-skill>issues</use-skill> 判定）且用户要开工 → 抓取前核验收可行性：验收清单含验证依赖当前不可用环境/外部资源（真机、CI、他平台、未建机制）的条目 → 先列出交用户裁定（re-scope / 提供环境 / 接受留 pending），裁定前不置 doing；无则抓取之（status 改 doing），读它，第 2 步接管
+- 进度审阅与任务安排（「看看完成情况」「安排后续任务」类）→ 先盘点再排程：整批列出在途阻塞与未决决策（验收项的环境/外部依赖门禁、blockedBy 未解、待裁定设计），按 被 blockedBy 卡死 / 进行中 / 级联风险 / 待用户裁定 四层呈交，用户裁定后再排执行顺序；阻塞与裁定未清前，推荐推进方向是清阻塞与澄清，不是继续执行
+- 抓取：`docs/issues/` 有 frontier issue（open 且无未归档阻塞，归 <use-skill>issues</use-skill> 判定）且用户要开工 → 抓取前核验收可行性：验收清单含验证依赖当前不可用环境/外部资源（真机、CI、他平台、live 模型、未建机制）的条目 → 先列出交用户裁定（缩减范围 / 提供环境 / 保持 open 暂不抓取），裁定前不置 doing；无则抓取之（status 改 doing），读它，第 2 步接管
 - 新实现：有就绪的 spec？ → 第 2 步
   - design 就绪：本次改动触及的值得固化的 how 问题未落定（BC design 或 ARCHITECTURE.md）→ 先走 <use-skill>design</use-skill> 落定再回来；改动不产生值得固化的决策 → 空满足
 - 续写：`docs/issues/` 有 status: doing 的 issue？ → 读它，按"当前位置"恢复执行。scoped 重审已无未处理发现 → 第 6 步再派完整评审，不得停
@@ -80,6 +80,7 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 ### 7. 归档
 
+- 归档时的条目核对与瘦身按 <use-skill>issues</use-skill> 归档节执行
 - 前端对接面刷新：本次改动触及前端对接面（前端可见的对外接口、字段、错误码增删改）→ 从 spec 断言与代码刷新 `docs/contexts/<限界上下文>/<限界上下文>-前端对接.md`（模板见下），随归档一并提交；未触及 → 跳过
 - 补记终点 commit（任务分支顶端），issue 置 archived、移入 `docs/issues/<限界上下文>/archive/`、同步 guide 状态表（有则）并提交，告知用户并附各条验证结果。不合入基线、不移除 worktree、不 squash
 
