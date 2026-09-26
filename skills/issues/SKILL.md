@@ -23,7 +23,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 
 - 落 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（NN = 01–99，按上下文内创建顺序；跨上下文需求落主导上下文目录，目标分别引用各 spec；项目已有任务存放约定则跟随），模板见下
 - spec 收口的需求：先对照 spec/design 排查代码现状差距，排查结论随创建消息呈现；验收标准逐条抄入验收清单——抄入前逐条过断言，有多种合理解读或语义张力（含 design 原文措辞）→ 不照抄、不标注「执行期澄清」，停下路由来源 skill 澄清后再建，进队列的 issue 不携带未决语义；抄入时按验证可行性分家——验证依赖当前不可用环境/外部资源（真机、CI、他平台、live 模型、未建机制）的断言不混入主清单，各立一份 follow-up issue（目标引用同一 spec 节），主 issue 显式出界清单指向之：主 issue 只含当前可闭环条目，环境到位后 follow-up issue 自然进 frontier；门禁条目在创建期分家，不在归档期改判；status: open 即入队列；验证手段留执行方预填
-- 单 spec 拆出多份 issue → 同目录建 `guide_issue.md`（母 issue）：承载排查结论、spec 验收断言逐条 × 子 issue 覆盖对账（每条断言有归属，或标注已满足/出界）、拆分理由与子 issue 状态表；依赖只写各子 issue 的 blockedBy；状态表只镜像各子 issue status（一行一 issue），子 issue frontmatter 是状态唯一事实源，状态流转（抓取/归档/拒绝）时同步状态表、与子 issue 改动同一提交；母 issue 验收清单 = 子 issue 全部归档；同上下文一份进行中 guide，第二次拆分先告知用户
+- 单 spec 拆出多份 issue → 同目录建 `guide_issue.md`（母 issue）：承载排查结论、spec 验收断言逐条 × 子 issue 覆盖对账（每条断言有归属，或标注已满足/出界）、拆分理由与子 issue 状态表；依赖只写各子 issue 的 blockedBy；状态表只镜像各子 issue status（一行一 issue），子 issue frontmatter 是状态唯一事实源，状态流转（抓取/归档/拒绝）时同步状态表、与子 issue 改动同一提交，状态表与 frontmatter 漂移或合并冲突时以各子 issue frontmatter 重派生；母 issue 验收清单 = 子 issue 全部归档；同上下文一份进行中 guide，第二次拆分先告知用户；guide 只承载上述四件——审计快照、容量评估等临时累积物随对应裁定或子 issue 归档删除，裁定结论归 spec/design 变更历史（断言层）或子 issue 变更历史（执行层）
 - 创建完成后（单份或拆分整批）在当前上下文中做对比评审：issue 与现有 spec/design/代码逐面核对——验收清单抄录无失真、覆盖对账无遗漏（拆分场景，逐条断言求归属）、现状描述与代码一致；拆分批次加查子 issue 间交叉一致——认领与出界不互撞（同一工作一方认领、他方须出界）、blockedBy 不过宽（只列真实前置）不缺失（验收所依赖的地基已列）；发现失真当场修正再提交
 - bug：category: bug；已知根因或修法只当线索写入「当前位置」，不作结论
 - 有依赖：blockedBy 列阻塞方 issue 相对 `docs/issues/` 的路径（如 `插件化/01_代次地基_issue.md`）。爆炸半径大的机械性改动（wide refactor）不塞进功能 issue——单独立 issue 走 expand–contract（先并存、分批迁移、最后删除），每批一份
@@ -37,6 +37,8 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 ### 3. 归档与拒绝
 
 - 实现任务：由 <use-skill>implement</use-skill> 第 7 步归档（条件在那边：验收通过、声称未失真、最近一次完整评审无未处理发现）
+- 存量追溯拆分：归档前核对发现验收条目验证依赖当前不可用环境/外部资源 → 不勾不标绿，迁出为独立 open issue（目标引用同一 spec 节），本 issue 变更历史记迁出指向，剩余条目全绿后才归档——条目以 open 形态留 frontier，不留 pending 不归零
+- 归档瘦身：归档时过程脚手架（当前位置、计划触碰清单）压为一行闭环结论；验证记录、范围外问题、变更历史原样保留——证据不删，只删脚手架
 - 母 issue（guide_issue.md）归档：除子 issue 全部归档外，先派新鲜上下文全量评审（<use-skill>code-review</use-skill>，变更范围 = 母 issue 提交区间，对照 spec 全文），无未处理发现才置 archived
 - debug 修复闭环后：status 改 archived、移入 `docs/issues/<限界上下文>/archive/`、记变更历史并同步 guide 状态表（有则），git 仓库并提交
 - 拒绝：status 改 wontfix 归档（同样移入 `<限界上下文>/archive/` 并同步 guide 状态表），理由写入变更历史——归档即拒绝记忆，供创建前检索
