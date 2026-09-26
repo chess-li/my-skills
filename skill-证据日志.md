@@ -4,6 +4,8 @@
 
 ## 观察名单
 
+- 2026-09-26 implement/interview 动作级锚点缺口（ses_f23207130ffe 同日取证）：implement 有「抓取待办 issue（frontier）」锚点但「审阅现在插件化改造的完成情况，然后安排后续任务」未触发之；interview 在多决策呈裁定现场（question 三问齐发）未触发之；smooth 项目 AGENTS.md 零 skill 指针（常备层结构干预缺位）| 拉动条件：下一次同类入口（进度审阅/多决策呈裁定）仍不加载 → 补对应锚点或推常备层指针
+
 - 2026-09-24 多分组计数在过程与收口口径漂移且无说明（ses_f2ebfca21ffe：开场「6 条走默认」→ 收尾「4 访谈 + 9 默认」，中间无变化说明）| 来源：同日 issues 六缺口审 | 拉动条件：同类计数失真第二次造成用户误解 → 立「分组计数收口与开场口径一致或显式说明变化」
 - 2026-09-24 superpowers 脚本化完成闸门候选（task-done：脚本亲自跑测试、退出码 0 才向 ledger 写完成行，完成记录不由模型书写；跨 harness 可移植只需 bash+git）| 来源：同日跨 harness 弱执行者讨论，spec-skills 社区提取（superpowers executing-plans/scripts）| 用户裁定观察 | 拉动条件：第一次「验收方重跑也拦不住」的伪造漏网
 
@@ -98,6 +100,8 @@
 - 2026-09-24 install.sh 只管种不管收：rsync 逐 skill 同步但不清理仓外孤儿（ij-debugger 即以此滞留至评审发现）| 来源：2026-09-24 全仓评审 | 拉动条件：第二个仓外孤儿出现 → install.sh 加 prune 或白名单机制
 
 ## 返工事件
+
+- 2026-09-26 | spec/design（触发）| 同会话（ses_f23207130ffe）：平台范围裁定落盘编辑 spec 4 处验收断言（plugin-spec.md L150/152/153/231）与 design 技术决策、重划 3 份 issue in-scope、question 三问齐发（违反 interview 一次一问）——spec/design/implement/interview 全程零加载；会话开场被「审阅+安排」分类接管，中段滑入编辑无再评估 | 疑似病灶层：description 缺动作级产物锚点（spec/design 无 *-spec.md/*-design.md 字面锚点；issues 虽有 docs/issues/ 锚点但其管辖=格式与生命周期，in-scope 内容改写不归属）——呼应 08-26 reasoning 取证「判断事件不发生，锚点是唯一打断杠杆」
 
 - 2026-09-26 | design | 同会话（ses_f23207130ffe）：01 并发簇/05 mcp-gateway/04 item1 三案由 agent 凭空列 A/B/C 选项请用户裁定；用户指令「你先看看社区是怎么解决这些问题的」（opensource/harness），调研 grok-build/codex 后三案推荐全部改写（01 两阶段换入→grok Generation 模式、05 确认内嵌但握手/监管机制全改、04 确认方向但边界重划）——凭空选项险些固化为裁定 | 疑似病灶层：读现状只读项目内文档，选型/结构类决策的选项生成无先行调研环节
 
@@ -242,6 +246,8 @@
 - 2026-09-24 | issues | 用户发起 smooth 插件化 spec 对应 12 份 issue 评审（ses_f2d05ce22，两级评审机制升格后的首个自然发生现场），14 节 × 12 issue 逐条对账仍捞出四类 17+ 缺口：A 13 条 spec 验收断言无任何 issue 认领（节级对账粒度漏节内单条断言，如灰度默认态、kill -9 结算、quarantine 摘除）；B 批内归属矛盾（03 清单认领四端确认 UI、08 出界又写只做 TUI/Desktop 确认界面）；C 依赖过宽与缺失（05 blockedBy 04 阻塞无关安全收口、09 blockedBy 漏 01 代次地基）；D 断言歧义照抄（01 清单 `session.pin_plugins=true` 布尔与「钉在指定 stamp」语义张力照抄 design L76，标注「执行期需澄清」蒙混进队列）| 疑似病灶层：①覆盖对账粒度=节非断言，节有归属即过闸；②对比评审清单只核 issue↔spec/design/代码，无批内子 issue 间交叉一致面（认领/出界互撞、blockedBy 宽度）；③创建无歧义清零门禁——歧义断言可照抄并以「执行期澄清」合法化，违反「issue 是任务交接唯一面」的意图锚点
 
 ## 升格 / 移出
+
+- 2026-09-26 | spec/design description 补动作级产物锚点（双副本同步）：spec 用于段加「编辑 docs/contexts/ 下 *-spec.md 既有断言的动作发生时同样先加载」；design 用于段加「编辑 docs/contexts/ 下 *-design.md 或 ARCHITECTURE.md 既有断言的动作发生时同样先加载，是否豁免由正文判定」——请求级锚点（系统能力变更/值得固化的决策）之外补动作级锚点（文件编辑动作），覆盖会话中段滑入编辑现场 | 依据：2026-09-26 返工事件（ses_f23207130ffe 四 skill 全程零加载）+ 08-26 reasoning 取证（锚点是唯一打断杠杆）+ 用户指令「先修复A1/A2/A3 再固化C」| 回归：spec/design 触发集干净会话待补跑（欠账记此）；对照改前——中段编辑现场无任何锚点可命中，新稿文件动作本身即锚 | 减法审查：无可删 | 待验证：下一次中段编辑 spec/design 文档的会话是否加载；implement/interview 同类缺口见观察名单同日条
 
 - 2026-09-26 | design 读现状加先行调研步（双副本同步）：「选型/结构类决策列选项前先做先行调研：本仓库同类实现、上游依赖的对应机制、可得的社区参照实现；选项与推荐标注依据来源，未经调研不呈用户裁定」| 依据：2026-09-26 返工事件（ses_f23207130ffe 三案推荐经社区调研全部改写）+ 用户指令「先修复A1/A2/A3 再固化C」| 回归：对照改前——旧稿读现状只读项目内文档（spec/design/ARCHITECTURE/DOMAINS）；新稿选项生成有外部依据闸。description 未改，触发集不跑 | 减法审查：无可删（空白填补）| 待验证：下一次选型类设计会话选项是否带依据来源；无可得社区参照时是否声明「未调研」而非凭空呈选项
 

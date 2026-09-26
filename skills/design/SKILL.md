@@ -1,6 +1,6 @@
 ---
 name: design
-description: 维护按限界上下文组织的工程技术设计文档（how 层）：动手编码前把技术决策与结构固化为文档，让 design 断言持续为真；项目级决策落 ARCHITECTURE.md。用于：改动带来值得固化的新技术决策；改动改变了 design 或 ARCHITECTURE.md 已写过的断言；spec 就绪进入设计。不用于澄清需求与验收标准（spec skill 的事）；不用于视觉/UI 设计；不用于任务拆解与执行顺序；不触及已有 design 断言的改动（纯实现细节）不触发。
+description: 维护按限界上下文组织的工程技术设计文档（how 层）：动手编码前把技术决策与结构固化为文档，让 design 断言持续为真；项目级决策落 ARCHITECTURE.md。用于：改动带来值得固化的新技术决策；改动改变了 design 或 ARCHITECTURE.md 已写过的断言；spec 就绪进入设计；编辑 docs/contexts/ 下 *-design.md 或 ARCHITECTURE.md 既有断言的动作发生时同样先加载，是否豁免由正文判定。不用于澄清需求与验收标准（spec skill 的事）；不用于视觉/UI 设计；不用于任务拆解与执行顺序；不触及已有 design 断言的改动（纯实现细节）不触发。
 ---
 
 # 设计文档维护
