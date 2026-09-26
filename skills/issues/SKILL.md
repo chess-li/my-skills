@@ -1,6 +1,6 @@
 ---
 name: issues
-description: 本地 markdown issue 的格式与生命周期单一信源：创建（含防重复检索）、队列与抓取（frontier = open 且无未归档阻塞）、归档与拒绝记忆，落 docs/issues/。用于：记录新需求或 bug 为 issue；查看待办与当前可抓取的 issue；spec 收口发布执行 issue；其他 skill 需创建或检索 issue 时。不用于按验收标准执行实现与更新执行状态（implement 的事）；不用于 bug 诊断与修复（debug 的事）；不用于澄清需求与验收标准（spec/interview 的事）；不用于会话间交接（handoff 的事）。
+description: 本地 markdown issue 的格式与生命周期单一信源：创建（含防重复检索）、队列与抓取（frontier = open 且 blockedBy 全部消解）、归档与拒绝记忆，落 docs/issues/。用于：记录新需求或 bug 为 issue；查看待办与当前可抓取的 issue；spec 收口发布执行 issue；其他 skill 需创建或检索 issue 时。不用于按验收标准执行实现与更新执行状态（implement 的事）；不用于 bug 诊断与修复（debug 的事）；不用于澄清需求与验收标准（spec/interview 的事）；不用于会话间交接（handoff 的事）。
 ---
 
 # Issue
@@ -13,7 +13,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 
 - 创建前检索：`docs/issues/` 与 `docs/issues/archive/`（含 wontfix）按概念检索，不只按请求措辞；命中 open → 更新既有 issue，不重复立项；命中 wontfix → 告知用户曾被拒绝及理由，用户坚持才新建
 - 一份一事：一份 issue 只承载一个需求/bug；相关但独立的问题各立一份（blockedBy 或正文互链），不因「联动、同一修复」合并为一份
-- 书写三原则：耐久性优于精确性——issue 可能挂数周，创建期写行为契约与接口语义，不写会过期的文件路径与行号（模板标注「执行期」的小节允许精确，生命周期短）；行为式不过程式——写 what 不写 how，执行者自己重新探索；验收标准独立可验证，配「显式出界」清单
+- 书写三原则：耐久性优于精确性——issue 可能挂数周，创建期写行为契约与接口语义，不写会过期的文件路径与行号；执行期小节的实现指引用可 grep 定位的符号锚（类型/函数/字段/测试名）指代代码位置，不写行号——行号写入即开始腐烂、写错不挡执行者，符号锚漂移慢、写错可被执行者 grep 当场证伪（一次性验证记录例外）；行为式不过程式——写 what 不写 how，执行者自己重新探索；验收标准独立可验证，配「显式出界」清单
 - 状态即事实：status 字段、所在目录、实际进展三者一致；流转即记变更历史，git 仓库改动即提交
 - 本 skill 只管格式与生命周期：执行实现归 <use-skill>implement</use-skill>，bug 诊断修复归 <use-skill>debug</use-skill>
 
@@ -23,16 +23,16 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 
 - 落 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（NN = 01–99，按上下文内创建顺序；跨上下文需求落主导上下文目录，目标分别引用各 spec；项目已有任务存放约定则跟随），模板见下
 - spec 收口的需求：先对照 spec/design 排查代码现状差距，排查结论随创建消息呈现；验收标准逐条抄入验收清单——抄入前逐条过断言，有多种合理解读或语义张力（含 design 原文措辞）→ 不照抄、不标注「执行期澄清」，停下路由来源 skill 澄清后再建，进队列的 issue 不携带未决语义；抄入时按验证可行性分家——验证依赖当前不可用环境/外部资源（真机、CI、他平台、live 模型、未建机制）的断言不混入主清单，各立一份 follow-up issue（目标引用同一 spec 节），主 issue 显式出界清单指向之：主 issue 只含当前可闭环条目；follow-up issue 以 open 入队列即进 frontier，环境未到位前由 <use-skill>implement</use-skill> 抓取前核拦下交用户裁定；门禁条目在创建期分家，不在归档期改判（改判 = 勾掉/降级条目；迁出为 open issue 续存不算改判，见归档节）；status: open 即入队列；验证手段留执行方预填
-- 单 spec 拆出多份 issue → 同目录建 `guide_issue.md`（母 issue）：承载排查结论、spec 验收断言逐条 × 子 issue 覆盖对账（每条断言有归属，或标注已满足/出界）、拆分理由与子 issue 状态表；依赖只写各子 issue 的 blockedBy；状态表只镜像各子 issue status（一行一 issue），子 issue frontmatter 是状态唯一事实源，状态流转（抓取/归档/拒绝）时同步状态表、与子 issue 改动同一提交，状态表与 frontmatter 漂移或合并冲突时以各子 issue frontmatter 重派生；母 issue 验收清单 = 子 issue 全部归档；同上下文一份进行中 guide，第二次拆分先告知用户；guide 只承载上述四件——审计快照、容量评估等临时累积物随对应裁定或子 issue 归档删除，裁定结论归 spec/design 变更历史（断言层）或子 issue 变更历史（执行层）
+- 单 spec 拆出多份 issue → 同目录建 `guide_issue.md`（母 issue）：承载排查结论、spec 验收断言逐条 × 子 issue 覆盖对账（每条断言有归属，或标注已满足/出界）、拆分理由与子 issue 状态表；依赖只写各子 issue 的 blockedBy；状态表只镜像各子 issue status（一行一 issue），子 issue frontmatter 是状态唯一事实源，状态流转（抓取/归档/拒绝）时同步状态表、与子 issue 改动同一提交；镜像含 frontier 等派生列时，blockedBy 变更同提交重派生之；状态表与 frontmatter 漂移或合并冲突时以各子 issue frontmatter 重派生；母 issue 验收清单 = 子 issue 全部归档；同上下文一份进行中 guide，第二次拆分先告知用户；guide 只承载上述四件——审计快照、容量评估等临时累积物随对应裁定或子 issue 归档删除，裁定结论归 spec/design 变更历史（断言层）或子 issue 变更历史（执行层）
 - 创建完成后（单份或拆分整批）在当前上下文中做对比评审：issue 与现有 spec/design/代码逐面核对——验收清单抄录无失真、覆盖对账无遗漏（拆分场景，逐条断言求归属）、现状描述与代码一致；拆分批次加查子 issue 间交叉一致——认领与出界不互撞（同一工作一方认领、他方须出界）、blockedBy 不过宽（只列真实前置）不缺失（验收所依赖的地基已列）；发现失真当场修正再提交
 - bug：category: bug；已知根因或修法只当线索写入「当前位置」，不作结论
 - 有依赖：blockedBy 列阻塞方 issue 相对 `docs/issues/` 的路径（如 `插件化/01_代次地基_issue.md`）。爆炸半径大的机械性改动（wide refactor）不塞进功能 issue——单独立 issue 走 expand–contract（先并存、分批迁移、最后删除），每批一份
 
 ### 2. 队列与抓取
 
-- frontier = 递归 `docs/issues/` 全部 issue：status: open 且 blockedBy 全部已归档（或路径不存在）；「还有什么可做」= 列 frontier，各附一句话目标
+- frontier = 递归 `docs/issues/` 全部 issue：status: open 且 blockedBy 全部已消解（或路径不存在）；「还有什么可做」= 列 frontier，各附一句话目标
 - 抓取 = status 改 doing + 变更历史记一笔 + 同步 guide 状态表（有则）；一个会话抓一份，抓完即开始：enhancement 走 <use-skill>implement</use-skill>，bug 走 <use-skill>debug</use-skill>
-- 并行会话各抓 frontier 中的不同项；被阻塞项随阻塞方归档自动放行
+- 并行会话各抓 frontier 中的不同项；blockedBy 两路消解——阻塞方归档，或重估清空（被阻塞项所等的关键前置已合入基线/环境已具备，不等阻塞方归档）：重估清空 = blockedBy 改 [] 并在 frontmatter 注释行注记依据（等的是什么、何时何地已具备）
 
 ### 3. 归档与拒绝
 
@@ -50,7 +50,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 ---
 status: open          # open / doing / archived / wontfix
 category: enhancement # enhancement / bug
-blockedBy: []         # 阻塞方 issue 相对 docs/issues/ 的路径
+blockedBy: []         # 阻塞方 issue 相对 docs/issues/ 的路径；重估清空 = 改 [] + 注释行注记依据
 ---
 
 # <需求名>
