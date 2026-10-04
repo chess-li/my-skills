@@ -547,6 +547,8 @@
 
 - 2026-10-05 | 移出：测试用 skill 调用依赖抽取链——删除 `scripts/parse-skill-invocations.py` 与 `skills/skill-creator/references/invocation-markers.md`，移除 README 抽取入口，并把各 skill/测试中的调用标记恢复为普通 skill 名称与命令块；路由语义保留，parser-only 元数据规则移除 | 依据：2026-10-05 用户指令「删除 parse-skill-invocations.py 和其相关规则，这只是用于测试的，但似乎留下了不小的影响」；现状扫描确认解析器、规则文件、README 入口及 20 个文档文件存在标记残留 | 新旧对比：旧稿以解析器和调用标记维护一套测试元数据；新稿只保留 agent 可读的路由与命令说明，无脚本消费者或标记语法 | 减法审查：删除整条测试链及其引用，无替代规则；历史证据条目保留为追加式记录 | 回归：全库活动文件检索不再命中解析器、规则文件、调用标记；`git diff --check` 通过；临时目标运行 `scripts/install.sh` 成功
 
+- 2026-10-05 | 按用户指令升格社区扫描候选：debug 红色反馈回路与可证伪假设；code-review 收到意见后的技术核验；skill-creator 的上下文负载/认知负载与指针读取条件；domains 的边界场景和代码交叉核对；code-review/implement 的完整性、正确性、一致性三面摘要；writing 的可选英文结构检查器；新增 research、how、break-ui、wizard | 依据：本会话用户明确要求落地上一轮「值得提升现有 skill 的机制」和「本地缺失且值得引进的能力（除外部 Issue/PR 分诊）」；候选来源为 2026-10-05 Luna high 社区只读扫描；debug、code-review、domains、issues 的既有真实返工记录提供相邻机制证据，新增能力由用户一字批准进入可逆 skill 产物 | 移植按机制翻译：保留本地 SDD、授权、issue、原型和证据边界；未引入 OpenSpec 全生命周期、外部 tracker、自动调度或第二事实源 | writing linter 与 wizard template 保留上游 MIT 许可文件；新增 skill 不造拟真测试集，待真实使用语料冷启动 | 回归：`ste-lint.py --selftest`、writing 检查（0 hard violation）、向导 `bash -n`、生成向导行为冒烟（临时 ENV_FILE/假 gh，确认本地与远程写入、owner/repo 目标、secret 不进入日志，模板无 Stripe 外部 URL）、frontmatter 25 skill 校验、隔离安装面和 `git diff --check` 通过；独立评审首轮 P2/P3/P4 发现均已修复；clean-session 触发/工作流冒烟集待真实语料到场
+
 ## 冻结状态
 
 （暂无）
