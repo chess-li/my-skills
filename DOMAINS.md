@@ -49,9 +49,15 @@
 
 ### issue
 
-- **定义**：每需求/bug 一份的任务交接面产物，承载从创建到归档的完整生命周期。落 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（NN = 01–99，按上下文内创建顺序；跨上下文需求落主导上下文目录，目标分别引用各 spec），格式与生命周期的单一信源是 issues skill。单 spec 拆出多份 issue 时同目录建 `guide_issue.md`（母 issue）：承载排查结论、spec 节 × 子 issue 覆盖对账、拆分理由与子 issue 状态表；状态表只镜像各子 issue status，frontmatter 是状态唯一事实源，状态流转时同步、同一提交。frontmatter 状态机：`open`（入队列待抓取）→ `doing`（被抓取执行中）→ `archived`（完成，移入 `docs/issues/<限界上下文>/archive/`）或 `wontfix`（拒绝，归档即拒绝记忆）；`blockedBy` 列依赖，open 且无未归档阻塞 = frontier（可抓取队列）。创建期书写三原则：耐久性优于精确性（写行为契约，不写会过期的路径行号）、行为式不过程式、验收标准独立可验证配显式出界。执行期只承载六件事：需求目标（引用 spec）、足迹（本任务触及的 git 仓库与计划触碰清单，供他方撞车预判求交）、从 spec 派生的验收清单、每条的验证状态（验证手段 + 结果）、范围外问题（顺手发现、本次不修）、评审自检（派评审前的维度逐项结论）。SDD 执行状态的唯一交接介质：任何接手者只读此文件与 spec/design 即可续写实现。任务拆分留在会话内，不落盘。另锚定执行位置：基线分支与提交区间（起终点 commit），供评审圈定范围与归档后回溯。
+- **定义**：每需求/bug 一份的任务交接面产物，承载从创建到归档的完整生命周期。落 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（NN = 01–99，按上下文内创建顺序；跨上下文需求落主导上下文目录，目标分别引用各 spec），格式与生命周期的单一信源是 issues skill。同一限界上下文内拆出多份 issue 时建 `guide_issue.md`（母 issue）：承载该上下文排查结论、验收断言逐条 × 子 issue 覆盖对账、拆分理由与子 issue 状态表；状态表只镜像各子 issue status，frontmatter 是状态唯一事实源，状态流转时同步、同一提交。frontmatter 状态机：`open`（入队列待抓取）→ `doing`（被抓取执行中）→ `archived`（完成，移入 `docs/issues/<限界上下文>/archive/`）或 `wontfix`（拒绝，归档即拒绝记忆）；`blockedBy` 列依赖，open 且无未归档阻塞 = frontier（可抓取队列）。创建期书写三原则：耐久性优于精确性（写行为契约，不写会过期的路径行号）、行为式不过程式、验收标准独立可验证配显式出界。执行期只承载六件事：需求目标（引用 spec）、足迹（本任务触及的 git 仓库与计划触碰清单，供他方撞车预判求交）、从 spec 派生的验收清单、每条的验证状态（验证手段 + 结果）、范围外问题（顺手发现、本次不修）、评审自检（派评审前的维度逐项结论）。SDD 执行状态的唯一交接介质：任何接手者只读此文件与 spec/design 即可续写实现。任务拆分留在会话内，不落盘。另锚定执行位置：基线分支与提交区间（起终点 commit），供评审圈定范围与归档后回溯。
 - **反例**：≠ spec/design（持久真相文档 vs 一次性消耗品，无"与事实脱节"问题）；≠ 合入（见下）；≠ 交接文档（会话接力、不进版本库）。
-- **消费者**：issues 全文（格式与生命周期）；implement 第 1 步抓取与续写、第 2 步建/接管、提交区间与撞车预判（他方足迹）、第 6 步评审自检小节、第 7 步归档；code-review 第 1 步变更范围圈定；debug（bug 落 issue、第 1 步 issue 结论只当线索、验证闭环后归档）；handoff 执行包（只写路径）。
+- **消费者**：issues 全文（格式与生命周期）；implement 第 1 步抓取与续写、第 2 步建/接管、提交区间与撞车预判（他方足迹）、第 6 步评审自检小节、第 7 步归档；code-review 第 1 步变更范围圈定；debug（bug 落 issue、第 1 步 issue 结论只当线索、验证闭环后归档）；handoff 执行包（只写路径）；milestone（可选 milestone 归属）。
+
+### milestone
+
+- **定义**：跨一个或多个 spec 的一次交付切片。落 `docs/milestones/<milestone-id>.md`，引用 spec 的能力与验收编号，定义本次纳入、完成出口、明确出界和依赖。一个 milestone 可以包含多个限界上下文中的 issue 子集；成员只由子 issue 的精确 `milestone` frontmatter 字段决定。milestone 文档不复制 spec 断言，不保存 issue 执行状态。issue 的 `milestone` 字段可选，省略表示 issue 独立于任何 milestone；一个 issue 最多归属一个 milestone。`guide_issue.md` 是限界上下文级聚合 issue，管理该上下文的全部子 issue，不代表某个 milestone，且不带 `milestone` 字段。
+- **反例**：≠ spec（长期能力与验收断言）；≠ issue（单个需求或 bug 的执行生命周期）；≠ design（技术决策与结构）。
+- **消费者**：milestone skill（创建、关联、查找和收口）；issues skill（可选 frontmatter 关联）；implement skill（由 milestone 选定 issue 后接管执行）。
 
 ### 交接文档（handoff file）
 

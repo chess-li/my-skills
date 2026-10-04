@@ -1,6 +1,6 @@
 # skills
 
-SDD（规格驱动开发）agent skill 集合及其治理仓库。`skills/` 下每个目录是一个对外分发的 skill，共 20 个。
+SDD（规格驱动开发）agent skill 集合及其治理仓库。`skills/` 下每个目录是一个对外分发的 skill。
 
 ## 安装
 

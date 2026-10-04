@@ -4,6 +4,8 @@
 
 ## 观察名单
 
+- 2026-10-04 milestone skill 初建未建独立冒烟/触发集（按 skill-creator 创建期不造假语料）；拉动条件：首次真实 milestone 管理返工或该 skill description 改动时，从真实语料冷启动建集
+
 - 2026-09-26 design 调研结论验证状态标注缺口（ses_f23207130ffe 事后审查）：三架构裁定经单次 explore subagent 调研整体采纳进 design（bc40240），三处具体值（[1s,4s,16s]/MAX_MCP_SERVERS=64/ShutdownState 命名）无出处仍随「grok-build 模式」声称落盘；当日按用户裁定「改标不查」处置（smooth d5fce87：三值改标约定初值/约定名，模式层断言抽查属实保留出处）| 拉动条件：调研/subagent 转述的未核实声称再次带出处落盘并造成返工 → 立「调研结论落盘标注到可复核粒度（符号锚/file:line）或明示未复核」
 - 2026-09-26 spec/design 触发集干净会话补跑欠账（同日 description 动作级锚点升格自述「待补跑」）| 拉动条件：下次 spec/design description 改动或真实触发翻车 → 连同本次一并补跑
 - 2026-09-26 guide 归档时顺带清点同上下文 archive（B2 讨论候选④）：归档合并清点机制（09-25 升格）真实缺口=无人发起 | 拉动条件：archive 腐化（过期 issue 误导创建前检索）第二次发生 → 立触发点
@@ -104,6 +106,8 @@
 - 2026-09-24 install.sh 只管种不管收：rsync 逐 skill 同步但不清理仓外孤儿（ij-debugger 即以此滞留至评审发现）| 来源：2026-09-24 全仓评审 | 拉动条件：第二个仓外孤儿出现 → install.sh 加 prune 或白名单机制
 
 ## 返工事件
+
+- 2026-10-04 | milestone（创建依据）| 会话 `01a106d0-abaf-70c3-b386-53f5daca681f` 中，M1 先作为 plugin spec 章节落盘，随后因 milestone 可跨 spec 被重构为独立 `docs/milestones/M1-plugin-kernel.md`；用户继续追问“让 agent 完成 milestone 时怎么找到对应 issue”，才补出稳定 ID 与 issue `milestone` 标签，且确认该字段可选；本次继续澄清为“milestone 跨多个 context 取 issue 子集、guide issue 是 context 级聚合，不代表某个 milestone”。对应 smooth 提交 `9c50727`、`bd5c359`、`64c054a` | 疑似病灶层：SDD skill 集缺少 milestone 交付层与 issue 定位入口，导致交付范围、能力断言和执行状态先后混在不同文档中
 
 - 2026-09-26 | issues/implement | 同会话（ses_f23207130ffe）事后审查取证，订正返工 = smooth commit 1885163：①D3 条目三处代码引用凭前会话记忆写入、当会话零读/grep 复核——行号全错（:79 实为 :151、:73,110 实为 :103,140）、crate 指错（plugin_store.rs 实在 smooth-config 非 smooth-core）、`is_trusted(".")` 字面量全 git 历史不存在；用户当会话明确要求「不要留下阻塞性/歧义问题」供 flash 模型执行，而错行号不挡执行者（那行总有代码，静默误导）；②08 frontmatter blockedBy 注记声明前置已在 main 但标志位未清空，与 guide 镜像 frontier ✓ 三方矛盾（镜像自声明事实源=frontmatter）——blockedBy 重估清空操作（smooth 已发生 5 次：04/05/08/09/10）skill 未建模；③C5 攒批评审风险被识别两次并随 question 三问呈交，用户岔开未答，收口 D1-D5 裁定时静默消失（1885163 补裁落盘）| 疑似病灶层：①执行期精确指引无可证伪形态约束（行号写错不挡执行者）；②blockedBy 只有归档一条消解路径建模、镜像同步触发面只列状态流转；③进度审阅分支无收口对账步
 

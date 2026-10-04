@@ -22,8 +22,9 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 ### 1. 创建
 
 - 落 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（NN = 01–99，按上下文内创建顺序；跨上下文需求落主导上下文目录，目标分别引用各 spec；项目已有任务存放约定则跟随），模板见下
+- 子 issue 可带标量字段 `milestone: <milestone-id>`，一份 issue 最多归属一个 milestone；独立 issue 省略字段。ID 对应 `docs/milestones/<milestone-id>.md`，交付范围归 milestone skill。关联前读取旧值；已有其他归属且用户未授权改绑时，先交用户裁定，不覆盖旧值。归属变更写入该 issue 的变更历史。`guide_issue.md` 不带此字段。
 - spec 收口的需求：先对照 spec/design 排查代码现状差距，排查结论随创建消息呈现；验收标准逐条抄入验收清单——抄入前逐条过断言，有多种合理解读或语义张力（含 design 原文措辞）→ 不照抄、不标注「执行期澄清」，停下路由来源 skill 澄清后再建，进队列的 issue 不携带未决语义；抄入时按验证可行性分家——验证依赖当前不可用环境/外部资源（真机、CI、他平台、live 模型、未建机制）的断言不混入主清单，各立一份 follow-up issue（目标引用同一 spec 节），主 issue 显式出界清单指向之：主 issue 只含当前可闭环条目；follow-up issue 以 open 入队列即进 frontier，环境未到位前由 <use-skill>implement</use-skill> 抓取前核拦下交用户裁定；门禁条目在创建期分家，不在归档期改判（改判 = 勾掉/降级条目；迁出为 open issue 续存不算改判，见归档节）；status: open 即入队列；验证手段留执行方预填
-- 单 spec 拆出多份 issue → 同目录建 `guide_issue.md`（母 issue）：承载排查结论、spec 验收断言逐条 × 子 issue 覆盖对账（每条断言有归属，或标注已满足/出界）、拆分理由与子 issue 状态表；依赖只写各子 issue 的 blockedBy；状态表只镜像各子 issue status（一行一 issue），子 issue frontmatter 是状态唯一事实源，状态流转（抓取/归档/拒绝）时同步状态表、与子 issue 改动同一提交；镜像含 frontier 等派生列时，blockedBy 变更同提交重派生之；状态表与 frontmatter 漂移或合并冲突时以各子 issue frontmatter 重派生；母 issue 验收清单 = 子 issue 全部归档；同上下文一份进行中 guide，第二次拆分先告知用户；guide 只承载上述四件——审计快照、容量评估等临时累积物随对应裁定或子 issue 归档删除，裁定结论归 spec/design 变更历史（断言层）或子 issue 变更历史（执行层）
+- 同一限界上下文内拆出多份 issue → 同目录建 `guide_issue.md`（母 issue）：承载该上下文排查结论、验收断言逐条 × 子 issue 覆盖对账（每条断言有归属，或标注已满足/出界）、拆分理由与子 issue 状态表；依赖只写各子 issue 的 blockedBy；状态表只镜像各子 issue status（一行一 issue），子 issue frontmatter 是状态唯一事实源，状态流转（抓取/归档/拒绝）时同步状态表、与子 issue 改动同一提交；镜像含 frontier 等派生列时，blockedBy 变更同提交重派生之；状态表与 frontmatter 漂移或合并冲突时以各子 issue frontmatter 重派生；母 issue 验收清单 = 子 issue 全部归档；guide 管理本限界上下文的全部子 issue，不代表某个 milestone；同上下文一份进行中 guide，再次拆分时更新已有 guide 的覆盖对账与子 issue 状态表，不按 milestone 另建 guide；guide 只承载上述四件——审计快照、容量评估等临时累积物随对应裁定或子 issue 归档删除，裁定结论归 spec/design 变更历史（断言层）或子 issue 变更历史（执行层）
 - 创建完成后（单份或拆分整批）在当前上下文中做对比评审：issue 与现有 spec/design/代码逐面核对——验收清单抄录无失真、覆盖对账无遗漏（拆分场景，逐条断言求归属）、现状描述与代码一致；拆分批次加查子 issue 间交叉一致——认领与出界不互撞（同一工作一方认领、他方须出界）、blockedBy 不过宽（只列真实前置）不缺失（验收所依赖的地基已列）；发现失真当场修正再提交
 - bug：category: bug；已知根因或修法只当线索写入「当前位置」，不作结论
 - 有依赖：blockedBy 列阻塞方 issue 相对 `docs/issues/` 的路径（如 `插件化/01_代次地基_issue.md`）。爆炸半径大的机械性改动（wide refactor）不塞进功能 issue——单独立 issue 走 expand–contract（先并存、分批迁移、最后删除），每批一份
@@ -51,6 +52,8 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 status: open          # open / doing / archived / wontfix
 category: enhancement # enhancement / bug
 blockedBy: []         # 阻塞方 issue 相对 docs/issues/ 的路径；重估清空 = 改 [] + 注释行注记依据
+# 归属 milestone 时取消下一行注释；独立 issue 删除该行
+# milestone: <milestone-id>
 ---
 
 # <需求名>
