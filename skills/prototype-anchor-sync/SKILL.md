@@ -9,7 +9,7 @@ name: prototype-anchor-sync
 本 skill 守护一条主线：**术语表写入权归 agent——术语叫什么名、定义怎么写、归哪个上下文是裁定活，裁定发生在同步时，不在锚点创建时。** 锚点服务只写 HTML 锚点、只读术语表；本 skill 是原型锚点进入术语表的唯一通道。手动调用，时机由人定：编辑期锚点高频变动，稳定后再同步。
 
 护栏：
-- 只增不改：已有术语条目一字不动；改术语走 <use-skill>domains</use-skill>
+- 只增不改：已有术语条目一字不动；改术语走 domains skill
 - 孤儿只报不删：术语表有锚点条目但 HTML 已无此锚点 → 列出交用户裁决
 - 写不出定义的锚点跳过——锚点尚未成熟，下轮再沉淀
 
@@ -22,7 +22,6 @@ name: prototype-anchor-sync
 ### 2. 收锚点清单
 
 ```bash
-# invocation
 rg -o 'data-term-anchor="[^"]+"' <原型文件> | sort -u
 ```
 

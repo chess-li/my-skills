@@ -14,7 +14,7 @@ description: 用 ASD-STE100 的受控表达原则处理文档、消息及其他�
 - 保留原文的事实、范围、条件、数字和不确定性。信息缺失时标出缺口或提问，不猜测。
 - 事实准确优先于文采。不得用润色掩盖矛盾、把可能说成必然，或把建议写成已发生的事实。
 - spec/design 文档可以使用本 skill 做表达改写；改写必须保持既有断言和技术决策等价。语义发生变化时，切回负责该内容的 skill。
-- 一个概念在同一文本内使用一个稳定术语。项目已有术语优先；术语缺失或含义有分歧时，先路由 `<use-skill>domains</use-skill>`。
+- 一个概念在同一文本内使用一个稳定术语。项目已有术语优先；术语缺失或含义有分歧时，先路由 domains skill。
 - 句子只承载一个主要事实或动作。写清主语、动作、对象和条件；优先主动语态、直接动词和常用具体词。
 - 把条件、例外、顺序和责任人写在句子中。避免模糊代词、隐藏否定、名词化堆叠、无来源的修饰词和营销式表达。
 - 结论或用户要完成的动作先出现。标题应传达信息；列表只承载同层级的并列项；同一事实只放一处。
@@ -32,9 +32,9 @@ description: 用 ASD-STE100 的受控表达原则处理文档、消息及其他�
 
 - 阅读、分析、起草、改写和审阅按用户请求直接完成。
 - 用户明确要求修改文件时，按上述工作流修改并说明文件结果；批量覆盖、删除原文或对外发送前停下确认。
-- 内容边界不清时，不用写作规则替用户作需求、技术或术语裁决；先由 `<use-skill>spec</use-skill>`、`<use-skill>design</use-skill>` 或 `<use-skill>domains</use-skill>` 收口，再做表达改写。
-- 讲解深度或课程结构不清时，先由 `<use-skill>eli5</use-skill>` 或 `<use-skill>teach</use-skill>` 收口；本 skill 仍可改写已经确定的讲解文本。
-- 维护 `AGENTS.md`、issue 生命周期、前端对接文档或 skill 产物时，先由 `<use-skill>agents-md</use-skill>`、`<use-skill>issues</use-skill>`、`<use-skill>frontend-api-doc</use-skill>` 或 `<use-skill>skill-creator</use-skill>` 处理其治理内容；本 skill 可以随后处理文字表达。
+- 内容边界不清时，不用写作规则替用户作需求、技术或术语裁决；先由 spec skill、design skill 或 domains skill 收口，再做表达改写。
+- 讲解深度或课程结构不清时，先由 eli5 skill 或 teach skill 收口；本 skill 仍可改写已经确定的讲解文本。
+- 维护 `AGENTS.md`、issue 生命周期、前端对接文档或 skill 产物时，先由 agents-md skill、issues skill、frontend-api-doc skill 或 skill-creator skill 处理其治理内容；本 skill 可以随后处理文字表达。
 
 ## 例子
 

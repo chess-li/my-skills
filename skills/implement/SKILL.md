@@ -11,8 +11,8 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 实现护栏：
 - 验收强制：每条验收标准对应一个验证手段，验一条记一条；未验证的验收标准 = 未完成
-- 任务拆分留在会话内，不落盘；issue 只承载目标、足迹、验收清单、验证状态、范围外问题与评审自检，是执行的唯一交接介质（格式与生命周期归 <use-skill>issues</use-skill>）
-- 偏差路由：触及 spec 断言或 ARCHITECTURE.md → 停下问用户；只触及 BC design → 按 <use-skill>design</use-skill> 先改文件再实现
+- 任务拆分留在会话内，不落盘；issue 只承载目标、足迹、验收清单、验证状态、范围外问题与评审自检，是执行的唯一交接介质（格式与生命周期归 issues skill）
+- 偏差路由：触及 spec 断言或 ARCHITECTURE.md → 停下问用户；只触及 BC design → 按 design skill 先改文件再实现
 - 范围与整洁：改动限于验收标准所需，本任务产出不留死代码、注释掉的代码、未使用的导入、方法体未引用的参数、测试专用物；顺手发现的范围外问题记入 issue「范围外问题」，不顺带修复或删除
 - 验证状态实时落盘，不依赖会话记忆——接手者可能是另一个模型
 - 全部验收通过、已有声称未失真、最近一次完整评审无未处理发现 → git 仓库问三选一（合入基线 / 保留 worktree / 丢弃），合入或保留才移入 archive。scoped 可合入不够
@@ -23,16 +23,15 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 ### 1. 入口判断
 
-- 消除已观察到的失败（含按诊断/修法/修改结论执行）→ 先 <use-skill>debug</use-skill> 复现并定位根因，再回来；本会话未定位根因不改代码
+- 消除已观察到的失败（含按诊断/修法/修改结论执行）→ 先 debug skill 复现并定位根因，再回来；本会话未定位根因不改代码
 - 进度审阅与任务安排（「看看完成情况」「安排后续任务」类）→ 先盘点再排程：整批列出在途阻塞与未决决策（验收项的环境/外部依赖门禁、blockedBy 未解、待裁定设计），按 被 blockedBy 卡死 / 进行中 / 级联风险 / 待用户裁定 四层呈交，用户裁定后再排执行顺序；呈交清单收口时逐项对账——每项 = 已裁并落盘 / 显式放弃（记理由）/ 仍待裁（列入未决呈交），未裁项不静默消失；阻塞与裁定未清前，推荐推进方向是清阻塞与澄清，不是继续执行
-- 抓取：`docs/issues/` 有 frontier issue（open 且 blockedBy 全部消解，归 <use-skill>issues</use-skill> 判定）且用户要开工 → 抓取前核验收可行性：验收清单含验证依赖当前不可用环境/外部资源（真机、CI、他平台、live 模型、未建机制）的条目 → 先列出交用户裁定（缩减范围 / 提供环境 / 保持 open 暂不抓取），裁定前不置 doing；无则抓取之（status 改 doing），读它，第 2 步接管
+- 抓取：`docs/issues/` 有 frontier issue（open 且 blockedBy 全部消解，归 issues skill 判定）且用户要开工 → 抓取前核验收可行性：验收清单含验证依赖当前不可用环境/外部资源（真机、CI、他平台、live 模型、未建机制）的条目 → 先列出交用户裁定（缩减范围 / 提供环境 / 保持 open 暂不抓取），裁定前不置 doing；无则抓取之（status 改 doing），读它，第 2 步接管
 - 新实现：有就绪的 spec？ → 第 2 步
-  - design 就绪：本次改动触及的值得固化的 how 问题未落定（BC design 或 ARCHITECTURE.md）→ 先走 <use-skill>design</use-skill> 落定再回来；改动不产生值得固化的决策 → 空满足
+  - design 就绪：本次改动触及的值得固化的 how 问题未落定（BC design 或 ARCHITECTURE.md）→ 先走 design skill 落定再回来；改动不产生值得固化的决策 → 空满足
 - 续写：`docs/issues/` 有 status: doing 的 issue？ → 读它，按"当前位置"恢复执行。scoped 重审已无未处理发现 → 第 6 步再派完整评审，不得停
-- 接手（续写、跨模型/跨环境移交）先复述：用自己的话在 issue 写「当前任务要达成什么、下一步怎么验证」；复述不出、断言读不懂或有歧义 → 停下问用户回 <use-skill>spec</use-skill> 澄清，不猜着动手
+- 接手（续写、跨模型/跨环境移交）先复述：用自己的话在 issue 写「当前任务要达成什么、下一步怎么验证」；复述不出、断言读不懂或有歧义 → 停下问用户回 spec skill 澄清，不猜着动手
 
   ```bash
-  # invocation optional
   git worktree list   # git 仓库：有任务 worktree 时，进行中的 issue 在其内
   ```
 - 合入：用户要合入基线 → 「合入」节
@@ -40,12 +39,12 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 ### 2. 建/接管 issue
 
-写入 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（项目已有任务存放约定则跟随；现场存在 `docs/tasks/` 或平铺老布局 → 按 <use-skill>issues</use-skill> 冷启动迁移），模板与生命周期归 <use-skill>issues</use-skill>：spec 收口已发布 issue → 接管（预填验证手段、补足迹与当前位置）；没有 → 按其模板创建（status: doing）。本步规则：
+写入 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（项目已有任务存放约定则跟随；现场存在 `docs/tasks/` 或平铺老布局 → 按 issues skill 冷启动迁移），模板与生命周期归 issues skill：spec 收口已发布 issue → 接管（预填验证手段、补足迹与当前位置）；没有 → 按其模板创建（status: doing）。本步规则：
 
 - 逐条抄录 spec 的验收标准，为每条预填验证手段，优先级：可落成测试 → 该测试；其他可自动化的命令 → 命令；皆否 → 人工确认步骤
-- 全称断言（无论/任意/所有/每个）按分支全集拆成逐项验证，一个实例测试不得给全称断言标绿；列不出分支全集 → 回 <use-skill>spec</use-skill> 补失败面枚举
+- 全称断言（无论/任意/所有/每个）按分支全集拆成逐项验证，一个实例测试不得给全称断言标绿；列不出分支全集 → 回 spec skill 补失败面枚举
 - 条件子句含时序/生命周期状态（「执行后」「清除后」「重试后」、多跳链路）→ 验证手段须在真实序列造出该状态，不用单跳/注入态等捷径替代；捷径验过不给该条标绿
-- 写不出验证手段 = 验收标准不可执行——回 <use-skill>spec</use-skill> 修正，不用模糊条目充数
+- 写不出验证手段 = 验收标准不可执行——回 spec skill 修正，不用模糊条目充数
 - 跨上下文需求共用一份 issue，目标分别引用各 spec
 - git 仓库：从基线分支（当前检出的分支）建 worktree：默认 `<项目根目录>/.worktrees/<需求名>`（首次把 `.worktrees/` 写入 `.gitignore`），分支名 = 需求名，基线分支与起点 commit（建任务时基线顶端）记入 issue；此后实现在 worktree 内进行；跨仓库任务在每个触及的 git 仓库同样建 worktree（分支名 = 需求名），卫星仓库清单记入 issue「足迹」
 - 撞车预判（git 仓库）：三查——① `git worktree list` 同基线在途任务 worktree，`git diff --name-only <基线>...<在途任务分支>` 求文件足迹交集；② 在途 issue 的「足迹」清单（递归 `docs/issues/`，含卫星仓库）与本任务计划触碰文件求交；③ 同基线 checkout 的未提交变更与未推送提交（他方裸作业信号）。任一面交集非空 → 重叠清单报用户定夺（串行 / 划分范围 / 仍并行），不静默并行；交集触及同一构建 artifact 的接口契约（如 dubbo api 模块）→ 默认串行
@@ -53,7 +52,7 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 ### 3. 拆分与执行
 
-会话内拆成步骤逐个执行。粒度自定，唯一约束是覆盖全部验收标准。写生产代码遵循 <use-skill>tdd</use-skill>（测试先行）。
+会话内拆成步骤逐个执行。粒度自定，唯一约束是覆盖全部验收标准。写生产代码遵循 tdd skill（测试先行）。
 
 ### 4. 验证与记录
 
@@ -61,7 +60,7 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 ### 5. 偏差路由
 
-- 验收标准互相矛盾、按字面不可实现、边缘情形推出荒谬 → 停下，向用户陈述偏差，裁定后走 <use-skill>spec</use-skill> 更新，再回来
+- 验收标准互相矛盾、按字面不可实现、边缘情形推出荒谬 → 停下，向用户陈述偏差，裁定后走 spec skill 更新，再回来
 - 发现 design 决策不适用：只触及本 BC design → 先改 `docs/contexts/<限界上下文>/<限界上下文>-design.md` 再实现；触及 ARCHITECTURE.md → 停下问用户
 - git 仓库：上述 spec/design 修正回主 checkout 落盘（提交到基线分支），worktree merge 基线分支取回修正后继续
 
@@ -74,13 +73,13 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 - 读本次改动所涉 spec 章节与对应 design 决策（issue 引用的章节，不在 diff 里也要读），失真 → 第 5 步
 - 本次改动所及类型/方法上的 javadoc 与类注释，行为事实（日志级别、字段语义、成败路径）与代码不一致 → 改注释或改代码。只核已有文字是否仍真：不把 design 写成代码镜像，不补写新注释
 - 评审自检闸：每次派完整评审前（首轮与修复循环内重派同样）逐项过评审维度清单（code-review skill 的 references/review-dimensions.md，在 skill 安装目录不在项目仓库），四维度各一句「已查 + 结论 + 证据」记入 issue「评审自检」小节——证据可核查（diff 级 file:line、验证命令与输出摘要），写不出证据视同未查；任一项不过 → 回第 4 步本任务内清除——可自查拦截的发现不留给评审
-- 派 <use-skill>code-review</use-skill> 完整评审任务分支变更（变更范围 = issue 的提交区间）。含 P4 及以上发现 → 按 code-review 修复循环修复——修复切片与验收切片同一提交纪律：提交前过第 4 步切片卫生自查，不引入新的测试专用物/死代码，删改既有断言等价迁回——后回第 4 步；仅 P5 发现 → 报告后继续
+- 派 code-review skill 完整评审任务分支变更（变更范围 = issue 的提交区间）。含 P4 及以上发现 → 按 code-review 修复循环修复——修复切片与验收切片同一提交纪律：提交前过第 4 步切片卫生自查，不引入新的测试专用物/死代码，删改既有断言等价迁回——后回第 4 步；仅 P5 发现 → 报告后继续
 - scoped 重审无未处理发现 → 立刻再派完整评审，不得停、不得因 scoped 可合入归档或合入
 - 最近一次完整评审无未处理发现：git 仓库 → 问用户三选一，不自选——合入基线 / 保留当前 worktree / 丢弃该任务。合入或保留 → 第 7 步（合入再走合入节）；丢弃 → 不归档、不改基线，移除 worktree（含删本地任务分支），删除 `docs/issues/` 该 issue。非 git → 第 7 步
 
 ### 7. 归档
 
-- 归档时的条目核对与瘦身按 <use-skill>issues</use-skill> 归档节执行
+- 归档时的条目核对与瘦身按 issues skill 归档节执行
 - 前端对接面刷新：本次改动触及前端对接面（前端可见的对外接口、字段、错误码增删改）→ 从 spec 断言与代码刷新 `docs/contexts/<限界上下文>/<限界上下文>-前端对接.md`（模板见下），随归档一并提交；未触及 → 跳过
 - 补记终点 commit（任务分支顶端），issue 置 archived、移入 `docs/issues/<限界上下文>/archive/`、同步 guide 状态表（有则）并提交，告知用户并附各条验证结果。不合入基线、不移除 worktree、不 squash
 
@@ -115,14 +114,14 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 同一上下文的归档散单累积多份，用户发起清点时：
 
 - 逐份与 spec、design、现有代码核对：内容已全部过期/被替代/已消化的 archived issue → 删除（git 历史保留）；wontfix 与仍含有效检索记忆（拒绝理由、防重复线索）的文件不删。按各归档的提交区间定位任务改动；区间因 squash 悬空时以现存代码为据
-- 不落汇总文件：archive 是常驻检索记忆（格式与生命周期归 <use-skill>issues</use-skill>），「当前状态视图」由 frontier 与各 issue 文件即时生成——固化的汇总追 spec 改动必腐烂成双事实源
+- 不落汇总文件：archive 是常驻检索记忆（格式与生命周期归 issues skill），「当前状态视图」由 frontier 与各 issue 文件即时生成——固化的汇总追 spec 改动必腐烂成双事实源
 - 核对结论（删除文件 + 依据）随提交信息记录并随消息呈现给用户，不另存备查副本
 - 核对发现的仍成立未完成/待办 → 列出并问用户是否现在完成；未批准不修（要修时各立一份新 issue，不回改归档文件）
 - git 仓库：核对与删除后提交（执行后告知）
 
 ## 冷启动
 
-项目没有 `docs/issues/` 时，随第一份 issue 创建（格式归 <use-skill>issues</use-skill>）；`<限界上下文>/archive/` 首次归档时创建。不预建空目录、不建索引。项目无前端对接文档而存量接口多 → 全量生成走 <use-skill>frontend-api-doc</use-skill>，不靠逐任务收尾补建。
+项目没有 `docs/issues/` 时，随第一份 issue 创建（格式归 issues skill）；`<限界上下文>/archive/` 首次归档时创建。不预建空目录、不建索引。项目无前端对接文档而存量接口多 → 全量生成走 frontend-api-doc skill，不靠逐任务收尾补建。
 
 ## 完整示例（一次带偏差的实现）
 

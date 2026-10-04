@@ -24,7 +24,7 @@ description: 维护按限界上下文组织的工程技术设计文档（how 层
 
 - 新改动：是否带来值得固化的技术决策（数据模型、对外契约、选型）？带来 → 进入流程
 - 改已有技术：是否改变 design 或 ARCHITECTURE.md 已写过的断言？改变 → 先更新 design
-- 对应上下文还没有 spec → 先走 <use-skill>spec</use-skill> 完成 what/why，再回来
+- 对应上下文还没有 spec → 先走 spec skill 完成 what/why，再回来
 - 皆否 → 退出流程，直接干活
 
 ### 2. 归属路由
@@ -38,7 +38,7 @@ description: 维护按限界上下文组织的工程技术设计文档（how 层
 
 - 读对应 spec（what/why 的来源）、已有 design 与 ARCHITECTURE.md
 - 选型/结构类决策列选项前先做先行调研：本仓库同类实现、上游依赖的对应机制、可得的社区参照实现；选项与推荐标注依据来源，未经调研不呈用户裁定
-- 项目已有 `DOMAINS.md` → 先读，上下文划分跟随它；没有 → 先走 <use-skill>domains</use-skill> 冷启动判管辖，再回来
+- 项目已有 `DOMAINS.md` → 先读，上下文划分跟随它；没有 → 先走 domains skill 冷启动判管辖，再回来
 
 ### 4. 写决策
 

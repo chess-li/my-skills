@@ -545,6 +545,8 @@
 - 2026-10-04 | writing 适用范围改为全量表达层：用户纠正「spec/design 文档也需要 writing」，确认负责内容的 skill 管语义裁决，writing 管所有文档的表达改写；原先把相邻 skill 写成排除项，改为协作边界 | 依据：本次用户裁定；待验证：多 skill 同时触发时负责内容的 skill 与 writing 的顺序是否稳定
 - 2026-10-05 | skill-creator 设计原则升格三条：已知规范不默认外查；表达层 skill 与负责内容的 skill 叠加而不互相排除产物；`AGENTS.md` 只放全局短基线，工作流与检查项放 skill | 依据：本次 writing 重建中的真实用户纠正与范围返工；待验证：后续 skill 创建是否按这三条减少无效检索、误排除和双处维护
 
+- 2026-10-05 | 移出：测试用 skill 调用依赖抽取链——删除 `scripts/parse-skill-invocations.py` 与 `skills/skill-creator/references/invocation-markers.md`，移除 README 抽取入口，并把各 skill/测试中的调用标记恢复为普通 skill 名称与命令块；路由语义保留，parser-only 元数据规则移除 | 依据：2026-10-05 用户指令「删除 parse-skill-invocations.py 和其相关规则，这只是用于测试的，但似乎留下了不小的影响」；现状扫描确认解析器、规则文件、README 入口及 20 个文档文件存在标记残留 | 新旧对比：旧稿以解析器和调用标记维护一套测试元数据；新稿只保留 agent 可读的路由与命令说明，无脚本消费者或标记语法 | 减法审查：删除整条测试链及其引用，无替代规则；历史证据条目保留为追加式记录 | 回归：全库活动文件检索不再命中解析器、规则文件、调用标记；`git diff --check` 通过；临时目标运行 `scripts/install.sh` 成功
+
 ## 冻结状态
 
 （暂无）

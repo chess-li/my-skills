@@ -13,11 +13,11 @@ description: 管理交付 milestone 的范围与执行入口。用于创建或�
 
 ### 1. 定位 milestone 与范围
 
-读取 `DOMAINS.md` 和已有 `docs/milestones/` 文档。涉及新概念或命名时先走 <use-skill>domains</use-skill>。
+读取 `DOMAINS.md` 和已有 `docs/milestones/` 文档。涉及新概念或命名时先走 domains skill。
 
 - 维护或执行：以文件名中的完整 ID 定位，如 `M1-plugin-kernel`。用户只给序号或名称时，唯一匹配即可继续；多个候选才交用户选择。
 - 创建：沿用项目命名规则；无规则时用 `M<下一序号>-<kebab-case 名称>`。ID 发布后保持稳定。
-- 读取纳入的 spec 能力与验收条款。目标未被覆盖或需要改变断言时，先走 <use-skill>spec</use-skill>；目标与交付范围尚未决定时，走 <use-skill>interview</use-skill> 收敛后再落盘。
+- 读取纳入的 spec 能力与验收条款。目标未被覆盖或需要改变断言时，先走 spec skill；目标与交付范围尚未决定时，走 interview skill 收敛后再落盘。
 
 完成物：唯一 milestone ID，以及每个纳入上下文的 spec 引用和交付范围。查看与执行已有 milestone 时直接进入第 3 步。
 
@@ -56,7 +56,7 @@ description: 管理交付 milestone 的范围与执行入口。用于创建或�
 
 ### 3. 找出 issue 子集并核对覆盖
 
-加载 <use-skill>issues</use-skill>，递归读取 `docs/issues/` 中子 issue 的 frontmatter，包含归档；精确匹配 `milestone: <milestone-id>`。排除所有 `guide_issue.md`，正文提及 ID 不算归属。字段格式和 guide 规则以 issues 为准。
+加载 issues skill，递归读取 `docs/issues/` 中子 issue 的 frontmatter，包含归档；精确匹配 `milestone: <milestone-id>`。排除所有 `guide_issue.md`，正文提及 ID 不算归属。字段格式和 guide 规则以 issues 为准。
 
 按 issue 存放的上下文分组；读取对应 guide 的覆盖对账作为线索，状态以子 issue frontmatter 为准。一个跨上下文 issue 只列一次，但把它目标中引用的全部 spec 映射到覆盖上下文；不能因其他上下文目录没有 issue 就重复建单。
 
@@ -66,7 +66,7 @@ description: 管理交付 milestone 的范围与执行入口。用于创建或�
 - 当前行为已经满足：只有带当前 milestone 标签的 issue 验证记录可以作为本 milestone 的完成证据；已有独立 issue 或其他 milestone 的记录不能直接改变归属。没有当前 milestone 的承载 issue 时，建立一个验证型子 issue，再记录验证结果。
 - 尚未覆盖：先按概念检索其他 milestone 或独立 issue。已有当前 milestone issue 时复用；独立 issue 只有在用户明确授权改绑后才能转入当前 milestone，否则建立当前 milestone 的验证型子 issue；属于其他 milestone 的共用前置用 `blockedBy` 引用，不改绑。确无承载者时按引用的 spec 创建子 issue，写入当前 milestone 字段，并更新本上下文已有 guide。
 
-某个纳入上下文的验收条款没有被匹配子 issue 覆盖时，使用 <use-skill>issues</use-skill> 按该条款创建 issue；跨上下文 issue 已覆盖该条款时不重复创建。需要拆分时只在该上下文建立 guide，再使用 <use-skill>implement</use-skill> 抓取。
+某个纳入上下文的验收条款没有被匹配子 issue 覆盖时，使用 issues skill 按该条款创建 issue；跨上下文 issue 已覆盖该条款时不重复创建。需要拆分时只在该上下文建立 guide，再使用 implement skill 抓取。
 
 标签指向不存在的 milestone，或 issue 的目标／验收范围超出本 milestone 时，列出不一致项；依据已授权的范围修正，否则交用户裁定。修正前不执行该 issue，也不宣称 milestone 完成。
 
@@ -76,7 +76,7 @@ description: 管理交付 milestone 的范围与执行入口。用于创建或�
 
 查看进度时，只报告第 3 步查询得到的状态、覆盖缺口和阻塞。创建或维护 milestone 不自动开始实现；用户要求完成 milestone 时，再进入执行。
 
-按 issues 的 frontier 规则选择成员，`blockedBy` 可以跨上下文或指向其他 milestone 的 issue。读取已在执行的成员及对应 worktree 后按 <use-skill>implement</use-skill> 接管；新成员也由 implement 核验验证条件后抓取。guide 只供对账，不作为待实现成员。完成一份后重新读取成员状态，继续其余成员；尚未满足的依赖和未决决策按 implement 的入口规则处理，不因部分 issue 归档而结束整个 milestone。
+按 issues 的 frontier 规则选择成员，`blockedBy` 可以跨上下文或指向其他 milestone 的 issue。读取已在执行的成员及对应 worktree 后按 implement skill 接管；新成员也由 implement 核验验证条件后抓取。guide 只供对账，不作为待实现成员。完成一份后重新读取成员状态，继续其余成员；尚未满足的依赖和未决决策按 implement 的入口规则处理，不因部分 issue 归档而结束整个 milestone。
 
 完成物：成员 issue 中实时保存的执行与验证记录。
 

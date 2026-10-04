@@ -60,7 +60,6 @@ name: bootstrap
 ### 5. codegraph 索引
 
 ```bash
-# invocation optional
 command -v codegraph                    # 无 CLI → 询问用户是否安装，拒绝则跳过本步
 npm install -g @colbymchenry/codegraph  # 仅用户同意安装后执行
 codegraph init <目录>                   # 仅对清单中用户同意的目录执行；已有 .codegraph/ 跳过

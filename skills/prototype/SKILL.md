@@ -18,7 +18,7 @@ description: 原型（界面/交互）的创建与效果对齐纪律：说不清
 
 ### 1. 分路
 
-- 行为问题（功能对错）→ 走 <use-skill>spec</use-skill> 补验收条款，本流程结束
+- 行为问题（功能对错）→ 走 spec skill 补验收条款，本流程结束
 - 新建原型 / 方向不明（「该长什么样」）→ 第 2 步变体锚定
 - 已有原型的效果反馈 → 第 2 步锚定谱系
 
@@ -72,14 +72,12 @@ description: 原型（界面/交互）的创建与效果对齐纪律：说不清
 1. 安装到本地 npm：
 
    ```bash
-   # invocation
    npm link "<skill目录>/scripts/prototype-anchor"
    ```
 
 2. 启动（停止/查看把 start 换成 stop/status；人手手动管理用同一脚本）：
 
    ```bash
-   # invocation
    bash "<skill目录>/scripts/anchor-serve.sh" start
    ```
 

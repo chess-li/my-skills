@@ -15,4 +15,3 @@ bash scripts/install.sh
 - 创建、修改、审查任何 skill：先加载 `skills/skill-creator/`，纪律见 `AGENTS.md`
 - 改动证据与观察名单：`skill-证据日志.md`
 - 统一语言（领域术语）：`DOMAINS.md`
-- skill 依赖抽取：`python3 scripts/parse-skill-invocations.py --all`

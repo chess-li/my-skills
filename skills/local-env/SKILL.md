@@ -32,14 +32,12 @@ description: 维护项目本地运行目录 `.local-env`：发现入口、引导
 `.gitignore` 无 `.local-env` → 补上。产物：可用的 start 与 url。
 
 ```bash
-# invocation
 ln -s {本机环境目录} .local-env
 ```
 
 ### 3. 立通道
 
 ```bash
-# invocation
 .local-env/start
 ```
 

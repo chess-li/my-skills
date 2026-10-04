@@ -177,4 +177,3 @@ description: 创建、修改与审查 agent skill 的纪律与流程。当用户
 - [references/design-principles.md](references/design-principles.md)：触发与调用方式、差值原则、授权与默认值、workflow 结构、措辞与组织
 - [references/testing-guide.md](references/testing-guide.md)：语料采集、覆盖结构、用例模板、触发测试集、回归对比、运行成本、防过拟合
 - [references/harness.md](references/harness.md)：观测三层分工、机制层现状与重建判据、拆分判据
-- [references/invocation-markers.md](references/invocation-markers.md)：正文调用标记规范（v0.2）——skill/MCP/tool/shell 四种载体的书写与抽取规则，供代码从正文解析依赖
