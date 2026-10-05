@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 from pathlib import Path
@@ -23,6 +24,7 @@ DEFAULT_DESCRIPTION = "Portable SDD skills for OpenCode, Codex, and Kimi Work."
 # keeps one generated package valid for all three harnesses.
 PLUGIN_NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
 SKILL_NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
+MARKDOWN_LINK_RE = re.compile(r"(\[[^\]]*\]\()([^)\s]+)(\))")
 VERSION_RE = re.compile(
     r"^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)"
     r"(?:-(?:0|[1-9]\d*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)"
@@ -71,11 +73,85 @@ def _assert_no_symlinks(path: Path) -> None:
             raise ValueError(f"plugin source contains a symlink: {item}")
 
 
-def _skill_metadata(skill_root: Path) -> list[dict[str, str]]:
-    result: list[dict[str, str]] = []
-    for skill_dir in sorted(skill_root.iterdir()):
-        if not skill_dir.is_dir() or not (skill_dir / "SKILL.md").is_file():
+def _skill_dirs(skill_root: Path) -> list[Path]:
+    """Find skill directories at skills/<name> or skills/<scene>/<name>."""
+    found: list[Path] = []
+    seen: dict[str, Path] = {}
+
+    def add(skill_dir: Path) -> None:
+        previous = seen.get(skill_dir.name)
+        if previous is not None:
+            raise ValueError(
+                f"duplicate skill name {skill_dir.name!r}: {previous} and {skill_dir}"
+            )
+        seen[skill_dir.name] = skill_dir
+        found.append(skill_dir)
+
+    for child in sorted(path for path in skill_root.iterdir() if path.is_dir()):
+        if (child / "SKILL.md").is_file():
+            add(child)
             continue
+        for nested in sorted(path for path in child.iterdir() if path.is_dir()):
+            if (nested / "SKILL.md").is_file():
+                add(nested)
+    return found
+
+
+def _locate_in_skill(path: Path, skill_dirs: list[Path]) -> tuple[str, Path] | None:
+    resolved = path.resolve()
+    matches: list[tuple[int, str, Path]] = []
+    for skill_dir in skill_dirs:
+        try:
+            relative = resolved.relative_to(skill_dir.resolve())
+        except ValueError:
+            continue
+        matches.append((len(skill_dir.parts), skill_dir.name, relative))
+    if not matches:
+        return None
+    _, name, relative = max(matches)
+    return name, relative
+
+
+def _rewrite_skill_links(
+    dest_file: Path,
+    source_file: Path,
+    skill_dirs: list[Path],
+    output_skills: Path,
+) -> None:
+    """Point copied cross-skill links at the flat package, not the scene tree."""
+    text = dest_file.read_text(encoding="utf-8")
+
+    def replace(match: re.Match[str]) -> str:
+        target = match.group(2)
+        if target.startswith(("#", "http://", "https://", "mailto:")):
+            return match.group(0)
+        raw, separator, anchor = target.partition("#")
+        if not raw.startswith("."):
+            return match.group(0)
+        resolved = (source_file.parent / raw).resolve()
+        if not resolved.is_file():
+            return match.group(0)
+        located = _locate_in_skill(resolved, skill_dirs)
+        if located is None:
+            return match.group(0)
+        name, relative = located
+        dest_target = (output_skills / name / relative).resolve()
+        if not dest_target.is_relative_to(output_skills.resolve()):
+            raise ValueError(f"skill link escapes the package: {target}")
+        rewritten = Path(os.path.relpath(dest_target, dest_file.parent.resolve())).as_posix()
+        if not rewritten.startswith("."):
+            rewritten = "./" + rewritten
+        suffix = f"#{anchor}" if separator else ""
+        return f"{match.group(1)}{rewritten}{suffix}{match.group(3)}"
+
+    updated = MARKDOWN_LINK_RE.sub(replace, text)
+    if updated != text:
+        dest_file.write_text(updated, encoding="utf-8")
+
+
+def _skill_metadata(skill_dirs: list[Path]) -> list[dict[str, str]]:
+    result: list[dict[str, str]] = []
+    for skill_dir in skill_dirs:
         if not SKILL_NAME_RE.fullmatch(skill_dir.name) or "--" in skill_dir.name:
             raise ValueError(
                 f"skill directory must use lowercase kebab-case: {skill_dir.name}"
@@ -151,23 +227,26 @@ def build_plugin(
     # Only files copied into the package need the containment check.  The
     # repository may contain unrelated development symlinks in node_modules.
     _assert_no_symlinks(skill_source)
-    metadata = _skill_metadata(skill_source)
+    skill_dirs = _skill_dirs(skill_source)
+    metadata = _skill_metadata(skill_dirs)
     if not metadata:
-        raise ValueError("no skills/<name>/SKILL.md files found")
+        raise ValueError("no skills/<name>/SKILL.md or skills/<scene>/<name>/SKILL.md files found")
 
     output_dir.mkdir(parents=True)
     target_skills = output_dir / "skills"
     target_skills.mkdir()
-    for item in sorted(skill_source.iterdir()):
-        if not item.is_dir() or not (item / "SKILL.md").is_file():
-            continue
+    for item in skill_dirs:
+        destination = target_skills / item.name
         shutil.copytree(
             item,
-            target_skills / item.name,
+            destination,
             symlinks=False,
             ignore=shutil.ignore_patterns(".DS_Store", "__pycache__"),
         )
-        _dialectize_skill(target_skills / item.name / "SKILL.md")
+        for copied in destination.rglob("*.md"):
+            if copied.is_file():
+                _rewrite_skill_links(copied, item / copied.relative_to(destination), skill_dirs, target_skills)
+        _dialectize_skill(destination / "SKILL.md")
 
     portable = {
         "$schema": PORTABLE_SCHEMA,

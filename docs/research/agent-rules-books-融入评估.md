@@ -1,116 +1,123 @@
 # agent-rules-books 融入评估
 
-日期：2026-10-05
+调查日：2026-10-05
 
-源仓库根目录：`/Users/chess/workspace/opensource/opensource-skills/agent-rules-books`。下文未带绝对前缀的源路径均相对于该目录。
+目标版本：agent-rules-books `v0.6-3-g893a88a`（`893a88a6fce3a80c565bf39ac65021b43a8b2990`）；本仓库 `7d17167`
 
-全仓优化项见同目录的 [skills 仓库优化清单](./skills-optimization-backlog.md)。
+过期条件：上述提交中被引用文件的断言改版
+
+支持的决策：不把该提交的 14 组规则安装为本仓库全局规则，也不按书名新增自动触发 skill。机制若被吸收，只进入已有 skill 的条件性参考；源规则整理不能单独充当 skill 正文证据。
+
+不决定什么：不决定超时、重试次数或其他数值；不决定 skill 正文措辞；不把源规则当作书籍原文；不判断未读 mini 的单条机制以后是否值得吸收。
+
+## 问题与范围
+
+问题：`agent-rules-books` 在目标版本的规则集，能否作为本仓库的全局规则或自动触发 skill。
+
+`agent-rules-books/` 指 `/Users/chess/workspace/opensource/opensource-skills/agent-rules-books` 的该提交。本仓库路径相对于本仓库根的 `7d17167`。
+
+已读：`README.md`、`LICENSE`、`_rule-workbench/PROCESS.md`、`docs/COMPATIBILITY.md`、`docs/CRITICISM.md`、14 个规则目录的文件清单、`release-it/SKILL.md`，以及结论中引用的 mini 与兼容对比。本仓库对照了 `spec`、`design`、`tdd`、`debug`、`domains`、`skill-creator`、`code-review` 的对应断言。
+
+不查：书籍原文；14 组 `full` 的逐行内容；其余 13 个 `SKILL.md` 正文；各书 `traceability.md` 是否逐条满足过程要求；远程在上次 fetch 之后的新提交。源仓库工作区里已修改、未提交的 `AGENTS.md` 未被引用。兼容矩阵的 78/2/11 采用文档自述，未重算单元格。
 
 ## 结论
 
-`agent-rules-books` 适合作为条件化参考库和规则候选来源，不适合作为本仓库的全局规则集合。
+1. 该提交有 14 个规则集，每组都有 full、mini、nano 和 `SKILL.md`。置信：事实。来源：`agent-rules-books/README.md:34-38,78-93`；调查日对该提交的目录清点。无冲突。
 
-本仓库已有 `spec`、`design`、`domains`、`tdd`、`debug`、`code-review` 和 `implement` 的生命周期分工。源仓库的 14 组书籍规则与这些 skill 有大量重叠。直接复制 `mini` 文件，或把 14 组规则全部安装为自动触发 skill，会增加上下文负载和触发竞争。
+2. 抽查的 Release It! 入口要求先读 mini，full 只作更深参考。置信：事实。来源：`agent-rules-books/release-it/SKILL.md:7-11`。无冲突。
 
-原始评估按三层处理候选机制。截至 2026-10-05，P0–P2 已按下文“落地补记”完成条件性落点：
+3. 压缩目标是决策等价，不是句子等价。mini 保留会改变决策的规则；nano 只保留紧上下文下的常驻纠偏。过程要求保留规则回溯到 full 的章节和行号，并记录合并或有意丢弃。置信：事实。来源：`agent-rules-books/_rule-workbench/PROCESS.md:3-9,62-90,92-114`。无冲突。
 
-1. 保留本次结果为研究记录，继续把未满足证据门槛的候选留在 `skill-证据日志.md` 的观察名单。
-2. 已有真实返工或测试失败证据的机制，翻译到已有 skill 的条件性参考文件或正文；本次已完成 P1/P2 指定落点。
-3. 只有出现独立触发场景时，才考虑新增 skill。不要按书名新增 skill。
+4. 这些规则是受书籍启发的原创实践指令，不是作者或出版社的官方材料，也不是书籍替代品。许可证是 MIT。置信：事实。来源：`agent-rules-books/README.md:28,203-208,241`；`agent-rules-books/LICENSE:1`。无冲突。
 
-## 来源事实
+5. README 写明：一次重构实验把 mini 规则分支评为约 74/100，把只提书名的分支评为约 46/100；该结果是早期定性信号，不是基准。置信：事实。来源：`agent-rules-books/README.md:195-199`。无冲突。
 
-| 事实 | 证据 |
-| --- | --- |
-| 本地检出包含 14 个书籍规则集，每组有 full、mini、nano 和 `SKILL.md` 入口 | 当前 `main`，`git describe` 为 `v0.6-3-g893a88a`；`/Users/chess/workspace/opensource/opensource-skills/agent-rules-books/README.md:34-38,78-93`；目录清单显示 14 个书籍目录 |
-| `SKILL.md` 主要负责触发和指向 mini/full；实际规则在 mini/full | 例如 `release-it/SKILL.md:1-11` |
-| 压缩目标是“决策等价”，不是句子等价；mini 保留会改变决策的规则，nano 只保留紧凑的常驻纠偏 | `_rule-workbench/PROCESS.md:3-9,62-90` |
-| 每条 mini/nano 规则需要回溯到 full 的章节和行号，且要记录合并或有意丢弃 | `_rule-workbench/PROCESS.md:92-114`；各书的 `_rule-workbench/*/traceability.md` |
-| 兼容性矩阵是定性判断，源仓库自己标注还没有任务实证 | `docs/COMPATIBILITY.md:50-62`；`docs/CRITICISM.md:15-17,75-77,105-107` |
-| `docs/compatibility/` 有 91 个书籍对比文件，矩阵统计为 78 个互补、2 个冲突、11 个重叠 | `docs/COMPATIBILITY.md:3-10,50-62`；本次只读清点 |
-| 源仓库说明规则是受书籍启发的原创实践指令，不是作者或出版社的官方材料，也不是书籍替代品 | `README.md:203-208` |
-| 源仓库使用 MIT 许可证 | `README.md:27-30,241`；`LICENSE` |
-| 书籍规则的早期实验是定性信号，不是基准；mini 与只提书名的分支在一次重构实验中得到不同评分 | `README.md:193-199` |
-| 本次完整覆盖公开的 `SKILL.md`、mini、nano；traceability 和 full 按候选机制回查，未逐行验证所有 full 章节 | 本次 Luna 只读审查记录；未验证部分列在本文“未决项” |
+6. 兼容矩阵的分数是定性估计，不是任务实证。文档自述互补 78、冲突 2、重叠 11。`agent-rules-books/docs/compatibility/` 下有 91 个 `.md`。置信：事实。来源：`agent-rules-books/docs/COMPATIBILITY.md:3-10,50-62`；`agent-rules-books/docs/CRITICISM.md:75-77`；调查日目录清点。无冲突。
 
-## 规则机制和本仓库落点
+7. 源仓库写明仍没有缺陷率、评审时间或任务结果数据。置信：事实。来源：`agent-rules-books/docs/CRITICISM.md:7,15-17,105-107`。无冲突。
 
-### 1. 遗留代码先取得控制权
+8. 同时加载过多规则会增加 token，并挤占任务上下文。源仓库不能阻止使用者仍然一次挂上太多。置信：事实。来源：`agent-rules-books/docs/CRITICISM.md:19-27`。无冲突。
 
-源仓库的 `Working Effectively with Legacy Code` 规则整理要求：没有可信测试的区域先当作遗留代码；编辑前写清行为变化和必须保留的行为；先做 characterization、找最小 seam，再改行为；行为改动、结构重构和清理分开（`working-effectively-with-legacy-code/working-effectively-with-legacy-code.mini.md:13-27`）。触发条件包括不确定行为、构造副作用、全局状态和框架回调（同文件 `:31-38`）。
+9. Clean Code 与 APoSD 被标为重叠。对比文件要求二选一作为主要设计或卫生规则集，因为二者在函数大小和注释上施压不同。置信：事实。来源：`agent-rules-books/docs/COMPATIBILITY.md:16-18`；`agent-rules-books/docs/compatibility/a-philosophy-of-software-design/clean-code.md:6,12-14`。无冲突。
 
-本仓库的 `tdd` 已覆盖测试先行、真实生产路径、装配验证和重构测试断言迁回（`skills/tdd/SKILL.md:15-34`）。`debug` 已覆盖复现、根因解释和分层修复（`skills/debug/SKILL.md:10-15`）。因此不新建“遗留代码”总 skill。本次按遗留构造、装配和隔离缝返工证据，将 characterization、change point 和最小 seam 机制落到 `tdd` 的条件性 reference；`debug` 仍拥有复现与根因，生产代码修复继续回到 tdd。效果待后续真实任务验证。
+10. 矩阵把 DDD–PoEAA 与 IDDD–PoEAA 标为冲突。DDD–PoEAA 对比文件要求不要把二者作为同一任务的平等有效指导。置信：事实。来源：`agent-rules-books/docs/COMPATIBILITY.md:21-24`；`agent-rules-books/docs/compatibility/domain-driven-design/patterns-of-enterprise-application-architecture.md:6,12-14`。无冲突。
 
-### 2. 生产失败契约
+11. Release It! 与 DDIA 被标为互补。对比文件写明二者保护不同失败面：DDIA 管数据所有权、一致性、耐久、重放和派生数据；Release It! 管超时、重试、隔离、过载和诊断。置信：事实。来源：`agent-rules-books/docs/compatibility/designing-data-intensive-applications/release-it.md:6,12-14`。无冲突。
 
-源仓库的 `Release It!` 规则整理要求显式超时、受限且有退避的重试、容量和队列边界、隔离、降级、可观测性、可恢复的部署与迁移（`release-it/release-it.mini.md:13-27,31-37`）。
+12. Working Effectively with Legacy Code 的 mini 要求：没有可信测试的区域先当遗留代码；编辑前写清要改变的行为和必须保留的行为；先做 characterization，再用最小 seam；行为改动、结构重构和清理分开。置信：事实。来源：`agent-rules-books/working-effectively-with-legacy-code/working-effectively-with-legacy-code.mini.md:13-20,31-38`。无冲突。
 
-源仓库的 `Designing Data-Intensive Applications` 规则整理要求显式记录 source of truth、一致性、持久化与可见性时点、重复和重放语义、派生数据修复、schema 演进和未知成功状态（`designing-data-intensive-applications/designing-data-intensive-applications.mini.md:13-30,34-42`）。
+13. Release It! 的 mini 要求显式时限，只对安全操作做有界重试，并定义容量、隔离、降级和诊断。置信：事实。来源：`agent-rules-books/release-it/release-it.mini.md:16-19,24,31-32`。无冲突。
 
-本仓库的 `spec` 已要求枚举外部调用、异步、超时和中断的失败入口（`skills/spec/SKILL.md:56-60`），`design` 已要求记录技术决策及取舍（`skills/design/SKILL.md:37-54`）。本次没有把两个书籍 mini 全文并入这些 skill，而是建立条件性“失败契约”参考表，供 `spec` 写用户可观察验收标准、`design` 写 how 决策、`code-review` 按边界核对实现。
+14. DDIA 的 mini 要求显式写出 source of truth、一致性、耐久与可见时点、重复与重放、派生数据修复，以及超时或未知成功后的行为。置信：事实。来源：`agent-rules-books/designing-data-intensive-applications/designing-data-intensive-applications.mini.md:13-14,18-20,34-37`。无冲突。
 
-候选表的最小字段应是：边界、超时、重试资格、重复/重放、容量、可见性、恢复或修复、诊断信号。它不能替代 spec 的行为断言，也不能在没有系统证据时规定具体数值。
+15. APoSD 的 mini 用认知负担和变更扩散衡量复杂度，拒绝只增加名字的薄封装，并要求没有证据不加泛化或框架。Refactoring 的 mini 要求小步、行为与结构分离，并在阻塞 smell 消失后停止。Refactoring.Guru 的 mini 要求先命名 smell，再用最小治疗，验证后停止。置信：事实。来源：`agent-rules-books/a-philosophy-of-software-design/a-philosophy-of-software-design.mini.md:13-15,25,29-30`；`agent-rules-books/refactoring/refactoring.mini.md:13-17,26`；`agent-rules-books/refactoring-guru/refactoring-guru.mini.md:13-18,53`。无冲突。
 
-### 3. 复杂度和抽象边界
+16. DDD 的 mini 要求一个限界上下文一套统一语言，业务规则留在领域模型，聚合只承载需要立即一致的边界。IDDD 的 mini 还要求跨上下文先标明关系和翻译责任，跨聚合默认用身份引用。置信：事实。来源：`agent-rules-books/domain-driven-design/domain-driven-design.mini.md:14-17,21`；`agent-rules-books/implementing-domain-driven-design/implementing-domain-driven-design.mini.md:13-19`。无冲突。
 
-源仓库的 `A Philosophy of Software Design` 规则整理提供的可移植机制是：以认知负担和变更扩散作为复杂度信号；优先深模块和语义接口；拒绝只增加名字的薄 wrapper；让拥有细节的模块吸收复杂度；没有证据不加入泛化、框架或优化（`a-philosophy-of-software-design/a-philosophy-of-software-design.mini.md:13-25,29-38`）。
+17. PoEAA 的 mini 要求先写明责任归属，再选分层、事务、仓储或映射；只转发的层不合格。置信：事实。来源：`agent-rules-books/patterns-of-enterprise-application-architecture/patterns-of-enterprise-application-architecture.mini.md:13-15,34-35`。无冲突。
 
-`Refactoring` 和 `Refactoring.Guru` 将其落成小步、可验证、按 smell 选择最小处理、行为改动与结构改动分离、到达停止条件后停止（`refactoring/refactoring.mini.md:13-26,30-39`；`refactoring-guru/refactoring-guru.mini.md:13-18,30-36,53-64`）。
+18. The Pragmatic Programmer 的 mini 要求每个系统知识有一个权威表示，并保持职责不重叠、契约可见。置信：事实。来源：`agent-rules-books/the-pragmatic-programmer/the-pragmatic-programmer.mini.md:16-17,25`。无冲突。
 
-本仓库已有 `tdd` 的“最小实现不得添加无消费者抽象”（`skills/tdd/SKILL.md:17-20`）、`design` 的“只记录悄悄变化会造成损失的决策”（`skills/design/SKILL.md:12-19,49-54`），以及 `skill-creator` 的删减和证据门禁（`skills/skill-creator/SKILL.md:95-123,149-154`）。这些机制已经覆盖大部分内容。本次根据过度设计、薄封装和清理范围返工证据，在 `code-review` 维度增加了复杂度证据、最小治疗和停止条件；效果待后续真实评审验证。
+19. 本仓库当前断言是：`spec` 先枚举失败入口，并在相关边界读取失败契约；`design` 只记录悄悄变化会受损的决策，模式决策先读责任参考，失败边界另读失败契约；`tdd` 先写失败测试，遗留条件另读安全回路；`debug` 没有复现不诊断；`domains` 维护一套统一语言，无真实歧义不扩张术语表；`code-review` 要求复杂度有认知负担或变更扩散证据，按已命名 smell 做最小治疗并在验证后停止，不以行数判定；`skill-creator` 规定没有真实返工或测试失败不改 skill 正文。置信：事实。来源：`skills/workflow/spec/SKILL.md:59-60`；`skills/workflow/design/SKILL.md:17,42-43`；`skills/coding/tdd/SKILL.md:15-17,28`；`skills/coding/debug/SKILL.md:13`；`skills/workflow/domains/SKILL.md:10,16`；`skills/coding/code-review/references/review-dimensions.md:16-17`；`skills/skill/skill-creator/SKILL.md:99`。无冲突。
 
-### 4. 领域模型和上下文边界
+20. 该规则集不适合作为本仓库全局规则，也不应按书名安装为 14 个自动触发 skill。全部常驻或按书名自动触发，会与 spec、design、tdd、debug、domains、code-review 的现有触发面重叠，并增加上下文负载。置信：推断。来源：`agent-rules-books/docs/CRITICISM.md:19-27`；`agent-rules-books/docs/COMPATIBILITY.md:16-24`；`skills/workflow/spec/SKILL.md:59-60`；`skills/workflow/design/SKILL.md:17,42-43`；`skills/coding/tdd/SKILL.md:15-17,28`；`skills/coding/debug/SKILL.md:13`；`skills/workflow/domains/SKILL.md:10,16`；`skills/coding/code-review/references/review-dimensions.md:16-17`。无冲突。
 
-源仓库的 DDD 规则整理强调一个限界上下文内使用一套统一语言，业务规则留在领域模型，跨上下文交互必须有关系和翻译责任，聚合只承载需要立即一致的边界（`domain-driven-design/domain-driven-design.mini.md:13-27,31-39`；`implementing-domain-driven-design/implementing-domain-driven-design.mini.md:13-31,35-44`）。
+21. 源规则整理不能单独充当本仓库 skill 正文的证据。源仓库没有任务结果数据；本仓库改 skill 正文需要一次真实返工或一条测试失败。置信：推断。来源：`agent-rules-books/docs/CRITICISM.md:15-17`；`skills/skill/skill-creator/SKILL.md:99`。无冲突。
 
-本仓库的 `domains` 已直接覆盖查术语、边界场景和代码事实交叉核对（`skills/domains/SKILL.md:20-47`），并规定没有真实歧义信号不扩张术语表（同文件 `:12-16,49-65`）。DDD 规则在本仓库的最佳融入方式是作为现有 domains 的来源对照，不新增 DDD skill，也不把 Aggregate、Value Object 等词预先加入 `DOMAINS.md`。没有项目真实概念和消费者时，新增术语会违反 domains 的消费者闭环。
+22. 可从 Release It! 与 DDIA 抽出的失败契约字段是边界、source of truth、可见性、超时、重试资格、重复/重放、容量、恢复和诊断。二者不能压成同一份可靠性清单。置信：推断。来源：`agent-rules-books/release-it/release-it.mini.md:16-19,24,31-32`；`agent-rules-books/designing-data-intensive-applications/designing-data-intensive-applications.mini.md:13-14,18-20,34-37`；`agent-rules-books/docs/compatibility/designing-data-intensive-applications/release-it.md:12-14`。无冲突。指针：`skills/workflow/spec/references/failure-contract.md`
 
-### 5. 模式选择，而不是模式清单
+23. 遗留变更可移植的是 characterization、change point、最小 seam，以及行为改动与清理分离。这不构成新 skill：`tdd` 已拥有测试先行，`debug` 已拥有复现。置信：推断。来源：`agent-rules-books/working-effectively-with-legacy-code/working-effectively-with-legacy-code.mini.md:13-20`；`skills/coding/tdd/SKILL.md:15-17,28`；`skills/coding/debug/SKILL.md:13`。无冲突。指针：`skills/coding/tdd/references/legacy-change-safety.md`
 
-源仓库的 `Patterns of Enterprise Application Architecture` 规则整理要求先明确责任归属，再选择分层、事务、仓储、映射和集成模式；每层必须减少耦合或澄清责任，拒绝只转发的分层（`patterns-of-enterprise-application-architecture/patterns-of-enterprise-application-architecture.mini.md:13-30,34-43`）。
+24. 复杂度判断使用认知负担或变更扩散证据，按已命名 smell 做最小治疗，验证后停止，不用固定行数。不能把 Clean Code 与 APoSD 合成“函数越小越好”。置信：推断。来源：`agent-rules-books/a-philosophy-of-software-design/a-philosophy-of-software-design.mini.md:13-15,25`；`agent-rules-books/refactoring/refactoring.mini.md:17,26`；`agent-rules-books/refactoring-guru/refactoring-guru.mini.md:14-18,53`；`agent-rules-books/docs/compatibility/a-philosophy-of-software-design/clean-code.md:12-14`；`skills/coding/code-review/references/review-dimensions.md:16-17`。无冲突。指针：`skills/coding/code-review/references/review-dimensions.md`
 
-这与 `design` 的决策归属和取舍记录相容，但不适合加入模式名清单。本次根据设计选项经调研后重写的证据，已在 `design` 增加“先写责任和约束，再选模式”的条件性参考；效果待后续真实设计任务验证。
+25. 模式选择先写责任、不变量和边界，再选分层、事务、仓储或映射。置信：推断。来源：`agent-rules-books/patterns-of-enterprise-application-architecture/patterns-of-enterprise-application-architecture.mini.md:13-15`；`skills/workflow/design/SKILL.md:42`。无冲突。指针：`skills/workflow/design/references/responsibility-before-pattern.md`
 
-### 6. 一致性和可维护性的一般原则
+26. 跨上下文的同一个词应先翻译；聚合只放必须立即一致的不变量。没有真实歧义时，不把 Aggregate、Value Object 等词预先写入术语表。置信：推断。来源：`agent-rules-books/domain-driven-design/domain-driven-design.mini.md:14-17,21`；`agent-rules-books/implementing-domain-driven-design/implementing-domain-driven-design.mini.md:16-19`；`skills/workflow/domains/SKILL.md:16`。无冲突。
 
-源仓库的 `The Pragmatic Programmer` 规则整理强调每个事实只有一个权威拥有者、保持正交、让假设和契约可见、自动化重复工作、从复现事实调试（`the-pragmatic-programmer/the-pragmatic-programmer.mini.md:13-24`）。这些原则在本仓库已经分散落在 `DOMAINS.md`、spec/design/issue 单一信源、`debug` 和 `skill-creator`。复制为新的通用 skill 会制造第二套解释，不建议移植。
+27. 把 The Pragmatic Programmer 复制成新的通用 skill，会与本仓库已有分工形成第二解释。置信：推断。来源：`agent-rules-books/the-pragmatic-programmer/the-pragmatic-programmer.mini.md:16-17,25`；`skills/workflow/domains/SKILL.md:10`；`skills/workflow/design/SKILL.md:17`；`skills/coding/debug/SKILL.md:13`。无冲突。
 
-## 冲突和风险
+## 冲突
 
-1. `Clean Code` 的小函数压力与 APoSD 的深模块压力可能在同一方法上竞争。源仓库把该对标为 overlap，而不是无条件同时加载（`docs/COMPATIBILITY.md:16-19`）。本仓库不应把二者合成“函数越小越好”。
-2. DDD/IDDD 与 PoEAA 对模型、事务脚本和数据访问模式的优先级不同。源仓库将 DDD–PoEAA、IDDD–PoEAA 标为 conflicting（`docs/COMPATIBILITY.md:21-24`）。模式参考只能在具体上下文和约束下读取。
-3. Release It! 与 DDIA 虽互补，但一个偏运行时失败和容量，一个偏数据语义、一致性和演进。把两者压成“可靠性清单”会丢失 source of truth、unknown success 和重放语义。
-4. 源仓库自己承认还缺少事故和任务结果驱动的验证（`docs/CRITICISM.md:7,15-17`）。书籍规则可作为候选机制来源，不能作为本仓库 skill 正文的证据。
+无。
 
-## 建议的落地顺序
+## 未决
 
-| 优先级 | 动作 | 进入条件 | 目标落点 |
-| --- | --- | --- | --- |
-| P0 | 保留本评估和来源路径；候选只进观察名单 | 已完成；仍不把候选升级为全局规则 | 本文件、`skill-证据日志.md` |
-| P1 | 建立“失败契约”条件性 reference | 已有真实失败边界证据，且本次按条件性 reference 落地；效果待后续任务验证 | `skills/spec/references/failure-contract.md`；由 `spec`、`design`、`code-review` 分工读取 |
-| P1 | 补“遗留变更安全回路”条件性 reference | 已有遗留构造、装配和隔离缝返工证据；本次落在 `tdd`，效果待后续任务验证 | `skills/tdd/references/legacy-change-safety.md`；不新建总 skill |
-| P2 | 补“复杂度/抽象停止条件”评审维度 | 已有过度设计、薄封装和清理范围返工证据；已加入评审维度，效果待后续评审验证 | `skills/code-review/references/review-dimensions.md` |
-| P2 | 补“责任先于模式”设计检查 | 已有模式选项经调研后重写的设计证据；已落条件性 reference，效果待后续设计任务验证 | `skills/design/references/responsibility-before-pattern.md` |
-| 不做 | 复制 14 组 mini/full/nano；创建按书名的 14 个 skill；把书籍规则放入根 AGENTS.md；导入源仓库兼容矩阵作为运行时策略 | 无独立触发场景或会形成第二事实源 | 保持不动 |
+- 这些 mini 规则在本仓库真实任务中是否减少缺陷、返工或评审时间：未知。
+- 未在本文结论中引用的 mini 是否还有值得引入的决策规则：已由 [再评估](agent-rules-books-再评估.md) 关闭。结论是没有第五条现在值得写入 skill 的机制。
+- 14 个 `SKILL.md` 是否都只指向 mini：已关闭。再评估核对各书 `SKILL.md:11`，全部先读 mini。
+- 各书 `traceability.md` 是否都满足 `PROCESS.md:92-114`：未在本文重走；再评估只抽查了 intentionally lost，未逐节核对。
+- `full` 是否含有 traceability 未记载的决策规则：未知。再评估不把它当作引入理由。
+- 上次 fetch 之后 `origin/main` 是否有新提交：未知。本地 `main` 与已记录的 `origin/main` 无 ahead/behind；本次未 fetch。
 
-每次 P1/P2 改动都必须先写目标 skill 的具体缺口，引用 `skill-证据日志.md` 的返工或测试失败，再按 skill-creator 的移植纪律翻译机制、补新旧对比和触发回归。没有证据时，只保留观察项。
+## 来源
 
-## P0–P2 落地补记（2026-10-05）
+`agent-rules-books/` = `/Users/chess/workspace/opensource/opensource-skills/agent-rules-books` @ `893a88a6fce3a80c565bf39ac65021b43a8b2990`。其余路径相对于本仓库根 @ `7d17167`。
 
-用户要求将本评估中的 P0–P2 全部落地。本次按已有返工证据和用户明确授权完成以下落点：
-
-- P0：研究报告、源仓库路径、14 组规则处置表和候选观察项已保留；新增内容仍以条件性 reference 为主，不把书籍规则放入根 AGENTS.md，也不创建书名 skill。
-- P1 失败契约：以 skills/spec/references/failure-contract.md 为单一参考。spec、design 和 code-review 分别读取同一文件，分别拥有行为、技术边界和实现核验。触发条件是外部调用、异步、超时、重试、复制/派生数据、迁移、容量或未知成功。
-- P1 遗留变更安全回路：以 skills/tdd/references/legacy-change-safety.md 为单一消费者。它补 characterization、change point、最小 seam、隔离缝评估和行为/清理分离，不新建遗留代码 skill，也不替换 debug 或 TDD 主流程。
-- P2 复杂度和停止条件：skills/code-review/references/review-dimensions.md 现在要求复杂度有认知负担或变更扩散证据，按已命名 smell 采用最小治疗并在验证后停止，不使用固定行数。
-- P2 责任先于模式：以 skills/design/references/responsibility-before-pattern.md 为条件性参考。design 和 code-review 在模式决策时先核对责任、不变量、边界、耦合变化和当前消费者，再选择最轻方案。
-
-本次同步补充 spec S3、tdd T10、code-review R16 和 design D01 真实语料用例。description 未改，因此没有重复运行触发测试；有效性仍待下一次真实任务按条件读取并产出可核查证据。
-
-## 未决项
-
-- 尚未在本仓库的真实任务中验证 source `mini` 规则能否减少缺陷、返工或评审时间。
-- “失败契约”的消费者已定为 spec（行为）、design（技术边界）和 code-review（实现核验），但尚未验证条件性读取是否减少返工。
-- 遗留变更 reference 已落在 tdd，debug 仍通过修复阶段路由到 tdd；尚未验证它是否与现有 tdd/debug 触发面竞争。
-- 复杂度/停止条件与责任先于模式已落到 code-review/design；尚未在新的真实评审和设计任务中验证误报、漏报和读取成本。
-- 本评估只使用源仓库本地检出内容，未核对上游最新提交，也未把书籍原文当作证据。
+- `agent-rules-books/README.md:28,34-38,78-93,195-199,203-208,241`
+- `agent-rules-books/LICENSE:1`
+- `agent-rules-books/_rule-workbench/PROCESS.md:3-9,62-90,92-114`
+- `agent-rules-books/docs/COMPATIBILITY.md:3-10,16-24,50-62`
+- `agent-rules-books/docs/CRITICISM.md:7,15-17,19-27,75-77,105-107`
+- `agent-rules-books/docs/compatibility/a-philosophy-of-software-design/clean-code.md:6,12-14`
+- `agent-rules-books/docs/compatibility/domain-driven-design/patterns-of-enterprise-application-architecture.md:6,12-14`
+- `agent-rules-books/docs/compatibility/designing-data-intensive-applications/release-it.md:6,12-14`
+- `agent-rules-books/release-it/SKILL.md:7-11`
+- `agent-rules-books/release-it/release-it.mini.md:16-19,24,31-32`
+- `agent-rules-books/designing-data-intensive-applications/designing-data-intensive-applications.mini.md:13-14,18-20,34-37`
+- `agent-rules-books/`（调查日目录清点）
+- `agent-rules-books/docs/compatibility/`（调查日目录清点）
+- `agent-rules-books/working-effectively-with-legacy-code/working-effectively-with-legacy-code.mini.md:13-20,31-38`
+- `agent-rules-books/a-philosophy-of-software-design/a-philosophy-of-software-design.mini.md:13-15,25,29-30`
+- `agent-rules-books/refactoring/refactoring.mini.md:13-17,26`
+- `agent-rules-books/refactoring-guru/refactoring-guru.mini.md:13-18,53`
+- `agent-rules-books/domain-driven-design/domain-driven-design.mini.md:14-17,21`
+- `agent-rules-books/implementing-domain-driven-design/implementing-domain-driven-design.mini.md:13-19`
+- `agent-rules-books/patterns-of-enterprise-application-architecture/patterns-of-enterprise-application-architecture.mini.md:13-15,34-35`
+- `agent-rules-books/the-pragmatic-programmer/the-pragmatic-programmer.mini.md:16-17,25`
+- `skills/workflow/spec/SKILL.md:59-60`
+- `skills/workflow/design/SKILL.md:17,42-43`
+- `skills/coding/tdd/SKILL.md:15-17,28`
+- `skills/coding/debug/SKILL.md:13`
+- `skills/workflow/domains/SKILL.md:10,16`
+- `skills/skill/skill-creator/SKILL.md:99`
+- `skills/coding/code-review/references/review-dimensions.md:16-17`

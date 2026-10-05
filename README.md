@@ -1,6 +1,6 @@
 # skills
 
-SDD（规格驱动开发）Agent Plugin 及其治理仓库。`skills/` 下每个目录是插件内的一个 Agent Skill。
+SDD（规格驱动开发）Agent Plugin 及其治理仓库。源码按场景放在 `skills/<scene>/<skill-name>/`。安装时构建成扁平的 `skills/<skill-name>/`，因为 Agent Plugins 只发现 `skills/` 的直接子目录。
 
 ## 安装插件
 
@@ -46,6 +46,6 @@ Kimi 桌面版不在默认路径时，可设置 `KIMI_PLUGIN_BUILDER`、`KIMI_DA
 
 ## 治理
 
-- 创建、修改、审查任何 skill：先加载 `skills/skill-creator/`，纪律见 `AGENTS.md`
+- 创建、修改、审查任何 skill：先加载 `skills/skill/skill-creator/`，纪律见 `AGENTS.md`
 - 改动证据与观察名单：`skill-证据日志.md`
 - 统一语言（领域术语）：`DOMAINS.md`

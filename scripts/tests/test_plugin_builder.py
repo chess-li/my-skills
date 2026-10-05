@@ -81,6 +81,92 @@ class PluginBuilderTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 build_plugin(root, root / "out", "demo-plugin", "1.0.0")
 
+    def test_flattens_scene_skill_and_skips_scene_directory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = root / "skills" / "coding" / "demo"
+            (skill / "scripts").mkdir(parents=True)
+            (skill / "SKILL.md").write_text(
+                "---\nname: demo\ndescription: Demo skill\n---\n\nUse demo.\n",
+                encoding="utf-8",
+            )
+            (skill / "scripts" / "run.sh").write_text("#!/bin/sh\necho demo\n", encoding="utf-8")
+            (root / "skills" / "coding" / "shared").mkdir()
+            (root / "skills" / "coding" / "shared" / "note.md").write_text("shared\n", encoding="utf-8")
+            output = root / "plugin"
+
+            result = build_plugin(root, output, "demo-plugin", "1.2.3")
+
+            self.assertEqual(result["skills"], ["demo"])
+            self.assertEqual(
+                (output / "skills/demo/scripts/run.sh").read_text(encoding="utf-8"),
+                "#!/bin/sh\necho demo\n",
+            )
+            self.assertFalse((output / "skills/coding").exists())
+            self.assertFalse((output / "skills/shared").exists())
+
+    def test_rewrites_cross_skill_links_for_flat_package(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            review = root / "skills" / "coding" / "review" / "references"
+            spec = root / "skills" / "workflow" / "spec" / "references"
+            design = root / "skills" / "workflow" / "design"
+            review.mkdir(parents=True)
+            spec.mkdir(parents=True)
+            design.mkdir(parents=True)
+            (root / "skills" / "coding" / "review" / "SKILL.md").write_text(
+                "---\nname: review\ndescription: Review\n---\n",
+                encoding="utf-8",
+            )
+            (root / "skills" / "workflow" / "spec" / "SKILL.md").write_text(
+                "---\nname: spec\ndescription: Spec\n---\n",
+                encoding="utf-8",
+            )
+            (design / "SKILL.md").write_text(
+                "---\nname: design\ndescription: Design\n---\n\n"
+                "Read [contract](../spec/references/contract.md).\n"
+                "See [project spec](../contexts/order/order-spec.md).\n",
+                encoding="utf-8",
+            )
+            (spec / "contract.md").write_text("contract\n", encoding="utf-8")
+            (review / "dims.md").write_text(
+                "Read [contract](../../../workflow/spec/references/contract.md).\n",
+                encoding="utf-8",
+            )
+            output = root / "plugin"
+
+            build_plugin(root, output, "demo-plugin", "1.2.3")
+
+            self.assertEqual(
+                (output / "skills/review/references/dims.md").read_text(encoding="utf-8"),
+                "Read [contract](../../spec/references/contract.md).\n",
+            )
+            self.assertIn(
+                "Read [contract](../spec/references/contract.md).",
+                (output / "skills/design/SKILL.md").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "See [project spec](../contexts/order/order-spec.md).",
+                (output / "skills/design/SKILL.md").read_text(encoding="utf-8"),
+            )
+
+    def test_build_rejects_duplicate_skill_names(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for scene in ("coding", "workflow"):
+                skill = root / "skills" / scene / "demo"
+                skill.mkdir(parents=True)
+                (skill / "SKILL.md").write_text(
+                    "---\nname: demo\ndescription: Demo\n---\n",
+                    encoding="utf-8",
+                )
+
+            with self.assertRaises(ValueError) as caught:
+                build_plugin(root, root / "plugin", "demo-plugin", "1.0.0")
+
+            self.assertIn("duplicate skill name", str(caught.exception))
+            self.assertFalse((root / "plugin").exists())
+
     def test_build_rejects_non_semver_version(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
