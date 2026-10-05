@@ -11,6 +11,10 @@
 # Node
 node_modules/
 
+# Python test and bytecode output
+__pycache__/
+*.py[cod]
+
 # 本仓工作产物
 /logs/
 .worktrees/

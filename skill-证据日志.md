@@ -549,6 +549,22 @@
 
 - 2026-10-05 | 按用户指令升格社区扫描候选：debug 红色反馈回路与可证伪假设；code-review 收到意见后的技术核验；skill-creator 的上下文负载/认知负载与指针读取条件；domains 的边界场景和代码交叉核对；code-review/implement 的完整性、正确性、一致性三面摘要；writing 的可选英文结构检查器；新增 research、how、break-ui、wizard | 依据：本会话用户明确要求落地上一轮「值得提升现有 skill 的机制」和「本地缺失且值得引进的能力（除外部 Issue/PR 分诊）」；候选来源为 2026-10-05 Luna high 社区只读扫描；debug、code-review、domains、issues 的既有真实返工记录提供相邻机制证据，新增能力由用户一字批准进入可逆 skill 产物 | 移植按机制翻译：保留本地 SDD、授权、issue、原型和证据边界；未引入 OpenSpec 全生命周期、外部 tracker、自动调度或第二事实源 | writing linter 与 wizard template 保留上游 MIT 许可文件；新增 skill 不造拟真测试集，待真实使用语料冷启动 | 回归：`ste-lint.py --selftest`、writing 检查（0 hard violation）、向导 `bash -n`、生成向导行为冒烟（临时 ENV_FILE/假 gh，确认本地与远程写入、owner/repo 目标、secret 不进入日志，模板无 Stripe 外部 URL）、frontmatter 25 skill 校验、隔离安装面和 `git diff --check` 通过；独立评审首轮 P2/P3/P4 发现均已修复；clean-session 触发/工作流冒烟集待真实语料到场
 
+- 2026-10-05 | 插件分发替换散装 skill 安装：将 `scripts/install.sh` 从复制 `~/.agents/skills` 改为生成 Agent Plugins 1.0.0 portable 包，并为 OpenCode、Codex、Kimi Work 分别使用平台方言 | 依据：用户反馈「现在的 skill 管理很困难,不再直接安装 skill,而是修改为安装 plugin」并指定 `agent-plugins.org` 为标准；本次本地分析确认 OpenCode 的 skills 配置、Codex 的本地 marketplace 与 Kimi Work 的 `kimi.plugin.json`/官方登记 CLI 是三种不同入口 | 待验证：真实三端安装与重复更新现场是否满足幂等和平台可用性
+
+- 2026-10-05 | 插件分发首轮实现后的真实返工：初次构建把仓库外的 `node_modules/prototype-anchor` 符号链接误当作插件输入而失败；独立评审又复现 OpenCode JSONC、Kimi `foo.bar` 名称和自定义 marketplace/share 路径问题。修复后加入 kebab-case/frontmatter 校验、JSONC 读取、根目录派生、失败隔离与重复项收敛测试 | 依据：首轮测试/临时安装失败与独立 code-review 复现；回归：12 tests OK，Codex CLI 临时安装成功，Kimi 官方 validator 0 error/0 warning，官方 register-personal 在不存在的临时 share 成功，OpenCode JSONC 重复安装保持一个路径 | 待验证：真实用户机器上的 OpenCode UI 重新加载配置与 Kimi Work 个人页签安装仍需用户现场确认
+
+- 2026-10-05 | 插件分发第二轮返工：独立评审发现缺少 `description` 的手动 skill 只有 OpenCode 的禁自动调用元数据，Kimi 会忽略该字段；同时收紧 Codex marketplace 文件名和 SemVer 校验。生成副本现在加入 Kimi `disableModelInvocation: true`，并补充回归测试 | 依据：Kimi Code 官方 Agent Skills 字段说明与独立评审复现；回归：14 tests OK，默认 25 skill 的 Kimi 官方 validator 仍为 0 error/0 warning | 待验证：Kimi Work 客户端实际自动调用行为仍需用户现场确认
+
+- 2026-10-05 | 插件分发第三轮收口：Kimi 客户端缺失时不再从结果中静默移除平台，而是由 Python 结果报告 `registered: false` 并继续其他平台；补充缺失客户端测试 | 依据：实现期边界复核；回归：15 tests OK，shellcheck、bash -n、py_compile 与 git diff --check 通过
+
+- 2026-10-05 | 插件分发 Codex marketplace 边界收紧：独立复审发现嵌套 `nested/marketplace.json` 会被写入但 Codex CLI 仍读取根目录，造成伪成功；现在只接受插件源目录根部的 `marketplace.json`，并加入负例测试 | 依据：Codex 本地 marketplace 规范与复审现场失败；回归：16 tests OK，标准路径临时 Codex CLI 安装保持成功
+
+- 2026-10-05 | 插件分发最终回归：标准 marketplace 根、OpenCode JSONC、Kimi 不存在 share、Codex cache 和旧 `~/.agents/skills` 隔离均在连续两次完整安装中通过；无 Kimi builder 时结果明确为 skipped 且 failures 为空 | 依据：临时 HOME/CODEX_HOME/share 真实命令与 16 项单元测试；结果：两次 failures=[]、marketplace 1 项、OpenCode 路径 1 项、Codex cache 可读、Kimi personal entry 可读
+
+- 2026-10-05 | 插件分发卸载流程与 `smooth` 改名：加入 `scripts/uninstall.sh` 和安装器反向流程，清理 OpenCode 精确路径、Codex 原生安装/cache、marketplace 条目、匹配源路径的 Kimi personal entry，最后删除本插件源目录；默认插件名、portable/Codex/Kimi 清单显示名和 CLI 选择器统一为 `smooth`，历史 `sdd-skills` 只接受显式名称清理 | 依据：用户明确要求补卸载并改名；TDD 先行证据为新增 `Smooth` 清单断言在实现前失败；回归：20 tests OK，`bash -n scripts/install.sh scripts/uninstall.sh`、`py_compile`、`git diff --check` 通过；临时三平台完整安装→卸载→重复卸载结果 `failures=[]`，源目录、OpenCode、Codex cache/条目和 Kimi personal entry 均按预期清理，其他插件与旧 `~/.agents/skills` 保留 | 待验证：真实用户 Kimi UI 中已安装的实例仍需按 README 手动移除
+
+- 2026-10-05 | 插件分发卸载安全修复：独立复审发现 Codex CLI 缺失时会删除源目录但留下 cache，以及 marketplace 只按名称删除会误删同名其他来源；新增 name+local source path 精确匹配，Codex CLI 缺失或直接调用卸载时未提供 Kimi share 会报告 failure 并保留源目录；Shell 卸载传入默认 Kimi share 路径，以便无登记目录时保持幂等 | 依据：独立 review P2 与临时 PATH 缺失 Codex 复现；TDD 先行证据为 3 个新增边界测试在实现前失败；回归：22 tests OK，Codex 缺失时 source/marketplace/cache 保留，同名异源 marketplace 条目保留，Kimi share 未提供时 source 保留；三平台可用时完整卸载仍 `failures=[]`
+
 ## 冻结状态
 
 （暂无）
