@@ -577,6 +577,8 @@
 
 - 2026-10-05 | E-02 证据校正：上一条台账记录中的 bootstrap 探针曾复用错误工作目录，不能作为冷启动工作流结果；本轮不把它计为通过。工作区正文复跑的正式记录为：spec P8 触发；design D01 短输入未触发且由 interview 竞争；implement P2 使用完整最小 fixture 通过 RED/GREEN、评审并归档，P3 只触发后因夹具缺生产代码而停；implement P4 同一原样输入两次，一次零 skill 直接错误合并 archive，另一次由 issues→interview 正确停问，故仍是 1/2 的路由波动；issues S1 触发；bootstrap 原语料自然入口仍未触发，因 skill 是 user-invoked，需显式用户调用后单独验证。P4b/P4c 经 OpenCode 数据库核对是同一字符串，不是异措辞。校正依据：Luna 复跑 session `ses_ef57ee755ffex1SlPC2iwlbxN1`、`ses_ef57ee755ffezdPDZPGQS7NKoG`、`ses_ef57c8515ffe7WzdPkt0v1xOSW`、`ses_ef58e7761ffeeKgwMK9aGx2d7r`；原始输出见台账。新旧对比：旧记录把错误 cwd、安装快照和 workspace 结果混在一起，并把 P4/ bootstrap 的不完整结果当成单次结论；校正后按 skill metadata、cwd、模型和会话分别记录，未触发、正确停问和完整通过分开。减法审查：不改任何 skill 正文，不把模型波动写成 description 修法，不为 bootstrap 增加 description，不生成 P4 异措辞。待验证：显式 user-invoked bootstrap 的全新夹具回归；P4 下一次同类真实现场是否仍波动；frontier/wontfix 真实语料。
 
+- 2026-10-05 | research 产物边界升格：单次调查写 `<topic>.md`；只有用户明确还会再用，或摘录会淹没结论，才建 `<topic>/<topic>-summary.md`。来源卡不单独触发建目录，且不写主张、行动结论或置信。第二个 topic 目录才建索引，并为每个 topic 目录各写一行。同一问题的更新、过期重查、换目标版本取代、问题不同新建四条互斥。子代理记录留在会话，不另建证据表。依据：用户指令「按你推荐的来进行」；独立评审必须修 5 条已按最小修法落地。新旧对比：旧稿无容器谓词，默认单文件五段，证据表与结论可以各写一遍；新稿入口是唯一可引用结论，来源卡只保留定位和短摘录。description 未改，不造测试集，不迁移 `docs/research/` 已有单文件。减法：删除「来源少 / 超过几行 / 来源卡迫使建目录 / 过期条件含版本更换或决策落地 / 来源卡上的置信和主张位置」。待验证：下一次真实研究是写单文件，还是在回访或长摘录时建目录且不把笔记写进 summary。
+
 ## 冻结状态
 
 （暂无）
