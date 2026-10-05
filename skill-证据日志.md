@@ -6,6 +6,11 @@
 
 - 2026-10-04 milestone skill 初建未建独立冒烟/触发集（按 skill-creator 创建期不造假语料）；拉动条件：首次真实 milestone 管理返工或该 skill description 改动时，从真实语料冷启动建集
 
+- 2026-10-05 agent-rules-books 融入评估（已升格，保留原始观察记录）：源仓库的 DDIA/Release It! 规则整理提示失败契约可拆为 source of truth、持久化/可见性、超时、重试资格、重复/重放、容量、恢复和诊断；当时本仓库尚无共享条件性 reference。本次已落 `skills/spec/references/failure-contract.md`，效果待真实任务验证。来源：`docs/research/agent-rules-books-融入评估.md`、源仓库对应 mini/full/traceability；原拉动条件为真实任务再次因未知成功、重复副作用、无界等待/重试或派生数据无法修复造成返工。
+- 2026-10-05 agent-rules-books 融入评估（已升格，保留原始观察记录）：源仓库的 Working Effectively with Legacy Code 规则整理提示遗留改动应先声明行为差异、做 characterization、选择最小 seam，再改行为并分离结构清理；当时现有 debug/tdd 有相邻纪律但无独立遗留回路。本次已落 `skills/tdd/references/legacy-change-safety.md`，效果待真实任务验证。来源：`docs/research/agent-rules-books-融入评估.md`、源仓库 `working-effectively-with-legacy-code` mini/full/traceability；原拉动条件为行为不明或无可信测试的真实改动再次直接修改并返工，或“不可测”未评估 seam 再次发生。
+- 2026-10-05 agent-rules-books 融入评估（已升格，保留原始观察记录）：源仓库的 Refactoring/Refactoring.Guru/APoSD 规则整理提示“先命名 smell/复杂度，再用最小治疗、验证并停止”，且以认知负担裁决抽象，不能硬化为函数行数或固定模式；当时 code-review 维度只有清单词。本次已落可观察检查，效果待真实评审验证。来源：`docs/research/agent-rules-books-融入评估.md`、源仓库对应 mini/full/traceability；原拉动条件为真实 code-review 再次漏掉薄封装、投机泛化、清理越界或以数字规则误判。
+- 2026-10-05 agent-rules-books 融入评估（已升格，保留原始观察记录）：源仓库 DDD/IDDD/PoEAA 规则整理存在重叠与冲突，候选机制是“跨 context 同词异义先翻译”和“先责任/不变量再选模式”，不是新增书名 skill 或预建 DDD 词条。本次已落 `skills/design/references/responsibility-before-pattern.md`，上下文翻译仍保留观察项。来源：`docs/research/agent-rules-books-融入评估.md`、源仓库 `docs/COMPATIBILITY.md`；原拉动条件为真实设计返工因共享模型、Aggregate 边界、事务脚本/领域模型选择或模式先行发生。
+
 - 2026-09-26 design 调研结论验证状态标注缺口（ses_f23207130ffe 事后审查）：三架构裁定经单次 explore subagent 调研整体采纳进 design（bc40240），三处具体值（[1s,4s,16s]/MAX_MCP_SERVERS=64/ShutdownState 命名）无出处仍随「grok-build 模式」声称落盘；当日按用户裁定「改标不查」处置（smooth d5fce87：三值改标约定初值/约定名，模式层断言抽查属实保留出处）| 拉动条件：调研/subagent 转述的未核实声称再次带出处落盘并造成返工 → 立「调研结论落盘标注到可复核粒度（符号锚/file:line）或明示未复核」
 - 2026-09-26 spec/design 触发集干净会话补跑欠账（同日 description 动作级锚点升格自述「待补跑」）| 拉动条件：下次 spec/design description 改动或真实触发翻车 → 连同本次一并补跑
 - 2026-09-26 guide 归档时顺带清点同上下文 archive（B2 讨论候选④）：归档合并清点机制（09-25 升格）真实缺口=无人发起 | 拉动条件：archive 腐化（过期 issue 误导创建前检索）第二次发生 → 立触发点
@@ -564,6 +569,9 @@
 - 2026-10-05 | 插件分发卸载流程与 `smooth` 改名：加入 `scripts/uninstall.sh` 和安装器反向流程，清理 OpenCode 精确路径、Codex 原生安装/cache、marketplace 条目、匹配源路径的 Kimi personal entry，最后删除本插件源目录；默认插件名、portable/Codex/Kimi 清单显示名和 CLI 选择器统一为 `smooth`，历史 `sdd-skills` 只接受显式名称清理 | 依据：用户明确要求补卸载并改名；TDD 先行证据为新增 `Smooth` 清单断言在实现前失败；回归：20 tests OK，`bash -n scripts/install.sh scripts/uninstall.sh`、`py_compile`、`git diff --check` 通过；临时三平台完整安装→卸载→重复卸载结果 `failures=[]`，源目录、OpenCode、Codex cache/条目和 Kimi personal entry 均按预期清理，其他插件与旧 `~/.agents/skills` 保留 | 待验证：真实用户 Kimi UI 中已安装的实例仍需按 README 手动移除
 
 - 2026-10-05 | 插件分发卸载安全修复：独立复审发现 Codex CLI 缺失时会删除源目录但留下 cache，以及 marketplace 只按名称删除会误删同名其他来源；新增 name+local source path 精确匹配，Codex CLI 缺失或直接调用卸载时未提供 Kimi share 会报告 failure 并保留源目录；Shell 卸载传入默认 Kimi share 路径，以便无登记目录时保持幂等 | 依据：独立 review P2 与临时 PATH 缺失 Codex 复现；TDD 先行证据为 3 个新增边界测试在实现前失败；回归：22 tests OK，Codex 缺失时 source/marketplace/cache 保留，同名异源 marketplace 条目保留，Kimi share 未提供时 source 保留；三平台可用时完整卸载仍 `failures=[]`
+
+- 2026-10-05 | agent-rules-books P0–P2 落地：P0 保留研究报告、来源路径和观察名单；P1 建立条件性失败契约参考（skills/spec/references/failure-contract.md，spec 为行为信源，design 为技术边界，code-review 负责核验）与遗留变更安全回路（skills/tdd/references/legacy-change-safety.md，tdd 为唯一消费者，补 characterization、最小 seam、行为/清理分离）；P2 将复杂度证据、最小治疗/停止条件和责任先于模式检查加入 skills/code-review/references/review-dimensions.md，并在 design 接入责任先于模式（skills/design/references/responsibility-before-pattern.md）。同步更新 spec/design/tdd/code-review 指针和真实语料冒烟集（spec S3、tdd T10、code-review R16、design D01）。依据：用户明确要求“将 agent-rules-books-融入评估.md 中的 P0-P2 全部落地”；历史返工见 2026-09-10 失败面漏检、2026-09-14 遗留构造/装配缝、2026-09-15 隔离缝误判、2026-09-26 设计选项调研后重写。新旧对比：旧稿无条件性失败契约和遗留回路，复杂度只写清单词，设计可直接从模式名开始；新稿按可观察边界读取 reference，字段不适用需说明，复杂度必须有证据，模式必须先交代责任和当前消费者。description 未改，触发集不跑；静态路径检查、git diff --check 通过。待验证：下一真实失败边界、遗留改动、代码评审和结构设计任务中按条件读取并产生可核查产物。
+- 2026-10-05 | 项目 AGENTS.md 增加 skill 测试回归准则：“如果你是 GPT，则使用 Luna 或 Reverse 进行 skill 的测试与回归验证” | 依据：用户本轮明确指令；适用范围为本项目 skill 测试与回归，不改变单个 skill 的触发面。回归：本次由 Luna 复核 P0–P2 改动；`git diff --check` 通过，全仓 Markdown 相对链接 23 条缺失 0，改动目标和新增 references 存在，4 个受影响 description 未变；动态触发效果待真实任务验证
 
 ## 冻结状态
 

@@ -18,3 +18,7 @@
 ## 对外产物
 
 `skills/` 下的 skill 是对外分发的产物；`skill-creator` 本身亦在此目录，本项目与外部消费者同一份。
+
+## 测试与回归
+
+如果你是 GPT，则使用 Luna 或 Reverse 进行 skill 的测试与回归验证。
