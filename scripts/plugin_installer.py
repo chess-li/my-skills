@@ -384,6 +384,45 @@ def _remove_codex_plugin(codex: str, plugin_name: str, marketplace_name: str) ->
         raise
 
 
+def _gemini_plugin_dir(home: Path, name: str) -> Path:
+    return Path(home).expanduser().resolve() / ".gemini/config/plugins" / name
+
+
+def _gemini_import_names(home: Path) -> list[str]:
+    manifest = Path(home).expanduser().resolve() / ".gemini/config/import_manifest.json"
+    if not manifest.is_file():
+        return []
+    data = _read_json(manifest, {})
+    imports = data.get("imports", [])
+    if not isinstance(imports, list):
+        raise ValueError(f"Gemini import record must be an array: {manifest}")
+    names: list[str] = []
+    for item in imports:
+        if isinstance(item, dict) and isinstance(item.get("name"), str):
+            names.append(item["name"])
+    return names
+
+
+def _run_agy(home: Path, arguments: list[str]) -> dict[str, Any]:
+    """Run Antigravity CLI against the installer's home, not the process home."""
+    agy = shutil.which("agy")
+    if not agy:
+        raise RuntimeError("agy executable not found")
+    env = os.environ.copy()
+    env["HOME"] = str(Path(home).expanduser().resolve())
+    completed = subprocess.run(
+        [agy, *arguments],
+        text=True,
+        capture_output=True,
+        encoding="utf-8",
+        env=env,
+    )
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout).strip()
+        raise RuntimeError(f"agy {' '.join(arguments)} failed: {detail}")
+    return {"ok": True, "output": completed.stdout.strip()}
+
+
 def _run_json_command(command: list[str]) -> dict[str, Any]:
     completed = subprocess.run(command, text=True, capture_output=True, encoding="utf-8")
     if completed.returncode != 0:
@@ -461,6 +500,9 @@ def install(args: argparse.Namespace) -> dict[str, Any]:
 
         attempt("kimi-work", register_kimi)
 
+    if not args.skip_gemini:
+        attempt("gemini", lambda: _run_agy(home, ["plugin", "install", str(plugin_dir)]))
+
     results["failures"] = failures
     return results
 
@@ -517,6 +559,32 @@ def uninstall(args: argparse.Namespace) -> dict[str, Any]:
 
         attempt("kimi-work", uninstall_kimi)
 
+    if not getattr(args, "skip_gemini", False):
+        def uninstall_gemini() -> dict[str, Any]:
+            copy = _gemini_plugin_dir(home, args.name)
+            has_record = args.name in _gemini_import_names(home)
+            if not shutil.which("agy"):
+                if not copy.exists() and not has_record:
+                    return {"removed": False, "skipped": "agy executable not found"}
+                raise RuntimeError("agy executable not found; Gemini copy or import record remains")
+            if copy.exists():
+                manifest = copy / "plugin.json"
+                if not manifest.is_file():
+                    raise RuntimeError(f"Gemini plugin.json missing; refusing to uninstall {copy}")
+                try:
+                    data = json.loads(manifest.read_text(encoding="utf-8"))
+                except json.JSONDecodeError as exc:
+                    raise RuntimeError(
+                        f"Gemini plugin.json is not valid JSON; refusing to uninstall {copy}"
+                    ) from exc
+                if not isinstance(data, dict) or data.get("name") != args.name:
+                    raise RuntimeError(
+                        f"Gemini plugin.json name does not match {args.name}; refusing to uninstall {copy}"
+                    )
+            return _run_agy(home, ["plugin", "uninstall", args.name])
+
+        attempt("gemini", uninstall_gemini)
+
     if not failures:
         def remove_source() -> dict[str, Any]:
             if not plugin_dir.exists():
@@ -539,7 +607,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--plugin-store", type=Path)
     parser.add_argument("--name", default=DEFAULT_PLUGIN_NAME)
     parser.add_argument("--version")
-    parser.add_argument("--description", default="Portable SDD skills for OpenCode, Codex, and Kimi Work.")
+    parser.add_argument("--description", default="Portable SDD skills for OpenCode, Codex, Kimi Work, and Gemini.")
     parser.add_argument("--opencode-config", type=Path)
     parser.add_argument("--codex-marketplace", type=Path)
     parser.add_argument("--kimi-register", type=Path)
@@ -549,6 +617,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--skip-opencode", action="store_true")
     parser.add_argument("--skip-codex", action="store_true")
     parser.add_argument("--skip-kimi", action="store_true")
+    parser.add_argument("--skip-gemini", action="store_true")
     parser.add_argument("--uninstall", action="store_true")
     return parser
 

@@ -56,7 +56,11 @@ if [ "${INSTALL_CODEX:-1}" != "1" ]; then
 fi
 if [ "${INSTALL_KIMI_WORK:-1}" != "1" ]; then
   args+=(--skip-kimi)
-else
+fi
+if [ "${INSTALL_GEMINI:-1}" != "1" ]; then
+  args+=(--skip-gemini)
+fi
+if [ "${INSTALL_KIMI_WORK:-1}" = "1" ]; then
   KIMI_SHARE="${KIMI_SHARE_DIR:-$HOME/Library/Application Support/kimi-desktop/daimon-share}"
   if [ "$UNINSTALL" -eq 1 ] || [ -n "${KIMI_SHARE_DIR:-}" ] || [ -d "$KIMI_SHARE" ]; then
     args+=(--kimi-share-dir "$KIMI_SHARE")
