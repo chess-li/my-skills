@@ -5,6 +5,7 @@
 ### 技术决策
 
 - 使用 Agent Plugins 1.0.0 的根部 `plugin.json` 与固定 `skills/` 目录作为唯一 portable 包；构建时从仓库 `skills/` 复制文件，避免符号链接越过插件根目录。源 skill 缺少 `description` 时只在生成副本补平台元数据：OpenCode 使用 `metadata.opencode/autoinvoke: "false"`，Kimi Work 使用 `disableModelInvocation: true`，保持手动调用语义。
+- 仓库源码按场景放在 `skills/<scene>/<skill-name>/`。构建同时接受该路径和直接位于 `skills/<skill-name>/` 的 skill，生成包始终写成扁平 `skills/<skill-name>/`。不把场景目录原样复制进包：Agent Plugins 只发现 `skills/` 的直接子目录，嵌套后 Codex 等客户端会漏掉 skill。两处同名 skill 时构建失败。复制的文件若用相对链接指向另一 skill 内的已有文件，改写成扁平包内的相对路径；目标不在任一 skill 内则保持原样，且不得因此指向包外。
 - 在同一包中保留 Codex 的 `.codex-plugin/plugin.json` 与 Kimi 的 `kimi.plugin.json` 适配清单；这些文件只表达平台元数据，不改变 portable manifest 和 skill 工作流正文。
 - 把插件源包保存到用户级 `~/.agents/plugins/<name>`。Codex 的个人 marketplace 指向该目录，OpenCode 的 `skills` 配置指向该包的 `skills/` 子目录。这样更新只替换一个包，避免逐个 skill 同步。
 - Kimi Work 只调用官方 `register-personal` 登记个人市场，不直接写入 Kimi 的 managed skills 目录；插件安装由 Kimi Work 的个人市场入口完成。
@@ -30,3 +31,4 @@ OpenCode 没有把 `plugin.json` 作为技能包安装入口。其方言使用�
 ## 变更历史
 
 - 2026-10-05 新建：固化 portable 包与三种平台方言的边界。
+- 2026-10-05 变更：源码按场景嵌套，构建打平为 `skills/<skill-name>/`，并改写跨 skill 相对链接。
