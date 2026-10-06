@@ -6,6 +6,10 @@
 
 领域术语见 `DOMAINS.md`：讨论与命名前先查已有词条；会话中出现歧义信号时即时沉淀，不要等会话结束。
 
+## 表达层
+
+凡是面向人阅读的文本产出或修改（消息、Markdown、HTML、skill、spec、design、issue、注释和交接文档），默认在负责内容的 skill 之后叠加 `writing` skill。内容 skill 负责事实、需求、技术决策、术语或治理语义；`writing` 负责清晰、简洁、结构和术语一致性，不改变已收口的语义。纯代码、配置和机器数据不因包含字符串而触发；精确引用、协议字段和代码标识按原文保留。
+
 ## 治理 skill
 
 创建、修改、审查任何 skill（含本仓库 `skills/` 对外产物）→ 加载 `skill-creator`（`skills/skill/skill-creator/`）。
