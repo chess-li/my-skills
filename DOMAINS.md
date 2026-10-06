@@ -9,19 +9,19 @@
 
 - **定义**：可分发的目录包，根部有标准 `plugin.json`，可在固定的 `skills/` 与 `mcp.json` 位置提供 Agent Skill 和 MCP server；安装、更新和展示由各 harness 自己负责。
 - **反例**：≠ 单独复制到 `~/.agents/skills` 的 skill 目录；≠ 只在某一 harness 生效的原生配置目录。
-- **消费者**：`scripts/build_plugin.py`、`scripts/install.sh`、Codex marketplace、Kimi Work 个人市场、OpenCode skills 配置与 Gemini 的 `agy plugin`。
+- **消费者**：`scripts/build_plugin.py`、`scripts/install.sh`、Codex marketplace、Kimi Work 个人市场、OpenCode skills 配置、Gemini 的 `agy plugin` 与 WorkBuddy 的 `codebuddy plugin`。
 
 ### harness（运行载体）
 
-- **定义**：发现、安装和运行 Agent Plugin 的 agent 客户端，例如 OpenCode、Codex、Kimi Work 与 Gemini。Gemini 指 Antigravity CLI 使用的用户级配置（`~/.gemini`），安装入口是 `agy plugin`。
-- **反例**：≠ plugin 内的 skill；同一个 skill 可由多个 harness 读取。≠ 旧 Gemini CLI 的 extensions 入口（`gemini extensions`、`gemini-extension.json`）。
+- **定义**：发现、安装和运行 Agent Plugin 的 agent 客户端，例如 OpenCode、Codex、Kimi Work、Gemini 与 WorkBuddy。Gemini 指 Antigravity CLI 使用的用户级配置（`~/.gemini`），安装入口是 `agy plugin`。WorkBuddy 指 WorkBuddy 应用内 codebuddy CLI 使用的用户级配置（`~/.workbuddy`），安装入口是 `codebuddy plugin`。
+- **反例**：≠ plugin 内的 skill；同一个 skill 可由多个 harness 读取。≠ 旧 Gemini CLI 的 extensions 入口（`gemini extensions`、`gemini-extension.json`）。≠ 未按 WorkBuddy 产品配置解析时写入的 `.codebuddy`。
 - **消费者**：插件分发 spec/design 与安装脚本的平台分路。
 
 ### 平台方言（platform dialect）
 
 - **定义**：同一 Agent Plugin 为某个 harness 生成的原生适配层；适配层只处理安装、登记和配置入口，不复制或改变 skill 正文语义。
 - **反例**：≠ 另一份独立 skill；≠ 修改标准 `plugin.json` 的 portable 字段来迎合某个平台。
-- **消费者**：`scripts/install.sh` 的 OpenCode、Codex、Kimi Work 与 Gemini 分路。
+- **消费者**：`scripts/install.sh` 的 OpenCode、Codex、Kimi Work、Gemini 与 WorkBuddy 分路。
 
 ## 限界上下文：规格驱动开发（SDD）
 
