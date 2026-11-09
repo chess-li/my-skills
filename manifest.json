@@ -1,0 +1,250 @@
+{
+  "schema": "grokbot-skills-sync/v2",
+  "source": {
+    "repo": "https://github.com/chess-li/my-skills.git",
+    "commit": "67eca714ecbf706689a627fc8e3ef9326f0855a8",
+    "dirty": true
+  },
+  "skills": [
+    {
+      "id": "agents-md",
+      "name": "agents-md",
+      "description": "编写与改造 AGENTS.md 及同类文件（CLAUDE.md 等），使其只含代码表达不了的内容、不随代码演进腐烂。用于：为项目从零起草；诊断与精简落后的存量文件（与代码脱节、臃肿、誊写他处文档）；评审此类文件的新增内容。不用于项目基座初始化与事实标记区派生（bootstrap 的事）；不用于编写 SKILL.md（skill-creator 的事）；不用于 spec/design/术语等文档断言（各对应 skill 的事）；不用于表达层润色（writing 的事）。",
+      "dir": "agents-md"
+    },
+    {
+      "id": "analyze-g1-gc-logs",
+      "name": "analyze-g1-gc-logs",
+      "description": "分析 JVM G1 GC 日志（gc.log / gc.log.N 轮转文件）：解析为 CSV 中间产物、写入带原生时区时间戳的 DuckDB 数据库并执行常用诊断查询。当用户提供 HotSpot G1 GC 日志、要求排查 GC 停顿/Full GC/内存泄漏、或需要对 gc.csv/gc.duckdb 做 GC 分析时使用。",
+      "dir": "analyze-g1-gc-logs"
+    },
+    {
+      "id": "bootstrap",
+      "name": "bootstrap",
+      "description": "Use the bootstrap skill when the user explicitly requests its workflow.",
+      "dir": "bootstrap"
+    },
+    {
+      "id": "break-ui",
+      "name": "break-ui",
+      "description": "用真实可发生的极端数据验证前端组件或页面，定位溢出、空态、数量和国际化边界。用于：用户要求尝试最坏数据、验证组件边界或查找 UI 极端情况。不用于：修复运行时行为 bug（debug）、探索视觉方向（prototype）、评判设计风格，或编写生产测试（tdd）。",
+      "dir": "break-ui"
+    },
+    {
+      "id": "code-review",
+      "name": "code-review",
+      "description": "已完成代码变更的独立评审，以及收到评审意见后的验证与处理：新鲜上下文评审者、发现分级、裁决门禁、技术反馈核验。用于：代码变更完成后、提交/合并/归档前的独立质量把关，或收到代码评审意见后逐条判断。不用于实现过程中的测试先行（tdd skill 的事）；不用于验收标准验证与执行状态落盘（implement skill 的事）。",
+      "dir": "code-review"
+    },
+    {
+      "id": "debug",
+      "name": "debug",
+      "description": "bug 诊断与修复的纪律：先复现，再定位根因，判定根因属期望/设计/实现哪一层，然后分路修复。用于：用户报告 bug、错误、意外行为；调试、测试或本地验证接口/服务（不要求给出访问地址），含「验证并修复/自动修复」连体命令；接手修 bug 或按已有结论执行修复。不用于写生产代码时的测试先行（tdd skill 的事）；不用于验收闭环与执行状态落盘（implement skill 的事）；不用于已完成变更的独立评审（code-review skill 的事）；不用于建立或补齐 `.local-env`（local-env skill 的事）；不用于会话间交接（handoff 的事）。",
+      "dir": "debug"
+    },
+    {
+      "id": "design",
+      "name": "design",
+      "description": "维护按限界上下文组织的工程技术设计文档（how 层）：动手编码前把技术决策与结构固化为文档，让 design 断言持续为真；项目级决策落 ARCHITECTURE.md。用于：改动带来值得固化的新技术决策；改动改变了 design 或 ARCHITECTURE.md 已写过的断言；spec 就绪进入设计；编辑 docs/contexts/ 下 *-design.md 或 ARCHITECTURE.md 既有断言的动作发生时同样先加载，是否豁免由正文判定。不用于澄清需求与验收标准（spec skill 的事）；不用于视觉/UI 设计；不用于任务拆解与执行顺序；不触及已有 design 断言的改动（纯实现细节）不触发。",
+      "dir": "design"
+    },
+    {
+      "id": "domains",
+      "name": "domains",
+      "description": "维护项目统一语言（领域术语表）的纪律与流程。任何讨论中，凡涉及 DOMAINS.md 等领域文档、概念定义或命名选择时使用——是否立词条由正文判定，加载前不自判；spec/design 判到项目无 DOMAINS.md 时路由过来冷启动。不用于同一描述多种合理解读的点选（interview 的事）；不用于执行任务本身。",
+      "dir": "domains"
+    },
+    {
+      "id": "eli5",
+      "name": "eli5",
+      "description": "把任意主题（概念、代码、工具、报错、系统）按深度分四档讲懂：了解=知道这是什么、会用=能解决真实场景、所以然=明白为何如此、改造=能变更延伸举一反三。用于：/eli5 <主题> 及求解释、求学用、求深入、求迁移的讲解请求，未指明深度默认「了解」档。不用于：从代码追调用链或生成交互式解释页面（how 的事）、诊断并修复 bug（debug 的事）、动手实现功能变更（spec/tdd 的事）。",
+      "dir": "eli5"
+    },
+    {
+      "id": "excel",
+      "name": "excel",
+      "description": "处理本地 Excel 工作簿和模板：读取、分析、创建、编辑、转换与验证 XLS/XLSX/XLSM/XLTX，包括从 CSV/TSV 生成或导入 XLSX 工作簿。需要工作表结构、公式、缓存值、样式、合并单元格、图表、条件格式、数据验证、宏、透视或财务模型时使用。不用于独立 CSV/TSV 的读取、清洗或 CSV/TSV 输出；这些由 spreadsheet 负责。也不用于 DOC/DOCX、PPT/PPTX、TXT 或在线表格；分别交给 word、powerpoint、txt 或对应连接器。",
+      "dir": "excel"
+    },
+    {
+      "id": "frontend-api-doc",
+      "name": "frontend-api-doc",
+      "description": "从已有代码（与 spec，如有）生成或重建前端对接文档：扫描项目前端可见接口，按模板产出 docs/contexts/<限界上下文>/<限界上下文>-前端对接.md（派生视图，不新立断言）。用于：存量代码缺前端对接文档，或需全量重建。不用于：任务收尾时的增量刷新（implement 的事）；接口行为断言的澄清与变更（spec 的事）。",
+      "dir": "frontend-api-doc"
+    },
+    {
+      "id": "frontend-experience",
+      "name": "frontend-experience",
+      "description": "为动效和移动 Web 提供创建、改进或审查指导。用于：动效连续性与 reduced-motion、移动浏览器的触控和视口。不用于：探索视觉方向或调整「效果不对」（prototype 的事）；极端文本和空态数据（break-ui 的事）；在没有行为断言时直接修改生产代码（spec、design、tdd 的事）。",
+      "dir": "frontend-experience"
+    },
+    {
+      "id": "generate-rd-deduction-report-gen",
+      "name": "generate-rd-deduction-report-gen",
+      "description": "根据企业原始研发资料，按流程A规范（Mermaid 拓扑 + 契约块）生成研发费用加计扣除留存备查资料：研发加计工作底稿、立项决议、项目计划书、成果效用说明、补充信息清单。产物与 generate-rd-deduction-report 完全等价，差异仅在编排形态——流程拓扑以流程A为唯一信源，模型步骤只产出声明字段，分支只对已声明字段求值。流程A 创作规范以本 skill 铁律节为唯一信源，skill→ETL 转换归 skill-to-flow，本 skill 是其首个参考案例。不用于评分、税务风险评估或已有资料审查。",
+      "dir": "generate-rd-deduction-report-gen"
+    },
+    {
+      "id": "handoff",
+      "name": "handoff",
+      "description": "会话间任务交接：写出交接文档并生成新会话提示词；能拉起可交互新会话则启动。用于：移交给新会话；新会话按交接文档接手；执行移交到异 harness/异模型（执行包）与其回程验收。不用于 SDD 执行状态落盘（implement issue 的事）；不用于 bug 诊断与修复（debug 的事）；不用于建立或补齐 `.local-env`（local-env 的事）。",
+      "dir": "handoff"
+    },
+    {
+      "id": "how",
+      "name": "how",
+      "description": "通过阅读实际代码解释代码库中的子系统、能力或运行链路如何工作，并在用户明确要求时给出架构批评。也用于：根据代码生成带步骤、链路和术语索引的交互式解释 HTML。用于：接手项目、理解调用链、寻找入口文件或回答“这个系统如何工作”。不用于：修复 bug（debug）、制定技术决策（design）、定义或实现能力（spec、implement）、只讲通用概念（eli5、teach）。需要 ELI5 深度或类比规则时协作调用 eli5；不把解释 HTML 当作 prototype 原型设计。",
+      "dir": "how"
+    },
+    {
+      "id": "implement",
+      "name": "implement",
+      "description": "按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue、派生验收清单、逐条验证强制闭环，执行状态落 issue 文件，支持中断续写。用于：spec 就绪进入实现（含在已有能力上追加新能力）；抓取待办 issue（frontier）；任务中断需要续写；存量归档壳与同上下文多份能力归档的归一清点（按 spec/design/代码核对：迁入 features/ 或过期删、仍成立的待办问用户，不落汇总文件）。不用于澄清需求与验收标准（spec skill 的事）；不用于制定或变更技术决策（design skill 的事）；不用于 issue 格式与生命周期（issues skill 的事）；不用于存量代码全量生成/重建前端对接文档（frontend-api-doc 的事）；不用于会话间交接（handoff 的事）；不触及 spec 断言的改动（纯实现细节、重构）不触发。",
+      "dir": "implement"
+    },
+    {
+      "id": "interview",
+      "name": "interview",
+      "description": "把歧义与未决决策收敛为用户裁定。用于：同一描述有多种合理解读（会导向不同产物或答案）；其他 skill 路由过来的未决决策访谈（spec 澄清访谈）。不用于落 spec 断言（spec 的事；被路由时只访谈不写文档）；不用于目标轮廓未成形的探讨（spec 讨论出口）；不用于未指定的选择（走默认值）；不用于概念定义、命名选择与词条沉淀（domains 的事）。",
+      "dir": "interview"
+    },
+    {
+      "id": "issues",
+      "name": "issues",
+      "description": "本地 markdown issue 的格式与生命周期单一信源：创建（含防重复检索）、队列与抓取（frontier = open 且 blockedBy 全部消解）、归档与拒绝记忆——在办落 docs/issues/，归档溶入 docs/contexts/<限界上下文>/features/ 能力文件。用于：记录新需求或 bug 为 issue；查看待办与当前可抓取的 issue；spec 收口发布执行 issue；其他 skill 需创建或检索 issue 时。不用于按验收标准执行实现与更新执行状态（implement 的事）；不用于 bug 诊断与修复（debug 的事）；不用于澄清需求与验收标准（spec/interview 的事）；不用于会话间交接（handoff 的事）。",
+      "dir": "issues"
+    },
+    {
+      "id": "local-env",
+      "name": "local-env",
+      "description": "维护项目本地运行目录 `.local-env`：发现入口、引导创建、执行 start 立通道。用于：建立或补齐 `.local-env`；启动本地程序；debug 立通道时路由过来。不用于 bug 诊断与修复（debug 的事）；不用于测试构建信道（tdd 的事）；不用于项目文档初始化（bootstrap 的事）。",
+      "dir": "local-env"
+    },
+    {
+      "id": "logs-to-duckdb",
+      "name": "logs-to-duckdb",
+      "description": "将文本应用日志（log4j2/logback 等，.log/.log.gz 轮转文件）先分析识别行格式、再清洗写入 DuckDB 并执行常用诊断查询。当用户提供应用/服务日志、要求排查 ERROR 堆积/异常堆栈/按 requestId 或租户追踪日志、或需要对日志做 SQL 分析时使用；格式未知或内置档案不匹配时，先用 detect 脚本分析，再按内置 profile 或自定义命名组正则入库。",
+      "dir": "logs-to-duckdb"
+    },
+    {
+      "id": "milestone",
+      "name": "milestone",
+      "description": "管理交付 milestone 的范围与执行入口。用于创建或维护 docs/milestones/ 文档、查看 milestone 进度，以及完成指定 milestone 时定位跨限界上下文的 issue 子集。不用于定义能力目标与验收标准（spec 的事）；不用于 issue 格式与生命周期（issues 的事）；不用于单个 issue 的实现与验收（implement 的事）；不用于技术决策（design 的事）。",
+      "dir": "milestone"
+    },
+    {
+      "id": "powerpoint",
+      "name": "powerpoint",
+      "description": "处理本地演示文稿和模板：读取、提取、分析、创建、编辑、转换与验证 PPT/PPTX/POTX。需要幻灯片顺序、版式、主题、图表、媒体、备注、批注、模板、嵌入对象或保真局部 XML 编辑时使用。不用于 DOC/DOCX、XLS/XLSX、TXT、CSV/TSV、在线演示文稿、完整 PDF 编辑或纯文字润色；分别交给 word、excel、txt、spreadsheet、对应连接器、PDF 或 writing skill。",
+      "dir": "powerpoint"
+    },
+    {
+      "id": "project-verification",
+      "name": "project-verification",
+      "description": "为具体项目生成并维护项目专属验证 skill 与项目验证地图，记录真实入口、操作和可观察结果。用于：反复维护的 Web、CLI、桌面或 API 需要可复用的操作路径。不用于：解释代码如何工作或寻找源码入口（how 的事）；建立本地运行通道（local-env 的事）；诊断产品回归（debug 的事）；极端界面数据（break-ui 的事）；把验收状态写入 issue（implement 的事）。",
+      "dir": "project-verification"
+    },
+    {
+      "id": "prototype",
+      "name": "prototype",
+      "description": "原型（界面/交互）的创建与效果对齐纪律：说不清要什么时造结构迥异的变体对比挑选，反馈模糊时先锚定为可观测断言再动手。用于：产品界面原型 HTML 的创建与修改、界面方向探索、视觉效果/交互反馈调整（\"效果不对\"\"左侧不对\"类）、界面区域命名。不用于：根据代码生成解释性 HTML（how skill 的事）、行为需求定义（spec skill 的事）、生产代码纪律（tdd skill 的事，原型本就豁免）。",
+      "dir": "prototype"
+    },
+    {
+      "id": "prototype-anchor-sync",
+      "name": "prototype-anchor-sync",
+      "description": "Use the prototype-anchor-sync skill when the user explicitly requests its workflow.",
+      "dir": "prototype-anchor-sync"
+    },
+    {
+      "id": "research",
+      "name": "research",
+      "description": "针对问题、官方文档、规范或 API 事实做可复核的资料研究，并把结论与一手来源写入仓库。用于：用户要求查资料、核对当前文档、调查版本行为、收集 API 事实或委托只读资料调查。不用于：定义需求、选择技术方案或直接实现能力，那是 spec、design 或 implement skill 的事。",
+      "dir": "research"
+    },
+    {
+      "id": "session-forensics",
+      "name": "session-forensics",
+      "description": "从 agent 历史会话库取证并提炼经验：回放会话、聚合统计、对账声称与一手记录，产出返工事件、模式候选、观察名单条目或拒绝清单。用于：复盘或审视一段时间的历史会话、调查某个会话中 agent 的行为、从历史会话提炼可复用模式、核实某会话的完成声称。不用于：创建或修改 skill 正文（skill-creator 的事）、外部资料调研（research 的事）、会话间任务交接（handoff 的事）、产品 bug 诊断与修复（debug 的事）。",
+      "dir": "session-forensics"
+    },
+    {
+      "id": "skill-creator",
+      "name": "skill-creator",
+      "description": "创建、修改与审查 agent skill 的纪律与流程。当用户要起草新 skill 或 SKILL.md、优化精简已有 skill，或反馈 skill 表现退化/行为异常（触发不准、过度确认、上下文臃肿、skill 间冲突）时使用；也用于 skill 测试集建设。不用于执行 skill 所服务的业务任务本身；不用于普通文档写作润色（writing skill 的事）。",
+      "dir": "skill-creator"
+    },
+    {
+      "id": "skill-to-flow",
+      "name": "skill-to-flow",
+      "description": "将已有 Agent Skill 转换为可在外部流程引擎执行的流程：按流程A规范（Mermaid 拓扑 + YAML 契约块）编排或校验 skill，经决策环（批量语义、模型/人工/返工落地策略）编译为 EY TIMP ETL 的 BPMN JSON（elBpmn）与状态表 DDL，并驱动两种绑定的无损验证。适用于已流程化 skill 的 ETL 化（参考案例：generate-rd-deduction-report-gen）。不用于创作或评审 skill 内容本身，那是 skill-creator 的事；不直接修改 ETL 平台代码。",
+      "dir": "skill-to-flow"
+    },
+    {
+      "id": "spec",
+      "name": "spec",
+      "description": "起草与维护按限界上下文组织的 spec：把能力的目标（what/why）与验收标准固化为文档，并让文档断言持续为真。用于：任意系统能力变更（加/改/删功能、接口、字段、配置、校验、行为）都要先使用本 skill——能力目标与验收标准未落纸面（会话中给出完整需求不等于已落纸面）同样归管辖；是否豁免由正文判定，加载前不自判（含编辑 docs/contexts/ 下 *-spec.md 既有断言的动作）；检测到老标准 spec 文档（布局/结构不符现行约定）时提议迁移。不用于 bug 报告与诊断（debug 的入口，诊断到期望层由 debug 路由过来）、原型界面与交互（prototype 的事）、技术方案设计（design 的事）、spec 就绪后的实现与验证（implement/tdd 的事）。",
+      "dir": "spec"
+    },
+    {
+      "id": "spreadsheet",
+      "name": "spreadsheet",
+      "description": "处理本地 CSV/TSV 和用户明确指定为分隔表格的文件，并把结果保持为 CSV/TSV 或其他分隔文件：读取、解析、分析、清洗、合并、拆分、转换、生成与验证。需要编码、BOM、分隔符、表头、引号、行宽、类型、缺失、重复、排序、连接、聚合或前导零保护时使用。任何 XLSX/XLTX 工作簿输出（包括 CSV/TSV 转工作簿）交给 excel；普通 `.txt` 按 txt skill 处理，除非用户明确要求把它解析为表格。不用于 DOC/DOCX、PPT/PPTX、TXT 纯文本、在线表格或纯文字润色；分别交给 word、powerpoint、txt、对应连接器或 writing skill。",
+      "dir": "spreadsheet"
+    },
+    {
+      "id": "tdd",
+      "name": "tdd",
+      "description": "生产代码的测试先行纪律。用于：所有生产代码变更——写或改生产代码的动作发生时（实现新功能、修复 bug、重构等，无论从哪个流程环节进入；自认已会测试先行同样加载，凭记忆自绘纪律不算数）；是否免新失败测试由正文判定，加载前不自判。不用于：编码请求的入口判管辖（spec 的事；bug 请求入口归 debug）、验收闭环与执行状态落盘（implement 的事）、完成后的变更评审（code-review 的事）；原型、配置文件、生成代码、测试代码本身不触发。",
+      "dir": "tdd"
+    },
+    {
+      "id": "teach",
+      "name": "teach",
+      "description": "Use the teach skill when the user explicitly requests its workflow.",
+      "dir": "teach"
+    },
+    {
+      "id": "txt",
+      "name": "txt",
+      "description": "处理本地 TXT 纯文本：读取、提取、分析、创建、编辑、编码转换、换行转换与验证。需要保留字节编码、BOM、行顺序、空白或换行类型时使用。不用于 CSV/TSV、用户明确要求的表格解析、DOC/DOCX、XLS/XLSX、PPT/PPTX、Markdown 内容写作、在线文件或完整 PDF 编辑；分别交给 spreadsheet、word、excel、powerpoint、writing、对应连接器或 PDF skill。普通 tab 分隔 `.txt` 仍按 TXT 处理，除非用户明确要求表格解析。",
+      "dir": "txt"
+    },
+    {
+      "id": "visual-pr",
+      "name": "visual-pr",
+      "description": "按真实 diff 说明变更前后的结构、契约、调用路径和数据流。用于：已有 diff 或 PR，需要一张变化结构图。不用于：没有 diff 的调用链解释（how 的事）；独立裁决正确性（code-review 的事）；提交、推送或合并（implement 的事）。",
+      "dir": "visual-pr"
+    },
+    {
+      "id": "wayfinder",
+      "name": "wayfinder",
+      "description": "为尚未形成就绪 spec 的跨会话探索保存决策地图，记录目标、出界、未决问题、依赖和已定事项的权威链接。用于：同一方向多次会话仍未收敛，需要恢复未决问题。不用于：当前会话能完成的短讨论（spec 讨论出口的事）；可执行工作队列（issues 的事）；事实调查（research 的事）；选项裁定（interview 的事）。",
+      "dir": "wayfinder"
+    },
+    {
+      "id": "wizard",
+      "name": "wizard",
+      "description": "为必须由人完成的浏览器、账户、凭据、CI secret、一次性迁移或切换流程生成可重复的交互式 shell wizard。用于：用户需要逐步打开页面、复制值、写入 .env 或设置 CI secret 时。不用于：agent 可以直接执行的本地环境启动（local-env）或 bug 修复（debug）。",
+      "dir": "wizard"
+    },
+    {
+      "id": "word",
+      "name": "word",
+      "description": "处理本地 Word 文档和模板：读取、提取、分析、创建、编辑、转换与验证 DOC/DOCX/DOTX。需要保留段落、表格、样式、图片、页眉页脚、页码、目录、脚注、公式、批注、修订或复杂模板时使用。不用于 XLS/XLSX/XLSM、PPT/PPTX、TXT、CSV/TSV、在线文档资源、完整 PDF 编辑或纯文字润色；分别交给 excel、powerpoint、txt、spreadsheet、对应连接器、PDF 或 writing skill。",
+      "dir": "word"
+    },
+    {
+      "id": "word-template",
+      "name": "word-template",
+      "description": "按显式模板协议、结构化目标投影、证据台账和资产清单确定性填充本地 DOCX/DOTX 模板，适用于条件块、字段默认值和图片/附件插槽。自然语言标记只作辅助入口；不用于 Markdown、通用 Word 编辑、开放式写作或业务规则制定，分别交给 word、writing 或领域 skill。",
+      "dir": "word-template"
+    },
+    {
+      "id": "writing",
+      "name": "writing",
+      "description": "作为常驻表达层，用 ASD-STE100 的受控表达原则处理面向人阅读的文档、消息及其他文本产物，包括生成、改写和审阅（如 spec/design 等）；默认与负责内容的 skill 叠加，保留事实、降低歧义、统一术语与结构。不替负责该内容的 skill 裁决需求、验收、技术方案、术语或文件治理；语义确定后协作改写表达。纯代码、配置和机器数据不触发。",
+      "dir": "writing"
+    }
+  ]
+}

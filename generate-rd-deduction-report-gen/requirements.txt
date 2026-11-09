@@ -1,0 +1,8 @@
+Jinja2
+Pillow
+docxtpl
+olefile
+openpyxl
+pdfminer.six
+python-docx
+xlrd

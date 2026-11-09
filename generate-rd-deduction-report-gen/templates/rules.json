@@ -1,0 +1,211 @@
+{
+  "spec": "rd-document-validation-rules",
+  "version": 1,
+  "description": "研发加计资料生成的可执行形式规则（唯一来源）。本文件由 scripts/rule_engine.py 解释执行；不同业务替换本文件即可更换规则，引擎词汇表固定。语义类规则（研发实质判断、冲突取舍、政策适用、禁写内容识别等）不在本文件内，见 references/rules.md，由模型执行。",
+  "placeholder": {
+    "pattern": "H\\d{2,}",
+    "description": "占位符编号格式：字母 H 加两位及以上数字，如 H01、H12。"
+  },
+  "stages": {
+    "input": [
+      {
+        "name": "必填字段",
+        "description": "事实底稿 JSON 的顶层必填字段；未知值必须填 Hxx 占位符，不得留空。",
+        "check": "required",
+        "fields": [
+          "project_name",
+          "company_name",
+          "period",
+          "leader",
+          "decision_maker",
+          "decision_date",
+          "plan_date",
+          "outcome_date",
+          "background",
+          "objective",
+          "difficulties",
+          "uncertainties",
+          "company_advantages",
+          "personnel_advantages",
+          "purpose",
+          "technical_indicators",
+          "actual_results",
+          "innovation_points",
+          "social_benefits",
+          "economic_benefits",
+          "application_results",
+          "schedule",
+          "personnel",
+          "budget_items",
+          "intellectual_property"
+        ],
+        "message": "JSON must contain {field}; use an Hxx placeholder when unknown"
+      },
+      {
+        "name": "技术主线数量",
+        "description": "项目计划书恰好包含三条技术主线，不多不少。",
+        "check": "list_length",
+        "field": "topics",
+        "equals": 3,
+        "message": "topics must be a list of exactly three objects"
+      }
+    ],
+    "model": [
+      {
+        "name": "技术主线必填项",
+        "description": "每条技术主线必须包含六项方案内容：课题标题、现有问题、研究目标、研究内容/试验思路、变量或参数、验证方式、预期效果。在归一化投影上执行，字段别名已由数据模型解析。",
+        "check": "item_required",
+        "field": "topics",
+        "subfields": [
+          "title",
+          "existing_problem",
+          "research_objective",
+          "research_content",
+          "variables",
+          "verification",
+          "expected_effect"
+        ],
+        "message": "topics[{index}] must contain {subfield}; use an Hxx placeholder when unknown"
+      },
+      {
+        "name": "实际研发起止成对",
+        "description": "actual_start_date 与 actual_end_date 必须同时提供或同时缺失。",
+        "check": "paired",
+        "fields": ["actual_start_date", "actual_end_date"],
+        "message": "actual_start_date and actual_end_date must be provided together"
+      },
+      {
+        "name": "时间顺序",
+        "description": "时间逻辑必须满足：立项决议日 ≤ 实际研发开始日 ≤ 项目计划书编制日 ≤ 实际研发结束日 ≤ 成果效用说明日；允许同日。含 Hxx 的日期不参与比较，日期不全时由补充清单兜底（语义处理见 references/rules.md §2）。",
+        "check": "date_order",
+        "fields": [
+          "decision_date",
+          "actual_start_date",
+          "plan_date",
+          "actual_end_date",
+          "outcome_date"
+        ],
+        "formats": ["%Y-%m-%d", "%Y/%m/%d", "%Y.%m.%d", "%Y年%m月%d日"],
+        "message": "Date order must be decision_date <= actual_start_date <= plan_date <= actual_end_date <= outcome_date"
+      },
+      {
+        "name": "Hxx 编号格式",
+        "description": "正文占位（word 通道）补充项编号必须匹配 H+两位及以上数字。",
+        "check": "item_regex",
+        "field": "supplements",
+        "channel_field": "channel",
+        "channel_value": "word",
+        "item_field": "id",
+        "pattern": "^H\\d{2,}$",
+        "message": "Each word-channel supplement id must use Hxx format"
+      },
+      {
+        "name": "Hxx 编号唯一",
+        "description": "不同待补事项不得共用编号。",
+        "check": "item_unique",
+        "field": "supplements",
+        "item_field": "id",
+        "message": "Each supplement id must be unique"
+      },
+      {
+        "name": "Hxx 编号连续",
+        "description": "编号从 H01 起连续分配，并遵循正文首次出现顺序；同一次渲染内不得跳号。",
+        "check": "item_sequential",
+        "field": "supplements",
+        "channel_field": "channel",
+        "channel_value": "word",
+        "item_field": "id",
+        "prefix": "H",
+        "start": 1,
+        "message": "supplement ids must be continuous from H01 and follow first appearance order"
+      },
+      {
+        "name": "补充项页码格式",
+        "description": "word 通道页码必须来自最终渲染版 Word，支持单页、范围和多项（如 1、2-5、1、3 页）；list 通道不引用正文页码。",
+        "check": "item_pages",
+        "field": "supplements",
+        "channel_field": "channel",
+        "channel_value": "word",
+        "item_field": "pages",
+        "message": "Each supplement pages must contain valid Word page number(s) after render QA"
+      },
+      {
+        "name": "清单留痕项编号格式",
+        "description": "仅清单留痕（list 通道）使用 L+两位及以上数字编号，不分配正文 Hxx。",
+        "check": "item_regex",
+        "field": "supplements",
+        "channel_field": "channel",
+        "channel_value": "list",
+        "item_field": "id",
+        "pattern": "^L\\d{2,}$",
+        "message": "Each list-channel supplement id must use Lxx format"
+      },
+      {
+        "name": "清单留痕项编号连续",
+        "description": "list 通道编号从 L01 起连续分配，并保持清单排列顺序。",
+        "check": "item_sequential",
+        "field": "supplements",
+        "channel_field": "channel",
+        "channel_value": "list",
+        "item_field": "id",
+        "prefix": "L",
+        "start": 1,
+        "message": "list-channel supplement ids must be continuous from L01"
+      },
+      {
+        "name": "图片路径存在",
+        "description": "技术主线配图和成果图片引用的文件路径必须真实存在。",
+        "check": "paths_exist",
+        "paths": ["topics[].images[].path", "result_images[].path"],
+        "message": "Image does not exist: {path}"
+      }
+    ]
+  },
+  "fixed_elements": {
+    "description": "统一研发活动要素的固定要素枚举（业务相关固定形状），工作表始终包含这些行，输入值按名称合并。",
+    "items": [
+      "项目身份",
+      "背景与必要性",
+      "总体目标",
+      "技术指标",
+      "研究内容",
+      "技术路线",
+      "创新点",
+      "项目难点",
+      "技术不确定性",
+      "现有研发条件",
+      "人员与分工",
+      "周期与里程碑",
+      "预算与费用构成",
+      "预期成果",
+      "实际成果",
+      "知识产权",
+      "第三方验证",
+      "经济效益",
+      "社会效益",
+      "应用情况"
+    ]
+  },
+  "fixed_consistency_items": {
+    "description": "一致性核对的固定核对项枚举（业务相关固定形状）。",
+    "items": [
+      "项目名称",
+      "承担单位",
+      "负责人",
+      "周期",
+      "预算总额",
+      "人员",
+      "目标",
+      "指标",
+      "成果",
+      "知识产权/标准/报告编号"
+    ]
+  },
+  "output_invariants": {
+    "description": "渲染产物的跨文件形式一致性，由 scripts/generate_rd_docs.py 的 verify_outputs 在渲染后执行，占位符模式取自本文件 placeholder.pattern。",
+    "checks": [
+      "三份 DOCX 与两个 XLSX 中的 Hxx 集合必须与 word 通道补充项集合完全一致；list 通道只投射到 XLSX",
+      "Hxx 在三份 DOCX 中的首次出现顺序必须与 word 通道补充项的排列顺序一致"
+    ]
+  }
+}

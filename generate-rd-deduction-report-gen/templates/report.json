@@ -1,0 +1,40 @@
+{
+  "documents": [
+    {
+      "template": "01-立项决议-template.docx",
+      "output": "01-立项决议.docx",
+      "date_field": "decision_date"
+    },
+    {
+      "template": "02-项目计划书-template.docx",
+      "output": "02-项目计划书.docx",
+      "date_field": "plan_date"
+    },
+    {
+      "template": "03-成果效用说明-template.docx",
+      "output": "03-成果效用说明.docx",
+      "date_field": "outcome_date"
+    }
+  ],
+  "workbooks": [
+    {
+      "template": "00-研发加计工作底稿-template.xlsx",
+      "output": "00-研发加计工作底稿.xlsx",
+      "sheets": {
+        "资料清单": "source_manifest",
+        "统一研发活动要素": "unified_element_rows",
+        "事实与来源索引": "facts",
+        "文档投射矩阵": "projection_matrix",
+        "一致性核对": "consistency_rows",
+        "待补信息": "word_supplements"
+      }
+    },
+    {
+      "template": "04-补充信息清单-template.xlsx",
+      "output": "04-补充信息清单.xlsx",
+      "sheets": {
+        "补充信息清单": "supplements"
+      }
+    }
+  ]
+}
