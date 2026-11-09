@@ -246,5 +246,9 @@
       "description": "作为常驻表达层，用 ASD-STE100 的受控表达原则处理面向人阅读的文档、消息及其他文本产物，包括生成、改写和审阅（如 spec/design 等）；默认与负责内容的 skill 叠加，保留事实、降低歧义、统一术语与结构。不替负责该内容的 skill 裁决需求、验收、技术方案、术语或文件治理；语义确定后协作改写表达。纯代码、配置和机器数据不触发。",
       "dir": "writing"
     }
-  ]
+  ],
+  "instructions": {
+    "path": "instructions/AGENTS.md",
+    "sha256": "1ed0bf5ffd4e2e50e6048616e2fba3b3b97b72c173434dee18a5d764759f8a89"
+  }
 }
