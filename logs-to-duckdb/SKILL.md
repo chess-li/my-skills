@@ -7,6 +7,8 @@ description: 将文本应用日志（log4j2/logback 等，.log/.log.gz 轮转文
 
 ## 工作流（按顺序执行）
 
+原始日志只读。数据库与需续写的分析状态默认放 `<主工作区>/.agent-artifacts/<任务>/<唯一运行标识>/`，Git 用登记的主 checkout，非 Git 用项目目录；首次创建前在该工作区 `.gitignore` 加入 `/.agent-artifacts/` 并用 `git check-ignore` 核验，非 Git 跳过。以下脚本相对本 skill 定位，输入与输出传绝对路径；增量续导显式指定既有数据库，新分析另建运行目录。仅可复算的副本放本会话临时目录，清理只限本次创建的专属目录，不删除历史数据库或日志原件。
+
 1. **分析日志格式（必做，勿跳过）**：`python3 scripts/detect_log_format.py --dir <日志目录>`
    - 不同应用/环境的日志行格式不同（时间戳形态、level 位置、线程表示、有无 host/tenant），写死的正则会静默漏行；
    - 输出各内置 profile 的匹配率与推荐 profile；匹配率不足时给出未命中样例行，据此写自定义正则（见步骤 3）。

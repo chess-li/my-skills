@@ -24,6 +24,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 try:
@@ -45,17 +46,25 @@ def _page_key(path: Path) -> tuple[int, str]:
     return (int(match.group(1)), path.name) if match else (10**9, path.name)
 
 
+def _unique_backup(destination: Path) -> Path:
+    """Choose a sibling backup path without touching an existing sibling."""
+
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    serial = 0
+    while True:
+        suffix = f".previous-{stamp}" if serial == 0 else f".previous-{stamp}-{serial}"
+        candidate = destination.with_name(f".{destination.name}{suffix}")
+        if not candidate.exists():
+            return candidate
+        serial += 1
+
+
 def _replace_directory(staged: Path, destination: Path) -> None:
     """Atomically publish ``staged`` while retaining a rollback path."""
 
     backup: Path | None = None
     if destination.exists():
-        backup = destination.with_name(f".{destination.name}.previous")
-        if backup.exists():
-            if backup.is_dir():
-                shutil.rmtree(backup)
-            else:
-                backup.unlink()
+        backup = _unique_backup(destination)
         os.replace(destination, backup)
     try:
         os.replace(staged, destination)

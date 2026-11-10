@@ -74,6 +74,16 @@ def main():
 
     try:
         slide_info = get_slide_info(input_path)
+        existing = next(
+            (
+                path for path in _grid_paths(len(slide_info), cols, output_path)
+                if path.exists()
+            ),
+            None,
+        )
+        if existing is not None:
+            print(f"Error: output already exists: {existing}", file=sys.stderr)
+            sys.exit(2)
 
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
@@ -215,6 +225,17 @@ def convert_to_images(pptx_path: Path, temp_dir: Path) -> list[Path]:
     return sorted(temp_dir.glob("slide-*.jpg"))
 
 
+def _grid_paths(slide_count: int, cols: int, output_path: Path) -> list[Path]:
+    max_per_grid = cols * (cols + 1)
+    if slide_count <= max_per_grid:
+        return [output_path]
+    chunk_count = (slide_count + max_per_grid - 1) // max_per_grid
+    return [
+        output_path.with_name(f"{output_path.stem}-{index}{output_path.suffix}")
+        for index in range(1, chunk_count + 1)
+    ]
+
+
 def create_grids(
     slides: list[tuple[Path, str]],
     cols: int,
@@ -222,23 +243,19 @@ def create_grids(
     output_path: Path,
 ) -> list[str]:
     max_per_grid = cols * (cols + 1)
-    grid_files = []
+    planned = _grid_paths(len(slides), cols, output_path)
+    existing = next((path for path in planned if path.exists()), None)
+    if existing is not None:
+        raise FileExistsError(f"output already exists: {existing}")
 
+    grid_files = []
     for chunk_idx, start_idx in enumerate(range(0, len(slides), max_per_grid)):
         end_idx = min(start_idx + max_per_grid, len(slides))
-        chunk_slides = slides[start_idx:end_idx]
-
-        grid = create_grid(chunk_slides, cols, width)
-
-        if len(slides) <= max_per_grid:
-            grid_filename = output_path
-        else:
-            stem = output_path.stem
-            suffix = output_path.suffix
-            grid_filename = output_path.parent / f"{stem}-{chunk_idx + 1}{suffix}"
-
+        grid_filename = planned[chunk_idx]
         grid_filename.parent.mkdir(parents=True, exist_ok=True)
-        grid.save(str(grid_filename), quality=JPEG_QUALITY)
+        create_grid(slides[start_idx:end_idx], cols, width).save(
+            str(grid_filename), quality=JPEG_QUALITY,
+        )
         grid_files.append(str(grid_filename))
 
     return grid_files

@@ -921,6 +921,8 @@ def preflight(
     evidence: Optional[Path | str] = None,
     assets: Optional[Path | str] = None,
     report: Optional[Path | str] = None,
+    *,
+    protected: Optional[Iterable[Path | str]] = None,
 ) -> PreflightResult:
     template_path = Path(template).expanduser().resolve()
     projection_path = Path(projection).expanduser().resolve()
@@ -1019,6 +1021,21 @@ def preflight(
     )
     if report:
         report_path = Path(report).expanduser().resolve()
+        protected_inputs = {
+            path for path in (template_path, projection_path, evidence_path, assets_path)
+            if path is not None
+        }
+        for extra in protected or ():
+            protected_inputs.add(Path(extra).expanduser().resolve())
+        if report_path in protected_inputs:
+            result.status = "blocked"
+            result.errors.append(PreflightError(
+                "OUTPUT_ALIASES_INPUT", str(report_path),
+                "报告路径与模板、投影、证据台账、资产清单或输出文件是同一文件",
+                "为报告选择独立路径",
+                "停止预检，不写入任何输入或输出文件",
+            ))
+            return result
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(
             json.dumps(result.as_dict(), ensure_ascii=False, indent=2) + "\n",
@@ -1225,7 +1242,9 @@ def render(
     output_path = Path(output).expanduser().resolve()
     report_path = Path(report).expanduser().resolve() if report else None
     target_attachment_dir = output_path.parent / f"{output_path.stem}.attachments"
-    result = preflight(template, projection, evidence, assets, report)
+    result = preflight(
+        template, projection, evidence, assets, report, protected=[output],
+    )
     if result.status == "blocked":
         return result
     if output_path.exists() or target_attachment_dir.exists():
@@ -1455,6 +1474,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         evidence=args.evidence,
         assets=args.assets,
         report=args.report,
+        protected=[args.output] if args.command == "render" else None,
     )
     if args.command == "preflight":
         print(json.dumps(result.as_dict(), ensure_ascii=False, indent=2))

@@ -14,7 +14,7 @@
 
 | 能力 | 本地工具 | 调用入口 | 分发提示 |
 | --- | --- | --- | --- |
-| DOC/DOCX/DOTX → PDF | LibreOffice | `scripts/render_docx.py` | LibreOffice 以 MPL 2.0 发布，提供 Windows、macOS 和 Linux 安装包。 |
+| DOC/DOCX/DOTX → PDF | LibreOffice | `scripts/render_docx.py` | 输出使用独立新目录；`--force` 只替换该目录，不删除同名兄弟目录或历史备份。LibreOffice 以 MPL 2.0 发布，提供 Windows、macOS 和 Linux 安装包。 |
 | PDF → 逐页 PNG | Poppler `pdftoppm` | `scripts/render_docx.py` | Poppler 是开源 PDF 渲染库；只读取本地 PDF。 |
 | Markdown → DOCX 与引用 | Pandoc + citeproc | `scripts/md2docx_citeproc.py` | Pandoc 支持 BibTeX/BibLaTeX、CSL JSON/YAML 和 RIS；引用键使用 `[@key]`。 |
 | DOCX 创建 | `python-docx` 或 bundled `docx` npm 包 | `scripts/docx_tool.py`、`scripts/docx.py` | Python 包需要时使用 `pip3 install python-docx`；Node 包由调用方项目或 skill 的 bundled 运行时提供。 |

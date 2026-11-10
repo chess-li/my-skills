@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import uuid
 import warnings
 
 # UTF-8 stdio guard — win32 pipes default to the ANSI codepage (cp1252/cp936)
@@ -267,7 +268,7 @@ def cmd_recalc(args):
             # different drives and it dies with WinError 17. Stage the copy
             # next to the target and replace atomically: a mid-copy failure
             # must never leave the user's original file truncated.
-            recalc_tmp = filepath + '.recalc-part'
+            recalc_tmp = f'{filepath}.recalc-part-{os.getpid()}-{uuid.uuid4().hex}'
             shutil.copyfile(converted[0], recalc_tmp)
             os.replace(recalc_tmp, filepath)
             lo_warnings = []
@@ -343,7 +344,7 @@ def _set_calc_mode_auto(filepath):
             return None
         return new
 
-    tmp = filepath + '.calcmode-part'
+    tmp = f'{filepath}.calcmode-part-{os.getpid()}-{uuid.uuid4().hex}'
     try:
         with zipfile.ZipFile(filepath, 'r') as zin:
             infos = zin.infolist()

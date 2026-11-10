@@ -53,6 +53,7 @@ PROJECTION_INVALID
 EVIDENCE_LEDGER_UNREADABLE
 ASSET_MANIFEST_UNREADABLE
 OUTPUT_EXISTS
+OUTPUT_ALIASES_INPUT
 FIELD_NOT_BOUND
 FIELD_REQUIRED_MISSING
 FIELD_STATE_UNUSABLE
@@ -91,5 +92,5 @@ RENDER_VERIFY_FAILED
 
 ## 事务性行为
 
-预检在写出目标文件之前完成。渲染和验证使用临时路径；验证失败时删除或隔离临时目标，不把它登记为交付物。报告、日志和源哈希保留，便于修复后重跑。
+预检在写出目标文件之前完成。报告路径不得与模板、投影、证据台账、资产清单或 DOCX 输出同路径；冲突时返回 `OUTPUT_ALIASES_INPUT`，不写入任何输入或输出。渲染和验证使用临时路径；验证失败时删除或隔离临时目标，不把它登记为交付物。报告、日志和源哈希保留，便于修复后重跑。
 

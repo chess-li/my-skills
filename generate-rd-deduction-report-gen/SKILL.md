@@ -10,11 +10,11 @@ description: 根据企业原始研发资料，按流程A规范（Mermaid 拓扑 
 ## 发布包与资源路径
 
 - 发布时保留本目录的 `SKILL.md`、`references/`、`scripts/`、`templates/` 和 `requirements.txt`。
-- 本 skill 的资源路径均相对本目录（即本文件所在目录）。执行脚本前，以本目录作为工作目录。
+- `scripts/`、`templates/`、`references/` 相对本 skill 目录，只作资源读取；`facts.json`、`work/` 与验证材料相对本次运行目录。运行目录默认 `<主工作区>/.agent-artifacts/<任务>/<唯一运行标识>/`，Git 用登记的主 checkout，非 Git 用项目目录。首次创建前在该工作区 `.gitignore` 加入 `/.agent-artifacts/` 并用 `git check-ignore` 核验，非 Git 跳过。调用脚本时将这些路径展开为绝对路径，不向 skill 安装目录写运行产物。
 - 运行环境为 Python 3.10 或更新版本；在隔离环境中执行 `pip3 install -r requirements.txt` 安装 Python 依赖。
 - 语义纪律见 `references/workflow.md`、`references/rules.md`、`references/document-templates.md`、`references/workbook-template.md` 和 `references/json-input.md`；形式规则以 `templates/rules.json` 为准。
 - 脚本与模板随本 skill 一起发布。Python 依赖列在 `requirements.txt`；`--ocr` 需要额外安装 Tesseract 及 `chi_sim`、`eng` 语言数据，`--render-dir` 需要 LibreOffice。
-- 产物清单与文件名结构不变：`output/研发加计/<项目名称>/` 下 00 底稿、01–03 三份 DOCX、04 补充清单。
+- 产物清单与文件名结构不变：`output/研发加计/<项目名称>/` 下 00 底稿、01–03 三份 DOCX、04 补充清单；`output/` 映射到用户指定的正式交付目录。`facts.json`、`work/state.jsonl`、对应表裁定与图片证据需跨轮次保留，不随重跑清理。仅可复算副本使用本会话临时目录，清理不越出本次创建的专属目录。
 - 本 skill 描述的是**独立 Agent 执行**语义（核验或冲突处理后可回到底稿重跑）。转换为 EY TIMP ETL 时，返工回边按所选编译策略执行；采用 `--rework-as=fail_edge` 时，返工状态落库后**终止链路**，需人工修正后重触发。
 
 ## 流程A（编排唯一信源）

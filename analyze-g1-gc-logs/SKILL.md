@@ -7,6 +7,8 @@ description: 分析 JVM G1 GC 日志（gc.log / gc.log.N 轮转文件）：解�
 
 ## 工作流（按顺序执行）
 
+先分开输入与输出：原始日志只读；CSV 与 DuckDB 默认保存在 `<主工作区>/.agent-artifacts/<任务>/<唯一运行标识>/`，不写入日志源目录或 skill 安装目录。Git 项目用登记的主 checkout，首次创建前在其 `.gitignore` 加入 `/.agent-artifacts/` 并用 `git check-ignore` 核验；非 Git 项目用项目目录，不创建 `.gitignore`。以下脚本相对本 skill 定位，输入与输出均传绝对路径；可复算的解压副本才放本会话临时目录，清理只限本次创建的专属目录。数据库与冻结输入不随分析重跑自动删除。
+
 1. **确认日志形态**：`ls` 日志目录，确认是 G1 GC 日志（行形如 `[2026-10-29T17:32:02.998+0800][89494.901s][info ][gc          ] GC(15550) ...`，tag 含 `gc,phases`/`gc,heap`/`safepoint` 等）。若tag为 `gc` 且出现 `Pause Young`/`Concurrent Mark Cycle` 即 G1。其他收集器（CMS/ZGC/Shenandoah）格式不同，本 skill 的正则不匹配，需先告知用户。
 2. **解析**：`python3 scripts/parse_gc_log.py <日志目录> [输出.csv]` — 自动按轮转时间顺序（gc.log.N 数字越大越旧）合并所有文件。
 3. **抽样检查 CSV**：CSV 只是数据清洗中间产物，用 `head` 或 pandas 抽查几行确认解析正确（event/cause 拆分、MB 换算、耗时数量级），不要拿 CSV 做分析。

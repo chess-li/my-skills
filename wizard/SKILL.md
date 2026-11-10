@@ -23,7 +23,7 @@ description: 为必须由人完成的浏览器、账户、凭据、CI secret、�
 
 ### 3. 生成向导
 
-复制 [template.sh](template.sh) 到临时目录或用户指定的 `scripts/` 路径。只修改 `STAGES` 标记之后的区域：每个人工阶段写一个 `stage`，设置正确的 `TOTAL_STAGES`，使用模板提供的 `open_url`、`ask`、`ask_secret`、`write_env`、`set_secret`、`set_var`、`pause` 和 `confirm`。
+复制 [template.sh](template.sh) 到 `<主工作区>/.agent-artifacts/<任务>/<唯一运行标识>/` 或用户指定的 `scripts/` 路径，供人稍后运行和暂停续写，不把交付给人的脚本只留在系统临时目录。Git 用登记的主 checkout，非 Git 用项目目录；首次创建 `.agent-artifacts/` 前在该工作区 `.gitignore` 加入 `/.agent-artifacts/` 并用 `git check-ignore` 核验，非 Git 跳过。只修改 `STAGES` 标记之后的区域：每个人工阶段写一个 `stage`，设置正确的 `TOTAL_STAGES`，使用模板提供的 `open_url`、`ask`、`ask_secret`、`write_env`、`set_secret`、`set_var`、`pause` 和 `confirm`。
 
 - 打开 URL 后再要求粘贴值
 - secret 使用隐藏输入
@@ -32,7 +32,7 @@ description: 为必须由人完成的浏览器、账户、凭据、CI secret、�
 - 其他不可逆动作前使用 `confirm`
 - 一个阶段只做一个聚焦任务，避免用户需要滚屏找当前动作
 
-不要修改模板标记之前的共享库。临时向导默认不提交；用户要重复使用时才保存在仓库并接入 README。
+不要修改模板标记之前的共享库。运行目录中的向导默认不提交，也不保存 secret 值；用户要作为项目脚本维护时才保存在仓库并接入 README。
 
 ### 4. 静态验证
 
@@ -40,7 +40,7 @@ description: 为必须由人完成的浏览器、账户、凭据、CI secret、�
 
 ### 5. 交付说明
 
-说明脚本路径、运行命令、会写入的文件、跳过的人工动作和重新运行方式。可重复流程再补 README 链接；一次性流程完成后删除临时脚本。
+说明脚本路径、运行命令、会写入的文件、跳过的人工动作和重新运行方式。可重复流程再补 README 链接；流程完成不自动删除保留的向导，删除须用户明确授权。静态验证用的一次性夹具放本会话独立临时目录，只清理本次创建的该目录。
 
 ## 默认授权
 

@@ -19,7 +19,7 @@ description: 为具体项目生成并维护项目专属验证 skill 与项目验
    只记录缺少的运行条件。不写已运行证据，不改写产品预期。通道缺失时交 local-env，不在本 skill 里另起服务。
 
 4. **先走通一个功能**
-   环境可用时，实际执行其中一个功能，把可复现步骤留在地图。命令结果用 implement skill 目录的脚本记录：`python3 "<implement skill 目录>/scripts/run_evidence.py" run --output <证据文件> --criterion "<功能名>" -- <argv>`。退出码 0 不表示产品预期已满足。
+   环境可用时，实际执行其中一个功能，把可复现步骤留在地图。命令结果用 implement skill 目录的脚本记录：`python3 "<implement skill 目录>/scripts/run_evidence.py" run --root <被验证项目> --output <证据文件绝对路径> --criterion "<功能名>" -- <argv>`。证据放 `<主工作区>/.agent-artifacts/<任务>/<唯一运行标识>/`，Git 用登记的主 checkout，非 Git 用项目目录；首次创建前在该工作区 `.gitignore` 加 `/.agent-artifacts/` 并用 `git check-ignore` 核验，非 Git 跳过。地图只引用证据，不复制原始输出；清理槽位只覆盖本次创建的一次性数据，不删除共享父目录与历史证据。退出码 0 不表示产品预期已满足。
 
 5. **维护时分开三种结论**
    - 文档漂移：地图与当前入口或观察方式不一致

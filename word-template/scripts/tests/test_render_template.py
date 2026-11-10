@@ -2,6 +2,7 @@ import base64
 import hashlib
 import json
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -1066,6 +1067,95 @@ class RenderTemplateTest(unittest.TestCase):
         report_value = json.loads(report.read_text(encoding="utf-8"))
         self.assertEqual(report_value["visual_check"], "passed")
         self.assertTrue(list(visual_output.glob("page-*.png")))
+
+    def test_preflight_refuses_report_aliasing_input(self):
+        template = self.write_docx("固定文本")
+        projection = self.write_json("projection.json", {"target_id": "audit-fixture"})
+        before = projection.read_bytes()
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_ROOT / "render_template.py"),
+                "preflight",
+                "--template",
+                str(template),
+                "--projection",
+                str(projection),
+                "--report",
+                str(projection),
+            ],
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(projection.read_bytes(), before)
+        self.assertIn("OUTPUT_ALIASES_INPUT", result.stdout)
+
+    def test_render_refuses_report_aliasing_existing_output(self):
+        template = self.write_docx("固定文本")
+        projection = self.write_json("projection.json", {"target_id": "audit-fixture"})
+        output = self.root / "result.docx"
+        output.write_bytes(b"existing-output-not-a-report")
+        before_output = output.read_bytes()
+        before_projection = projection.read_bytes()
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_ROOT / "render_template.py"),
+                "render",
+                "--template",
+                str(template),
+                "--projection",
+                str(projection),
+                "--output",
+                str(output),
+                "--report",
+                str(output),
+            ],
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(output.read_bytes(), before_output)
+        self.assertEqual(projection.read_bytes(), before_projection)
+        self.assertIn("OUTPUT_ALIASES_INPUT", result.stdout)
+
+    def test_render_refuses_report_aliasing_missing_output(self):
+        template = self.write_docx("固定文本")
+        projection = self.write_json("projection.json", {"target_id": "audit-fixture"})
+        output = self.root / "result.docx"
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_ROOT / "render_template.py"),
+                "render",
+                "--template",
+                str(template),
+                "--projection",
+                str(projection),
+                "--output",
+                str(output),
+                "--report",
+                str(output),
+            ],
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(output.exists())
+        self.assertIn("OUTPUT_ALIASES_INPUT", result.stdout)
 
     def test_inline_condition_block_is_rejected_before_render(self):
         template = self.write_docx("前 {{#if:project.enabled}}中{{/if}} 后")

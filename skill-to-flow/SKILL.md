@@ -48,7 +48,7 @@ description: 将已有 Agent Skill 转换为可在外部流程引擎执行的流
 2. **批量语义决策环**（必问用户）：`--batch-mode=loop`（单项目链入 PROCESS_ITERATOR.childChain）还是 `generic`（只声明粒度）；默认不替用户选。
 3. **落地策略决策环**（必问用户，缺省即编译失败）：`--model-as`（现仅 ce_script：模型步骤包装 CE 脚本调 LLM，脚本内容人工补全）、`--human-as`（db_state 推荐 / fail_edge）、`--rework-as`（**fail_edge：图上返工回边编译为返工状态落库后链路终止，人工修正后重触发** / iterator 未实现）。独立 Agent 跑流程A 仍可在语义层“回 paper 再跑”；ETL 编译产物在 `fail_edge` 下不保留环。
 4. **编译**（在 **skills 仓库根**执行，不是 ey-timp-etl）：`python3 scripts/flowa_compile.py <SKILL.md> [策略参数] --out <产物>.bpmn.json`；脚本路径即本仓 `scripts/flowa_compile.py`。产出 elBpmn JSON + 状态表 DDL（`<产物>.ddl.sql`，states 声明驱动）。铁律 violation 与策略缺失都以编译错误呈现，修声明或补策略，不改编译器迁就。
-5. **绑定验证**（有独立运行样本时，同样在 skills 仓根）：`python3 scripts/flowa_state_bind.py <state.jsonl> <SKILL.md>` 验证轻量绑定与 DB 绑定无声明之外的信息差（列纯投影、行逐字可逆、键不越界）。样本可放在本仓 `flow-a-validate/`。
+5. **绑定验证**（有独立运行样本时，同样在 skills 仓根）：`python3 scripts/flowa_state_bind.py <state.jsonl> <SKILL.md>` 验证轻量绑定与 DB 绑定无声明之外的信息差（列纯投影、行逐字可逆、键不越界）。新样本与验证记录放 `<主工作区>/.agent-artifacts/<任务>/<唯一运行标识>/`；Git 用登记的主 checkout，非 Git 用项目目录。首次创建前在该工作区 `.gitignore` 加入 `/.agent-artifacts/` 并用 `git check-ignore` 核验，非 Git 跳过。BPMN/DDL 默认先写该运行目录，正式交付再按第 6 步显式复制；保留样本不随编译或 worktree 清理删除，既有 `flow-a-validate/` 不自动迁移或清理。
 6. **平台验证**（在 **ey-timp-etl** 消费产物，不在那边跑编译器）：把 BPMN/DDL 拷入或对齐 `ey-timp-etl-web/src/test/resources/flowa/`，走 `LiteFlowParser.convertElData` + `LiteFlowChainELBuilder.validateWithEx`（`FlowACompileBpmnValidateTest` / `FlowAExecuteSmokeTest`）；或在 ETL 管理界面导入。
 7. **交付清单**：BPMN JSON、DDL、EL 表达式、策略决策记录、未决项显式列出（FLOWA_* 占位 CE 脚本绑定、_ctx 变量对齐、建表与数据源绑定、分页工具链）。
 
@@ -58,5 +58,5 @@ description: 将已有 Agent Skill 转换为可在外部流程引擎执行的流
 - model→CE_SCRIPT 只生成占位 `ceScriptCode=FLOWA_<node>`，LLM 调用协议需人工补全。
 - 树化后 EL 冗长（公共后缀按分支复制；本参考案例 generic 约 **350** 节点/349 边，loop 为 1 个 `PROCESS_ITERATOR` 外包同构 childChain）——机器生成产物，语义正确，不宜人工阅读。历史产物若仍见约 264/322 节点，以当前编译器输出为准并同步 etl 测试资源。
 - 批量循环 foreach 数据源是上游节点数据集；编译产物在循环容器前没有输入节点时，需要在容器前补一个产出项目清单的输入节点（或按平台惯例由 API 输入节点承担）；冒烟测试在数据集为空时用请求参数 `loopList` 注入（仅测试）。
-- **仓职责拆分**：编译器/绑定器在 **skills 仓库**（`scripts/flowa_compile.py`、`scripts/flowa_state_bind.py`，案例 `skills/business/...`，验证工作区 `flow-a-validate/`）。**ey-timp-etl 不含这些脚本**，只消费 BPMN/DDL 并跑平台单测。skill 单独分发时不含 scripts，需随 skills 仓获取或改运行时定位。
+- **仓职责拆分**：编译器/绑定器在 **skills 仓库**（`scripts/flowa_compile.py`、`scripts/flowa_state_bind.py`，案例 `skills/business/...`）；验证材料位置按第 5 步。**ey-timp-etl 不含这些脚本**，只消费 BPMN/DDL 并跑平台单测。skill 单独分发时不含 scripts，需随 skills 仓获取或改运行时定位。
 - 平台单测依赖 ey-timp-etl 工作树与本地构件（如 ey-timp-etl-process 2.5.0.9）；全量 `mvn test` 重编译若遇 Lombok/JDK（`JCImport.qualid`）不匹配，属 etl 工具链问题而非本 skill 流程缺陷——可先用已编译 class 跑 `mvn surefire:test -pl ey-timp-etl-web -Dtest=FlowACompileBpmnValidateTest,FlowAExecuteSmokeTest`，或在 etl 侧固定可用的 JDK/Lombok 后再重建。

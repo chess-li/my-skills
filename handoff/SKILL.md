@@ -10,7 +10,7 @@ description: 会话间任务交接：写出交接文档并生成新会话提示�
 本 skill 守护一条主线：**新会话只读交接文档即可开工，不查询源会话。**
 
 护栏：
-- 交接文档落 `{本会话临时目录}/handoff/<yyyyMMdd>-<topic>.md`，不进版本库。临时目录取本会话环境声明的临时工作目录，不写死 harness 名
+- 交接文档需要跨会话保留，落 `<主工作区>/.agent-artifacts/<任务>/<唯一运行标识>/handoff/<yyyyMMdd>-<topic>.md`，不进版本库，不用系统临时目录作为唯一存放；接手后不自动删除
 - 有 issue/spec/design 只写路径，不复制正文
 - 前会话根因/修法写入「线索」，接手后仍按目标 skill 自己复现
 - 接手禁止查源会话 id、禁止翻会话库
@@ -27,8 +27,10 @@ description: 会话间任务交接：写出交接文档并生成新会话提示�
 
 topic：用户指定则用；否则从目标压一行（去空白，≤40 字）。
 
+先核对主工作区：Git 项目按 `git worktree list --porcelain` 找主 checkout，非 Git 项目用项目目录；不得放进待移除的任务 worktree。首次创建 `.agent-artifacts/` 前，在主工作区 `.gitignore` 加入 `/.agent-artifacts/` 并用 `git check-ignore` 核验；非 Git 项目跳过 Git 操作。每次交出新建唯一运行目录，历史目录只读；已有运行目录只在明确接管时续写，不覆盖旧交接文件。
+
 ```bash
-python3 "<skill目录>/scripts/path.py" "{本会话临时目录}" "{topic}"
+python3 "<skill目录>/scripts/path.py" "<主工作区>/.agent-artifacts/<任务>/<唯一运行标识>" "{topic}"
 ```
 
 写入该路径：
@@ -85,6 +87,6 @@ python3 "<skill目录>/scripts/path.py" "{本会话临时目录}" "{topic}"
 
 ## 授权分档
 
-- 直接执行：写临时文件、生成提示词、读文档
-- 执行后告知：启动可交互新会话
-- 必须先确认：无
+- 直接执行：生成交接文档与提示词、读文档
+- 执行后告知：首次创建保留目录并补 `.gitignore`、启动可交互新会话
+- 必须先确认：删除已有交接材料

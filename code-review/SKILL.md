@@ -25,7 +25,9 @@ description: 已完成代码变更的独立评审，以及收到评审意见后�
 - 测试质量场景文件原文（[references/test-quality.md](references/test-quality.md)）。写测试与评审测试共用该文件。维度清单里的指针不算携带原文
 - 变更包含新增、修改、移除或改名/迁移时，附上 [变更种类验证](../spec/references/change-kind-verification.md) 原文。没有行为去留时不附。新增路径成功不能单独完成该核对。
 
-送审包用脚本钉死，不手工拼哈希：在目标仓库根运行本 skill 目录 `scripts/review_package.py create --baseline <精确基线> [--path <范围>…] --out <证据目录>`，产出三物——`snapshot.json`（逐文件 SHA-256 与 scopeSha256）、`review.diff`（相对基线的完整差异，含未跟踪新增文件，附 diffSha256）、`dispatch-scaffold.md`（派遣提示词骨架）。骨架已钉入基线、快照与 diff 的位置及哈希；目标与验收、spec/design 与验证记录路径、前轮评审记录位置（首轮填「无」）、发现落盘位置是 REQUIRED 槽位，填全才派发。快照钉当前工作区字节，未提交变更同样覆盖；评审者用 `scripts/review_package.py verify --snapshot <路径>` 复核无漂移。评审报告与放行所依赖的证据落仓库邻接耐久位置（如 `target/<任务>/`），并在 issue 验证记录中引用其路径与哈希——系统临时目录会被清理，不作为唯一存放。
+送审包用脚本钉死，不手工拼哈希：运行本 skill 目录 `scripts/review_package.py create --repo <被评审仓库或任务worktree> --baseline <精确基线> [--path <范围>…] --out <本轮评审目录绝对路径>`，产出三物——`snapshot.json`（逐文件 SHA-256 与 scopeSha256）、`review.diff`（相对基线的完整差异，含未跟踪新增文件，附 diffSha256）、`dispatch-scaffold.md`（派遣提示词骨架）。骨架已钉入基线、快照与 diff 的位置及哈希；目标与验收、spec/design 与验证记录路径、前轮评审记录位置（首轮填「无」）、发现落盘位置是 REQUIRED 槽位，填全才派发。快照钉当前工作区字节，未提交变更同样覆盖；评审者用 `scripts/review_package.py verify --snapshot <路径>` 复核无漂移。
+
+送审包、评审报告与放行证据放 `<主工作区>/.agent-artifacts/<任务>/<唯一运行标识>/`，每轮新建目录，前轮只读；issue 引用绝对路径与哈希。主工作区从 `git worktree list --porcelain` 核对主 checkout，不放在待移除 worktree、构建清理目录或系统临时目录。首次创建前，在主工作区 `.gitignore` 加入 `/.agent-artifacts/` 并用 `git check-ignore` 核验。无 Git 仓库的非代码评审用项目目录，跳过送审包脚本和 Git 操作，在报告中明确范围与未验证项。评审者的可写范围只含本轮报告、核验记录与独立分配的一次性临时目录，不含共享父目录或历史证据；归档、合入与新一轮评审不自动清理证据。忽略规则不代表已有备份，删除保留材料须用户明确授权。
 
 不给实现会话历史——评审独立于实现思路。原始工具执行结果是证据，不是实现思路，可以携带；实现者的叙述不替代它。评审者读代码与上述断言，不改代码。
 
