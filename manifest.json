@@ -2,7 +2,7 @@
   "schema": "grokbot-skills-sync/v2",
   "source": {
     "repo": "https://github.com/chess-li/my-skills.git",
-    "commit": "1293c40dbd30c96b8806ea936ecde6ef8be73cb9",
+    "commit": "e4445b5e9128b4da7834e016c145ad1b110c709b",
     "dirty": true
   },
   "skills": [
@@ -45,7 +45,7 @@
     {
       "id": "design",
       "name": "design",
-      "description": "维护按限界上下文组织的工程技术设计文档（how 层）：动手编码前把技术决策与结构固化为文档，让 design 断言持续为真；项目级决策落 ARCHITECTURE.md。用于：改动带来值得固化的新技术决策；改动改变了 design 或 ARCHITECTURE.md 已写过的断言；spec 就绪进入设计；编辑 docs/contexts/ 下 *-design.md 或 ARCHITECTURE.md 既有断言的动作发生时同样先加载，是否豁免由正文判定。不用于澄清需求与验收标准（spec skill 的事）；不用于视觉/UI 设计；不用于任务拆解与执行顺序；不触及已有 design 断言的改动（纯实现细节）不触发。",
+      "description": "维护按限界上下文组织的工程技术设计文档（how 层）：动手编码前把技术决策与结构固化为文档，让 design 断言持续为真；项目级决策落 ARCHITECTURE.md。用于：改动带来值得固化的新技术决策；改动改变了 design 或 ARCHITECTURE.md 已写过的断言；spec 就绪进入设计；编辑 docs/contexts/ 下 *-design.md 或 ARCHITECTURE.md 既有断言的动作发生时同样先加载。是否写入由正文判定，加载前不把候选写入 design。不用于澄清需求与验收标准（spec skill 的事）；不用于视觉/UI 设计；不用于任务拆解与执行顺序；不用于用户尚未接受的设计候选（issues「临时方案」的事）；不触及已有 design 断言的改动（纯实现细节）不触发。",
       "dir": "design"
     },
     {
@@ -111,7 +111,7 @@
     {
       "id": "issues",
       "name": "issues",
-      "description": "本地 markdown issue 的格式与生命周期单一信源：创建（含防重复检索）、队列与抓取（frontier = open 且 blockedBy 全部消解）、归档与拒绝记忆——在办落 docs/issues/，归档溶入 docs/contexts/<限界上下文>/features/ 能力文件。用于：记录新需求或 bug 为 issue；查看待办与当前可抓取的 issue；spec 收口发布执行 issue；其他 skill 需创建或检索 issue 时。不用于按验收标准执行实现与更新执行状态（implement 的事）；不用于 bug 诊断与修复（debug 的事）；不用于澄清需求与验收标准（spec/interview 的事）；不用于会话间交接（handoff 的事）。",
+      "description": "本地 markdown issue 的格式与生命周期单一信源：创建（含防重复检索）、队列与抓取（frontier = open、blockedBy 已消解、且无「临时方案」节）、归档与拒绝记忆——在办落 docs/issues/，归档溶入 docs/contexts/<限界上下文>/features/ 能力文件。用于：记录新需求或 bug 为 issue；查看待办与当前可抓取的 issue；spec 收口发布执行 issue；用户要求把设计候选写入 issue 供讨论。不用于按验收标准执行实现与更新执行状态（implement 的事）；不用于 bug 诊断与修复（debug 的事）；不用于澄清需求与验收标准（spec/interview 的事）；不用于会话间交接（handoff 的事）；不用于尚未形成任务的探索（wayfinder 的事）；不用于把已接受的技术决策写入 design（design 的事）。",
       "dir": "issues"
     },
     {
@@ -219,7 +219,7 @@
     {
       "id": "wayfinder",
       "name": "wayfinder",
-      "description": "为尚未形成就绪 spec 的跨会话探索保存决策地图，记录目标、出界、未决问题、依赖和已定事项的权威链接。用于：同一方向多次会话仍未收敛，需要恢复未决问题。不用于：当前会话能完成的短讨论（spec 讨论出口的事）；可执行工作队列（issues 的事）；事实调查（research 的事）；选项裁定（interview 的事）。",
+      "description": "为尚未形成就绪 spec 的跨会话探索保存决策地图，记录目标、出界、未决问题、依赖和已定事项的权威链接。用于：同一方向多次会话仍未收敛，需要恢复未决问题。不用于：当前会话能完成的短讨论（spec 讨论出口的事）；可执行工作队列（issues 的事）；已有任务的设计候选讨论（issues「临时方案」的事）；事实调查（research 的事）；选项裁定（interview 的事）。",
       "dir": "wayfinder"
     },
     {

@@ -1,6 +1,6 @@
 ---
 name: issues
-description: 本地 markdown issue 的格式与生命周期单一信源：创建（含防重复检索）、队列与抓取（frontier = open 且 blockedBy 全部消解）、归档与拒绝记忆——在办落 docs/issues/，归档溶入 docs/contexts/<限界上下文>/features/ 能力文件。用于：记录新需求或 bug 为 issue；查看待办与当前可抓取的 issue；spec 收口发布执行 issue；其他 skill 需创建或检索 issue 时。不用于按验收标准执行实现与更新执行状态（implement 的事）；不用于 bug 诊断与修复（debug 的事）；不用于澄清需求与验收标准（spec/interview 的事）；不用于会话间交接（handoff 的事）。
+description: 本地 markdown issue 的格式与生命周期单一信源：创建（含防重复检索）、队列与抓取（frontier = open、blockedBy 已消解、且无「临时方案」节）、归档与拒绝记忆——在办落 docs/issues/，归档溶入 docs/contexts/<限界上下文>/features/ 能力文件。用于：记录新需求或 bug 为 issue；查看待办与当前可抓取的 issue；spec 收口发布执行 issue；用户要求把设计候选写入 issue 供讨论。不用于按验收标准执行实现与更新执行状态（implement 的事）；不用于 bug 诊断与修复（debug 的事）；不用于澄清需求与验收标准（spec/interview 的事）；不用于会话间交接（handoff 的事）；不用于尚未形成任务的探索（wayfinder 的事）；不用于把已接受的技术决策写入 design（design 的事）。
 ---
 
 # Issue
@@ -13,7 +13,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 
 - 创建前检索：`docs/issues/`（在办）与 `docs/contexts/<限界上下文>/features/`（能力归档，含 wontfix 拒绝记忆）按概念检索，不只按请求措辞；命中 open → 更新既有 issue，不重复立项；命中 wontfix → 告知用户曾被拒绝及理由，用户坚持才新建
 - 一份一事：一份 issue 只承载一个需求/bug；相关但独立的问题各立一份（blockedBy 或正文互链），不因「联动、同一修复」合并为一份；本条只约束在办生命周期——归档后身份从任务变记忆，同能力任务块合入同一份能力文件
-- 书写三原则：耐久性优于精确性——issue 可能挂数周，创建期写行为契约与接口语义，不写会过期的文件路径与行号；执行期小节的实现指引用可 grep 定位的符号锚（类型/函数/字段/测试名）指代代码位置，不写行号——行号写入即开始腐烂、写错不挡执行者，符号锚漂移慢、写错可被执行者 grep 当场证伪（一次性验证记录例外）；行为式不过程式——写 what 不写 how，执行者自己重新探索；验收标准独立可验证，配「显式出界」清单
+- 书写三原则：耐久性优于精确性——issue 可能挂数周，创建期写行为契约与接口语义，不写会过期的文件路径与行号；执行期小节的实现指引用可 grep 定位的符号锚（类型/函数/字段/测试名）指代代码位置，不写行号——行号写入即开始腐烂、写错不挡执行者，符号锚漂移慢、写错可被执行者 grep 当场证伪（一次性验证记录例外）；行为式不过程式——验收清单与执行状态写 what 不写 how，执行者自己重新探索；尚未接受的 how 只写入「临时方案」节；验收标准独立可验证，配「显式出界」清单
 - 状态即事实：status 字段与实际进展一致，文件存在即在办（归档即删除文件，状态由任务块标题承载）；在办期流转即记变更历史，git 仓库改动即提交
 - 本 skill 只管格式与生命周期：执行实现归 implement skill，bug 诊断修复归 debug skill
 
@@ -26,12 +26,25 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
 - spec 收口的需求：先对照 spec/design 排查代码现状差距，排查结论随创建消息呈现；验收标准逐条抄入验收清单——抄入前逐条过断言，有多种合理解读或语义张力（含 design 原文措辞）→ 不照抄、不标注「执行期澄清」，停下路由来源 skill 澄清后再建，进队列的 issue 不携带未决语义；抄入时按验证可行性分家——验证依赖当前不可用环境/外部资源（真机、CI、他平台、live 模型、未建机制）的断言不混入主清单，各立一份 follow-up issue（目标引用同一 spec 节），主 issue 显式出界清单指向之：主 issue 只含当前可闭环条目；follow-up issue 以 open 入队列即进 frontier，环境未到位前由 implement skill 抓取前核拦下交用户裁定；门禁条目在创建期分家，不在归档期改判（改判 = 勾掉/降级条目；迁出为 open issue 续存不算改判，见归档节）；status: open 即入队列；验证手段留执行方预填
 - 同一限界上下文内拆出多份 issue → 依赖只写各子 issue 的 blockedBy；排查结论（对照 spec/design 的代码现状差距）随创建消息呈现（同单份场景要求），并与其逐条断言归属结论（有主/已满足/出界）一并记入对应 spec 的变更历史——不建 `guide_issue.md`，不设母 issue、状态镜像或覆盖对账底账；后续批次的防孤儿断言核对在创建时按需重推（spec 断言 × 在办 issue 目标并集，结论同样记入 spec 变更历史）
 - 创建完成后（单份或拆分整批）在当前上下文中做对比评审：issue 与现有 spec/design/代码逐面核对——验收清单抄录无失真、断言归属无遗漏（拆分场景，逐条断言求归属）、现状描述与代码一致；拆分批次加查子 issue 间交叉一致——认领与出界不互撞（同一工作一方认领、他方须出界）、blockedBy 不过宽（只列真实前置）不缺失（验收所依赖的地基已列）；发现失真当场修正再提交
-- bug：category: bug；已知根因或修法只当线索写入「当前位置」，不作结论；红色回路的命令、关键输出、环境和最小场景写入 issue 的「复现记录」
+- bug：category: bug；已知根因只当线索写入「当前位置」，不作结论。修法若是尚未接受的设计候选，写入「临时方案」，不写入「当前位置」。红色回路的命令、关键输出、环境和最小场景写入 issue 的「复现记录」
 - 有依赖：blockedBy 列阻塞方 issue 相对 `docs/issues/` 的路径（如 `插件化/01_代次地基_issue.md`）。爆炸半径大的机械性改动（wide refactor）不塞进功能 issue——单独立 issue 走 expand–contract（先并存、分批迁移、最后删除），每批一份
+
+### 临时方案
+
+只在三种情况写这一节：用户要求把设计方案写入 issue；该 issue 已有这一节，需要继续讨论；已有 issue，且本轮候选尚未接受。第三种不要求用户这句再说「写入 issue」。没有 issue，且用户没有要求写入 → 不创建 issue。那是 wayfinder 的事。design、debug、implement 不得越过本句新建 issue。
+
+接受只认用户原话：明确接受该候选，或把方案指定为要落地的决策。要求讨论、写入 issue、先不改 spec 或 design，都不是接受。模型推荐不是接受。
+
+- 写入该 issue 的「临时方案」节。不写入「当前位置」、验收清单或「评审修复方案」。模板不含该标题。无候选不写标题。
+- 节内只留当前候选：决策、放弃了什么、约束、仍未对齐的点、写入 design 还差什么。用符号锚，不写行号。修订就地替换，不追加讨论实录。变更历史记一行。
+- 不改 spec、design、ARCHITECTURE.md。与现有 design 矛盾时，把矛盾写在本节。
+- 另一会话可以修订本节。用户接受某些点之前，不把这些点写入 design。
+- 用户接受某些点后：只把这些点按 design skill 写入 design，并从本节删除。仍有未接受的点 → 保留标题，该 issue 仍不在 frontier。没有剩余候选 → 删除整节（含标题）。变更历史记 design 路径。不把本节正文留在 issue，也不写入任务块。
+- 标题还在 → 不在 frontier，不置 doing，不按本节编码。已是 doing 的，status 改回 open，停在讨论，不按「当前位置」或「评审修复方案」编码。
 
 ### 2. 队列与抓取
 
-- frontier = 递归 `docs/issues/` 全部 issue：status: open 且 blockedBy 全部已消解（或路径不存在）；「还有什么可做」= 列 frontier，各附一句话目标
+- frontier = 递归 `docs/issues/` 全部 issue：status: open、blockedBy 全部已消解（或路径不存在）、且没有「临时方案」节标题；「还有什么可做」= 列 frontier，各附一句话目标
 - 抓取 = status 改 doing + 变更历史记一笔；一个会话抓一份，抓完即开始：enhancement 走 implement skill，bug 走 debug skill
 - 并行会话各抓 frontier 中的不同项；blockedBy 两路消解——阻塞方归档，或重估清空（被阻塞项所等的关键前置已合入基线/环境已具备，不等阻塞方归档）：重估清空 = blockedBy 改 [] 并在 frontmatter 注释行注记依据（等的是什么、何时何地已具备）
 
@@ -44,7 +57,7 @@ description: 本地 markdown issue 的格式与生命周期单一信源：创建
   3. **没做什么**——显式出界，含未验证边界
   4. **去哪查**——git 指针（压缩前完整过程记录的提交哈希）+ 行为证据（回归测试名）
 
-  变更历史不进任务块——git log 已承担；能力文件尾部可留一节「演进主线」（一句话串起各块因果链），除此之外不写
+  变更历史与「临时方案」节不进任务块——git log 已承担讨论过程；节标题还在则先按该节处理，不带着未接受候选归档。能力文件尾部可留一节「演进主线」（一句话串起各块因果链），除此之外不写
 - 能力文件格式：frontmatter `type: feature-archive`（不进 frontier，状态由各任务块自记）；头部三节：分层定位（契约指 `../<限界上下文>-spec.md` 节号，不复述契约——复述即成双事实源）、来源清单（存量合并迁入时登记原编号+标题+归档提交哈希）、长期行为证据（回归测试名）；任务块按创建时间排，标题 `### NN｜标题（enhancement/bug → archived/wontfix，YYYY-MM-DD）`，原 issue 带 milestone 字段时标题行尾追加 `｜milestone: <milestone-id>`
 - 实现任务：由 implement skill 第 7 步归档；条件在那边，独立评审范围与证据复用只由 code-review 判定，scoped 自检不放行
 - 存量追溯拆分：归档前核对发现验收条目验证依赖当前不可用环境/外部资源 → 不勾不标绿，迁出为独立 open issue（目标引用同一 spec 节），本 issue 变更历史记迁出指向，剩余条目全绿后才归档——门禁条目以 open issue 形态留在 frontier，不在原清单勾销

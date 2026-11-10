@@ -11,8 +11,8 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 实现护栏：
 - 验收强制：每条验收标准对应一个验证手段，验一条记一条；未验证的验收标准 = 未完成
-- 任务拆分留在会话内，不落盘；issue 只承载 issues skill 定义的执行期小节（目标、足迹、验收清单、验证状态、bug 复现记录、三面摘要、范围外问题、评审自检、评审修复方案），是执行的唯一交接介质（格式与生命周期归 issues skill）
-- 偏差路由：触及 spec 断言或 ARCHITECTURE.md → 停下问用户；只触及 BC design → 按 design skill 先改文件再实现
+- 任务拆分留在会话内，不落盘；issue 只承载 issues skill 定义的执行期小节（目标、足迹、验收清单、验证状态、bug 复现记录、三面摘要、范围外问题、评审自检、评审修复方案），是执行的唯一交接介质（格式与生命周期归 issues skill）。「临时方案」不是执行期小节。有该标题时保留，不据此编码
+- 偏差路由：触及 spec 断言或 ARCHITECTURE.md → 停下问用户。修法尚未被用户接受 → 不改 design 文件。已有 issue 则按 issues 写入「临时方案」后停下；没有 issue 且用户没要求写入 → 不创建 issue，停下。修法已被用户接受且只触及 BC design → 按 design skill 先改文件再实现
 - 范围：改动限于验收标准所需。顺手发现的范围外问题记入 issue「范围外问题」，不顺带修复或删除
 - 代码质量：写生产代码前和切片提交前读取并应用 [code-quality.md](../code-review/references/code-quality.md)（code-review skill 的 references/code-quality.md，在 skill 安装目录，不在项目仓库）。写代码与评审代码共用该文件。不在本 skill 复述判据
 - 测试质量：写测试前和切片提交前读取并应用 [test-quality.md](../code-review/references/test-quality.md)（code-review skill 的 references/test-quality.md，在 skill 安装目录，不在项目仓库）。写测试与评审测试共用该文件。不在本 skill 复述判据
@@ -28,22 +28,22 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 ### 1. 入口判断
 
 - 消除已观察到的失败（含按诊断/修法/修改结论执行）→ 先 debug skill 复现并定位根因，再回来；本会话未定位根因不改代码
-- 进度审阅与任务安排（「看看完成情况」「安排后续任务」类）→ 先盘点再排程：整批列出在途阻塞与未决决策（验收项的环境/外部依赖门禁、blockedBy 未解、待裁定设计），按 被 blockedBy 卡死 / 进行中 / 级联风险 / 待用户裁定 四层呈交，用户裁定后再排执行顺序；呈交清单收口时逐项对账——每项 = 已裁并落盘 / 显式放弃（记理由）/ 仍待裁（列入未决呈交），未裁项不静默消失；阻塞与裁定未清前，推荐推进方向是清阻塞与澄清，不是继续执行
-- 抓取：`docs/issues/` 有 frontier issue（open 且 blockedBy 全部消解，归 issues skill 判定）且用户要开工 → 抓取前核验收可行性：验收清单含验证依赖当前不可用环境/外部资源（真机、CI、他平台、live 模型、未建机制）的条目 → 先列出交用户裁定（缩减范围 / 提供环境 / 保持 open 暂不抓取），裁定前不置 doing；无则抓取之（status 改 doing），读它，第 2 步接管
-- 新实现：有就绪的 spec？ → 第 2 步
-  - design 就绪：本次改动触及的值得固化的 how 问题未落定（BC design 或 ARCHITECTURE.md）→ 先走 design skill 落定再回来；改动不产生值得固化的决策 → 空满足
-- 续写：`docs/issues/` 有 status: doing 的 issue？ → 读它。「评审修复方案」有未关闭条目 → 只执行未关闭，不查源会话补方案，不执行未选；条目已实现但未独立复核时，核对修复差异与验证记录后走第 6 步，不重复改代码。有未选 → 问用户，不代选。方案缺精确基线或要改变的行为 → 停下问用户，不按前缀相同的引用猜测。没有未关闭方案 → 按「当前位置」恢复执行。scoped 自检已清零 → 第 6 步独立复审，不得停
+- 进度审阅与任务安排（「看看完成情况」「安排后续任务」类）→ 先盘点再排程：整批列出在途阻塞与未决决策（验收项的环境/外部依赖门禁、blockedBy 未解、待裁定设计、未撤的「临时方案」），按 被 blockedBy 卡死 / 进行中 / 级联风险 / 待用户裁定 四层呈交，用户裁定后再排执行顺序；呈交清单收口时逐项对账——每项 = 已裁并落盘 / 显式放弃（记理由）/ 仍待裁（列入未决呈交），未裁项不静默消失；阻塞与裁定未清前，推荐推进方向是清阻塞与澄清，不是继续执行
+- 抓取：先按 issues skill 判 frontier。含「临时方案」节的 issue 不在 frontier，不置 doing。frontier issue 且用户要开工 → 抓取前核验收可行性：验收清单含验证依赖当前不可用环境/外部资源（真机、CI、他平台、live 模型、未建机制）的条目 → 先列出交用户裁定（缩减范围 / 提供环境 / 保持 open 暂不抓取），裁定前不置 doing；无则抓取之（status 改 doing），读它，第 2 步接管
+- 新实现：有就绪的 spec？本轮 how 尚未被用户接受 → 不进入第 2 步，不置 doing，不写 design。已有 issue 则按 issues 写入「临时方案」并保持 open；没有 issue 且用户没要求写入 → 不创建 issue，停下。已接受 → 第 2 步
+  - design 就绪：已接受而 how 未落定（BC design 或 ARCHITECTURE.md）→ 先走 design skill 落定再回来；改动不产生值得固化的决策 → 空满足
+- 续写：`docs/issues/` 有 status: doing 的 issue？ → 读它。有「临时方案」标题 → 不按「当前位置」或「评审修复方案」编码，停在讨论。没有该标题时：「评审修复方案」有未关闭条目 → 只执行未关闭，不查源会话补方案，不执行未选；条目已实现但未独立复核时，核对修复差异与验证记录后走第 6 步，不重复改代码。有未选 → 问用户，不代选。方案缺精确基线或要改变的行为 → 停下问用户，不按前缀相同的引用猜测。没有未关闭方案 → 按「当前位置」恢复执行。scoped 自检已清零 → 第 6 步独立复审，不得停
 - 接手（续写、跨模型/跨环境移交）先复述：用自己的话在 issue 写「当前任务要达成什么、下一步怎么验证」；复述不出、断言读不懂或有歧义 → 停下问用户回 spec skill 澄清，不猜着动手
 
   ```bash
   git worktree list --porcelain   # git 仓库：按登记路径与实际分支定位任务 worktree，不按目录名猜分支
   ```
 - 合入：用户要合入基线 → 「合入」节
-- 皆否 → 只读或不改变行为与交付物断言的局部工作可直接干活；改行为或 spec 断言先走 spec，产生值得固化的 how 先走 design，再建/接管 issue；只改 HTML、解释页或其他面向用户的交付物时，至少派生临时验收清单后进入第 3 步
+- 皆否 → 只读或不改变行为与交付物断言的局部工作可直接干活；改行为或 spec 断言先走 spec。尚未接受的 how 不先写 design，不置 doing。已有 issue 或用户要求写入 issue → 按 issues 写「临时方案」，status 保持 open。没有 issue 且用户没要求写入 → 不创建 issue，停下。已接受且产生值得固化的 how 才先走 design，再建/接管 issue。只改 HTML、解释页或其他面向用户的交付物时，至少派生临时验收清单后进入第 3 步
 
 ### 2. 建/接管 issue
 
-写入 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（项目已有任务存放约定则跟随；现场存在 `docs/tasks/` 或平铺老布局 → 按 issues skill 冷启动迁移），模板与生命周期归 issues skill：spec 收口已发布 issue → 接管（预填验证手段、补足迹与当前位置）；没有 → 按其模板创建（status: doing）。本步规则：
+写入 `docs/issues/<限界上下文>/<NN>_<需求名>_issue.md`（项目已有任务存放约定则跟随；现场存在 `docs/tasks/` 或平铺老布局 → 按 issues skill 冷启动迁移），模板与生命周期归 issues skill：spec 收口已发布 issue → 接管（预填验证手段、补足迹与当前位置）；没有 → 按其模板创建。含「临时方案」则 status: open，不置 doing；否则 status: doing。本步规则：
 
 - 逐条抄录 spec 的验收标准，为每条预填验证手段，优先级：可落成测试 → 该测试；其他可自动化的命令 → 命令；皆否 → 人工确认步骤
 - 全称断言（无论/任意/所有/每个）按分支全集拆成逐项验证，一个实例测试不得给全称断言标绿；列不出分支全集 → 回 spec skill 补失败面枚举
@@ -75,7 +75,7 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 ### 5. 偏差路由
 
 - 验收标准互相矛盾、按字面不可实现、边缘情形推出荒谬 → 停下，向用户陈述偏差，裁定后走 spec skill 更新，再回来
-- 发现 design 决策不适用：只触及本 BC design → 先改 `docs/contexts/<限界上下文>/<限界上下文>-design.md` 再实现；触及 ARCHITECTURE.md → 停下问用户
+- 发现 design 决策不适用：新修法尚未被用户接受 → 不改 design 文件。已有 issue 则按 issues 写入「临时方案」并停下；没有 issue 且用户没要求写入 → 不创建 issue，停下。修法已接受且只触及本 BC design → 先改 `docs/contexts/<限界上下文>/<限界上下文>-design.md` 再实现；触及 ARCHITECTURE.md → 停下问用户
 - git 仓库：上述 spec/design 修正回主 checkout 落盘（提交到基线分支），worktree merge 基线分支取回修正后继续
 
 ### 6. 归档前核对
@@ -142,7 +142,7 @@ description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue
 
 - **现场**：用户说"spec 就绪了，开始实现企业下单"
 - **入口判断**：`docs/contexts/订单/订单-spec.md` 有"企业下单"章节，`docs/issues/` 无对应 issue → 建 `docs/issues/订单/01_企业下单_issue.md`（status: doing），抄录三条验收标准并预填验证手段（两条跑命令，一条请用户人工确认审批流）
-- **执行**：会话内拆成四步；实现中发现 design 的订单状态流转未覆盖审批分支 → 只触及订单上下文：先改 `docs/contexts/订单/订单-design.md` 再实现
-- **验证**：两条命令验证通过并落盘；一条边缘标准（审批拒绝时订单自动取消）按字面不可实现——spec 未定义退款去向 → 停下问用户，spec 更新后继续
+- **执行**：会话内拆成四步；实现中发现 design 的订单状态流转未覆盖审批分支，该补法用户尚未接受 → 写入该 issue「临时方案」，status 改回 open，并停下，不改 `订单-design.md`，不继续验证或归档
+- **用户接受该补法并撤除该节之后**：两条命令验证通过并落盘；一条边缘标准（审批拒绝时订单自动取消）按字面不可实现——spec 未定义退款去向 → 停下问用户，spec 更新后继续
 - **归档前核对**：所涉 spec/design 仍为真；独立评审覆盖当前变更且可放行（scoped 清零后仍独立复审）；可合入则问三选一
 - **归档**：用户选合入或保留后，任务块追加进 `docs/contexts/订单/features/企业下单_feature.md` 并删除原 issue（同一提交），告知用户三条验证结果。不合入（选合入则随后走合入节）
