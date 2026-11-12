@@ -45,7 +45,7 @@ description: 将已有 Agent Skill 转换为可在外部流程引擎执行的流
 ## 转换工作流
 
 1. **可转换判定**：读目标 skill 的 SKILL.md，确认流程A 齐全（mermaid + 契约块必备区段，见上节列举）；缺失即回 skill-creator，不现场补格式。
-2. **批量语义决策环**（必问用户）：`--batch-mode=loop`（单项目链入 PROCESS_ITERATOR.childChain）还是 `generic`（只声明粒度）；默认不替用户选。
+2. **循环只认流程图**：技能若有批量循环，必须在 mermaid 中画 `:::loop` 节点，直接上游是参数整理节点，下游是循环体。图中没有 loop 节点就不生成循环。不询问、不使用 `--batch-mode`。scope 或其他自然语言不参与编译。
 3. **落地策略决策环**（必问用户，缺省即编译失败）：`--model-as`（现仅 ce_script：模型步骤包装 CE 脚本调 LLM，脚本内容人工补全）、`--human-as`（db_state 推荐 / fail_edge）、`--rework-as`（**fail_edge：图上返工回边编译为返工状态落库后链路终止，人工修正后重触发** / iterator 未实现）。独立 Agent 跑流程A 仍可在语义层“回 paper 再跑”；ETL 编译产物在 `fail_edge` 下不保留环。
 4. **编译**（在 **skills 仓库根**执行，不是 ey-timp-etl）：`python3 scripts/flowa_compile.py <SKILL.md> [策略参数] --out <产物>.bpmn.json`；脚本路径即本仓 `scripts/flowa_compile.py`。产出 elBpmn JSON + 状态表 DDL（`<产物>.ddl.sql`，states 声明驱动）。铁律 violation 与策略缺失都以编译错误呈现，修声明或补策略，不改编译器迁就。
 5. **绑定验证**（有独立运行样本时，同样在 skills 仓根）：`python3 scripts/flowa_state_bind.py <state.jsonl> <SKILL.md>` 验证轻量绑定与 DB 绑定无声明之外的信息差（列纯投影、行逐字可逆、键不越界）。新样本与验证记录放 `<主工作区>/.agent-artifacts/<任务>/<唯一运行标识>/`；Git 用登记的主 checkout，非 Git 用项目目录。首次创建前在该工作区 `.gitignore` 加入 `/.agent-artifacts/` 并用 `git check-ignore` 核验，非 Git 跳过。BPMN/DDL 默认先写该运行目录，正式交付再按第 6 步显式复制；保留样本不随编译或 worktree 清理删除，既有 `flow-a-validate/` 不自动迁移或清理。

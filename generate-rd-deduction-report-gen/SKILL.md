@@ -109,7 +109,7 @@ flowchart TD
 ```yaml
 flow: rd-deduction-report
 version: 5
-scope: 单项目粒度；batch 多项目如何循环（通用图或循环图）是转换期的用户决策，不在本图展开
+scope: 单项目粒度。本图没有 loop 节点，不生成循环。batch 只是图内布尔分支，不是循环声明。
 inputs: [原始研发材料目录, 最终研发文档目录, {公司, 年度, 项目范围, batch}]
 artifacts:
   correspondence_data: work/correspondence-data.json
@@ -216,6 +216,7 @@ policies:
 4. **待办双通道**：gate 类节点产出的待办必须经 `supplements.channel` 区分正文占位（word，分配 Hxx）与清单留痕（list，不进正文）；留痕项不得为满足 acceptance 第六条硬塞正文占位。
 5. **acceptance 是交付门槛**：渲染后逐条核验，任一不过即回到 paper 修正后重渲染。
 6. **人工语义只在 `states:` 声明**：每个 human/gate 节点必须且只能是一个 state 的 producer，阻断性只来自 state 的 `blocking:` 声明，不得按节点类名推断。独立运行时用轻量绑定（`work/state.jsonl` 每触发一行，blocking=true 停下等用户）；ETL 运行时由编译器按同一份声明生成 DB 绑定，两种绑定不得有声明之外的信息差。
+7. **循环只在图中声明**：批量循环必须画成 `:::loop` 节点，直接上游是参数整理节点，下游是循环体。scope 或其他自然语言不产生循环。图中没有 loop 节点，转换不生成循环。
 
 ## 执行工作流
 
@@ -224,4 +225,4 @@ policies:
 3. cond 节点只对 `fields:` 路由字段求值；`channels:` 是节点内部状态，不得用于分支。遇到块中未声明的情况，先回块里补声明再执行，不得在执行中临时扩展字段。
 4. human/gate 节点落成显式待办：独立运行时在 `work/state.jsonl` 追加一行状态记录（state=对应 state 名、producer 节点、blocking、业务字段），blocking=true 的节点记完日志后停下等用户裁定，人到场后推进并在底稿留痕；gate 待办另标明 channel（word 分配 Hxx / list 仅登记）。用户裁定只覆盖裁定明确涉及的字段，不自动扩展；同冲突源关联呈现一并处理，不得让被裁定一侧的值以其他字段形式残留正文。
 5. render 前确认 prereq 为 true（unresolved_conflicts == false）；渲染后调用 `scripts/verify_rd_docs.py` 核验 Hxx 集合与首次出现顺序。脚本输出 `verify_passed == true` 后，按 acceptance 七条逐条核验，全部通过才交付。
-6. 批量场景（batch == true）必须先走对应表审核门：模型将材料映射与待确认事项写入 `work/correspondence-data.json`，并声明 `correspondence_ready`；为 false 时补全后重跑，为 true 时调用 `scripts/generate_correspondence_workbook.py` 生成审核工作簿。`corr_status == audited` 才进入盘点入库。多项目循环由转换期决策（通用图或循环图），执行期逐项目复用本图。核验通过后调用 `scripts/generate_supplement_summary.py`；仅 batch 场景传入 `--batch` 与所有项目 facts JSON，生成跨项目汇总清单，单项目调用时脚本返回 skipped 且不创建文件。
+6. 批量场景（batch == true）必须先走对应表审核门：模型将材料映射与待确认事项写入 `work/correspondence-data.json`，并声明 `correspondence_ready`；为 false 时补全后重跑，为 true 时调用 `scripts/generate_correspondence_workbook.py` 生成审核工作簿。`corr_status == audited` 才进入盘点入库。本图没有 loop 节点，不生成多项目循环。要逐项目循环，必须另画 loop 节点及其直接上游的参数整理节点。核验通过后调用 `scripts/generate_supplement_summary.py`；仅 batch 场景传入 `--batch` 与所有项目 facts JSON，生成跨项目汇总清单，单项目调用时脚本返回 skipped 且不创建文件。

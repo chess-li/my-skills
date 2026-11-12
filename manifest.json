@@ -2,7 +2,7 @@
   "schema": "grokbot-skills-sync/v2",
   "source": {
     "repo": "https://github.com/chess-li/my-skills.git",
-    "commit": "96a82e565c158604d3c1c3f4f4c7e0e8e81e6cc0",
+    "commit": "fc3179dce92c37cb099e2beb8ba48774fe975fc6",
     "dirty": true
   },
   "skills": [
@@ -83,6 +83,12 @@
       "name": "generate-rd-deduction-report-gen",
       "description": "根据企业原始研发资料，按流程A规范（Mermaid 拓扑 + 契约块）生成研发费用加计扣除留存备查资料：研发加计工作底稿、立项决议、项目计划书、成果效用说明、补充信息清单。产物与 generate-rd-deduction-report 完全等价，差异仅在编排形态——流程拓扑以流程A为唯一信源，模型步骤只产出声明字段，分支只对已声明字段求值。流程A 创作规范以本 skill 铁律节为唯一信源，skill→ETL 转换归 skill-to-flow，本 skill 是其首个参考案例。不用于评分、税务风险评估或已有资料审查。",
       "dir": "generate-rd-deduction-report-gen"
+    },
+    {
+      "id": "generate-tpd-report",
+      "name": "generate-tpd-report",
+      "description": "根据转让定价工作底稿 Excel 与上期 Word 报告，依据外置业务规则 Skill 包生成本期 TPD 报告模板与区域差异报告。纯声明式驱动，解析全部由内部 Python 脚本承载，支持流程A编译与 ETL 承载。",
+      "dir": "generate-tpd-report"
     },
     {
       "id": "handoff",
