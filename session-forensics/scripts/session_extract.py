@@ -55,6 +55,9 @@ class OpenCodeAdapter:
             raise SystemExit(f"库不存在: {path}")
         self.conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
         self._guard_schema(path)
+        self._has_part_table = self.conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' "
+            "AND name='session_part'").fetchone() is not None
 
     def _guard_schema(self, path):
         tables = {r[0] for r in self.conn.execute(
@@ -112,8 +115,31 @@ class OpenCodeAdapter:
                 yield text
 
     def _parts(self, session_id, part_type):
-        for msg in self._raw_messages(session_id, "assistant"):
-            for part in msg.get("content", []):
+        """两代存储：2026-11-24 前部件内联在 data.content；之后 content
+        为空数组，部件在 session_part 表。finish=tool-calls 必有工具部件，
+        缺失即 schema 漂移，大声失败不静默返回空。"""
+        sql = ("SELECT id, data FROM session_message "
+               "WHERE session_id=? AND type='assistant' ORDER BY seq")
+        for msg_id, raw in self.conn.execute(sql, (session_id,)):
+            msg = json.loads(raw)
+            content = msg.get("content") or []
+            if content:
+                for part in content:
+                    if part.get("type") == part_type:
+                        yield part
+                continue
+            rows = []
+            if self._has_part_table:
+                rows = self.conn.execute(
+                    "SELECT data FROM session_part WHERE message_id=? "
+                    "ORDER BY ordinal", (msg_id,)).fetchall()
+            if not rows and msg.get("finish") == "tool-calls":
+                raise SystemExit(
+                    f"消息 {msg_id} finish=tool-calls 但无部件"
+                    f"（session_part 表{'在场' if self._has_part_table else '缺失'}）："
+                    "schema 漂移，请实查并更新 references/opencode-schema.md")
+            for (pdata,) in rows:
+                part = json.loads(pdata)
                 if part.get("type") == part_type:
                     yield part
 

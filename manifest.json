@@ -2,7 +2,7 @@
   "schema": "grokbot-skills-sync/v2",
   "source": {
     "repo": "https://github.com/chess-li/my-skills.git",
-    "commit": "fc3179dce92c37cb099e2beb8ba48774fe975fc6",
+    "commit": "506ca526be283992256f84b4584a52b63e8f5a4e",
     "dirty": true
   },
   "skills": [
@@ -105,7 +105,7 @@
     {
       "id": "implement",
       "name": "implement",
-      "description": "按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue、派生验收清单、逐条验证强制闭环，执行状态落 issue 文件，支持中断续写。用于：spec 就绪进入实现（含在已有能力上追加新能力）；抓取待办 issue（frontier）；任务中断需要续写；存量归档壳与同上下文多份能力归档的归一清点（按 spec/design/代码核对：迁入 features/ 或过期删、仍成立的待办问用户，不落汇总文件）。不用于澄清需求与验收标准（spec skill 的事）；不用于制定或变更技术决策（design skill 的事）；不用于 issue 格式与生命周期（issues skill 的事）；不用于存量代码全量生成/重建前端对接文档（frontend-api-doc 的事）；不用于会话间交接（handoff 的事）；不触及 spec 断言的改动（纯实现细节、重构）不触发。",
+      "description": "按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue、派生验收清单、逐条验证强制闭环，执行状态落 issue 文件，支持中断续写。用于：spec 就绪进入实现（含在已有能力上追加新能力）；抓取待办 issue（frontier）或完成指定 issue（「完成issueXX」形态）；任务中断需要续写；存量归档壳与同上下文多份能力归档的归一清点（按 spec/design/代码核对：迁入 features/ 或过期删、仍成立的待办问用户，不落汇总文件）。不用于澄清需求与验收标准（spec skill 的事）；不用于制定或变更技术决策（design skill 的事）；不用于 issue 格式与生命周期（issues skill 的事）；不用于存量代码全量生成/重建前端对接文档（frontend-api-doc 的事）；不用于会话间交接（handoff 的事）；不触及 spec 断言的改动（纯实现细节、重构）不触发。",
       "dir": "implement"
     },
     {
@@ -177,14 +177,8 @@
     {
       "id": "skill-creator",
       "name": "skill-creator",
-      "description": "创建、修改与审查 agent skill 的纪律与流程。当用户要起草新 skill 或 SKILL.md、优化精简已有 skill，或反馈 skill 表现退化/行为异常（触发不准、过度确认、上下文臃肿、skill 间冲突）时使用；也用于 skill 测试集建设。不用于执行 skill 所服务的业务任务本身；不用于普通文档写作润色（writing skill 的事）。",
+      "description": "创建、修改与审查 agent skill 的纪律与流程。当用户要起草新 skill 或 SKILL.md、优化精简已有 skill，或反馈 skill 表现退化/行为异常（触发不准、过度确认、上下文臃肿、skill 间冲突）时使用；也用于 skill 测试集建设。动笔改动任何 skill 文件（SKILL.md、references、scripts、tests）前同样先加载本 skill——含修复、转换、考察等任务中的顺带改动，按动作判定不按任务归类判定。不用于执行 skill 所服务的业务任务本身；不用于普通文档写作润色（writing skill 的事）。",
       "dir": "skill-creator"
-    },
-    {
-      "id": "skill-to-flow",
-      "name": "skill-to-flow",
-      "description": "将已有 Agent Skill 转换为可在外部流程引擎执行的流程：按流程A规范（Mermaid 拓扑 + YAML 契约块）编排或校验 skill，经决策环（批量语义、模型/人工/返工落地策略）编译为 EY TIMP ETL 的 BPMN JSON（elBpmn）与状态表 DDL，并驱动两种绑定的无损验证。适用于已流程化 skill 的 ETL 化（参考案例：generate-rd-deduction-report-gen）。不用于创作或评审 skill 内容本身，那是 skill-creator 的事；不直接修改 ETL 平台代码。",
-      "dir": "skill-to-flow"
     },
     {
       "id": "spec",
@@ -245,6 +239,12 @@
       "name": "word-template",
       "description": "按显式模板协议、结构化目标投影、证据台账和资产清单确定性填充本地 DOCX/DOTX 模板，适用于条件块、字段默认值和图片/附件插槽。自然语言标记只作辅助入口；不用于 Markdown、通用 Word 编辑、开放式写作或业务规则制定，分别交给 word、writing 或领域 skill。",
       "dir": "word-template"
+    },
+    {
+      "id": "worktree",
+      "name": "worktree",
+      "description": "实质性代码变更的作业隔离纪律。用于：无 issue 流程的临时变更（新能力、行为变更、多文件或跨模块改动）在首次编辑前建立独立 worktree；主 checkout 有未提交改动时的变更任务；接管或清理既有 worktree。不用于：issue 驱动实现流程的 worktree 约定（implement 的事）；诊断纪律与测试先行（debug、tdd 的事，本 skill 只裁决作业位置，与它们叠加）；单文件琐碎修复与纯只读任务（直接作业）。",
+      "dir": "worktree"
     },
     {
       "id": "writing",

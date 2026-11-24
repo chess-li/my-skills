@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: 创建、修改与审查 agent skill 的纪律与流程。当用户要起草新 skill 或 SKILL.md、优化精简已有 skill，或反馈 skill 表现退化/行为异常（触发不准、过度确认、上下文臃肿、skill 间冲突）时使用；也用于 skill 测试集建设。不用于执行 skill 所服务的业务任务本身；不用于普通文档写作润色（writing skill 的事）。
+description: 创建、修改与审查 agent skill 的纪律与流程。当用户要起草新 skill 或 SKILL.md、优化精简已有 skill，或反馈 skill 表现退化/行为异常（触发不准、过度确认、上下文臃肿、skill 间冲突）时使用；也用于 skill 测试集建设。动笔改动任何 skill 文件（SKILL.md、references、scripts、tests）前同样先加载本 skill——含修复、转换、考察等任务中的顺带改动，按动作判定不按任务归类判定。不用于执行 skill 所服务的业务任务本身；不用于普通文档写作润色（writing skill 的事）。
 ---
 
 # Skill 创建与迭代
@@ -126,7 +126,7 @@ description: 创建、修改与审查 agent skill 的纪律与流程。当用户
 ## 冷启动（无日志、无测试集时）
 
 1. 投诉即第一份证据，已满足证据闸
-2. 从投诉与历史对话摘 3–5 条输入建冒烟集，预置固定目录
+2. 从投诉与历史对话摘 3–5 条输入建冒烟集，预置固定目录；建集前读 [testing-guide.md](references/testing-guide.md) 的语料采集与用例模板
 3. 回归：失败用例 + 冒烟集；全量等测试集长大
 4. 证据日志从一个追加式 markdown 起步（见「证据体系」）；捕获机制等真实取证缺口拉动再建（[references/harness.md](references/harness.md)）
 

@@ -46,6 +46,65 @@ def make_opencode_db(path):
     conn.close()
 
 
+def make_opencode_db_two_gen(path):
+    """2026-11-24 起的新格式：assistant 消息 content 为空数组，
+    部件在 session_part 表；同库可并存旧格式（内联 content）。"""
+    conn = sqlite3.connect(path)
+    conn.execute(
+        "CREATE TABLE session_v2 (id TEXT PRIMARY KEY, directory TEXT, "
+        "title TEXT, model TEXT, time_created INTEGER, parent_id TEXT)")
+    conn.execute(
+        "CREATE TABLE session_message (id TEXT PRIMARY KEY, session_id TEXT, "
+        "type TEXT, seq INTEGER, data TEXT)")
+    conn.execute(
+        "CREATE TABLE session_part (message_id TEXT, session_id TEXT, "
+        "ordinal INTEGER, type TEXT, call_id TEXT, time_created INTEGER, "
+        "time_updated INTEGER, data TEXT, "
+        "PRIMARY KEY(message_id, ordinal))")
+    t = int(se.day_ms("2026-11-24"))
+    conn.execute("INSERT INTO session_v2 VALUES (?,?,?,?,?,?)",
+                 ("ses_new", "/repo/x", "新格式", "m1", t, None))
+    msgs = [
+        ("n1", "ses_new", "user", 1, {"text": "新格式问题"}),
+        # 新格式：content 空，部件在 session_part
+        ("n2", "ses_new", "assistant", 2,
+         {"content": [], "finish": "tool-calls"}),
+        # 新格式：finish=error 可以无部件（合法无部件形态）
+        ("n3", "ses_new", "assistant", 3,
+         {"content": [], "finish": "error"}),
+        # 新格式：finish=null（中断）可以无部件（合法无部件形态）
+        ("n5", "ses_new", "assistant", 5, {"content": []}),
+        # 旧格式：内联 content，同会话并存
+        ("n4", "ses_new", "assistant", 4, {"content": [
+            {"type": "text", "text": "旧格式答复"},
+            {"type": "tool", "name": "glob"}]}),
+    ]
+    conn.executemany(
+        "INSERT INTO session_message VALUES (?,?,?,?,?)",
+        [(i, s, ty, q, json.dumps(d)) for i, s, ty, q, d in msgs])
+    parts = [
+        ("n2", "ses_new", 0, "reasoning",
+         {"type": "reasoning", "text": "新格式推理"}),
+        ("n2", "ses_new", 1, "text",
+         {"type": "text", "text": "新格式答复"}),
+        ("n2", "ses_new", 2, "tool",
+         {"type": "tool", "name": "shell",
+          "state": {"status": "completed",
+                    "input": {"command": "ls"},
+                    "content": [{"type": "text", "text": "..."}]}}),
+        ("n2", "ses_new", 3, "tool",
+         {"type": "tool", "name": "edit",
+          "state": {"status": "completed",
+                    "input": {"path": "/repo/x/a.py"},
+                    "content": []}}),
+    ]
+    conn.executemany(
+        "INSERT INTO session_part VALUES (?,?,?,?,NULL,0,0,?)",
+        [(m, s, o, ty, json.dumps(d)) for m, s, o, ty, d in parts])
+    conn.commit()
+    conn.close()
+
+
 def make_codex_root(root):
     day = Path(root) / "sessions" / "2026" / "10" / "03"
     day.mkdir(parents=True)
@@ -134,6 +193,52 @@ class TestOpenCodeAdapter(unittest.TestCase):
         with self.assertRaises(SystemExit) as ctx:
             self.a.assert_session("ses_不存在")
         self.assertIn("不存在", str(ctx.exception))
+
+
+class TestOpenCodeTwoGenFormat(unittest.TestCase):
+    """2026-11-24 起 assistant 部件迁入 session_part 表的两代并存格式。"""
+
+    def setUp(self):
+        self.tmp = TemporaryDirectory()
+        self.db = str(Path(self.tmp.name) / "t2.db")
+        make_opencode_db_two_gen(self.db)
+        self.a = se.OpenCodeAdapter(self.db)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_parts_from_session_part_table(self):
+        self.assertEqual(list(self.a.assistant_texts("ses_new")),
+                         ["新格式答复", "旧格式答复"])
+        self.assertEqual(list(self.a.reasoning("ses_new")), ["新格式推理"])
+        self.assertEqual(list(self.a.tool_names("ses_new")),
+                         ["shell", "edit", "glob"])
+
+    def test_partless_error_message_is_legit(self):
+        # finish=error/null 且无部件是合法形态，不触发漂移守卫
+        self.assertEqual(list(self.a.tool_names("ses_new")),
+                         ["shell", "edit", "glob"])
+
+    def test_tool_calls_finish_without_parts_fails_loudly(self):
+        # finish=tool-calls 但 session_part 无该消息部件 → 漂移，大声失败
+        conn = sqlite3.connect(self.db)
+        conn.execute("DELETE FROM session_part WHERE message_id='n2'")
+        conn.commit()
+        conn.close()
+        with self.assertRaises(SystemExit) as ctx:
+            list(self.a.tool_names("ses_new"))
+        self.assertIn("漂移", str(ctx.exception))
+
+    def test_missing_part_table_with_new_format_fails_loudly(self):
+        # 库无 session_part 表但存在新格式消息 → 漂移，大声失败
+        conn = sqlite3.connect(self.db)
+        conn.execute("ALTER TABLE session_part RENAME TO session_part_gone")
+        conn.commit()
+        conn.close()
+        a2 = se.OpenCodeAdapter(self.db)
+        with self.assertRaises(SystemExit) as ctx:
+            list(a2.tool_names("ses_new"))
+        self.assertIn("漂移", str(ctx.exception))
 
 
 class TestCodexAdapter(unittest.TestCase):

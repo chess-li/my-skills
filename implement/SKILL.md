@@ -1,6 +1,6 @@
 ---
 name: implement
-description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue、派生验收清单、逐条验证强制闭环，执行状态落 issue 文件，支持中断续写。用于：spec 就绪进入实现（含在已有能力上追加新能力）；抓取待办 issue（frontier）；任务中断需要续写；存量归档壳与同上下文多份能力归档的归一清点（按 spec/design/代码核对：迁入 features/ 或过期删、仍成立的待办问用户，不落汇总文件）。不用于澄清需求与验收标准（spec skill 的事）；不用于制定或变更技术决策（design skill 的事）；不用于 issue 格式与生命周期（issues skill 的事）；不用于存量代码全量生成/重建前端对接文档（frontend-api-doc 的事）；不用于会话间交接（handoff 的事）；不触及 spec 断言的改动（纯实现细节、重构）不触发。
+description: 按验收标准实现就绪的 spec：从 docs/issues/ 抓取 issue、派生验收清单、逐条验证强制闭环，执行状态落 issue 文件，支持中断续写。用于：spec 就绪进入实现（含在已有能力上追加新能力）；抓取待办 issue（frontier）或完成指定 issue（「完成issueXX」形态）；任务中断需要续写；存量归档壳与同上下文多份能力归档的归一清点（按 spec/design/代码核对：迁入 features/ 或过期删、仍成立的待办问用户，不落汇总文件）。不用于澄清需求与验收标准（spec skill 的事）；不用于制定或变更技术决策（design skill 的事）；不用于 issue 格式与生命周期（issues skill 的事）；不用于存量代码全量生成/重建前端对接文档（frontend-api-doc 的事）；不用于会话间交接（handoff 的事）；不触及 spec 断言的改动（纯实现细节、重构）不触发。
 ---
 
 # Spec 实现
