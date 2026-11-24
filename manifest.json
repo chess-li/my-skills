@@ -2,7 +2,7 @@
   "schema": "grokbot-skills-sync/v2",
   "source": {
     "repo": "https://github.com/chess-li/my-skills.git",
-    "commit": "506ca526be283992256f84b4584a52b63e8f5a4e",
+    "commit": "4c56fa4dfcbd7e7fddc7eeb8e4c857136ebb39e8",
     "dirty": true
   },
   "skills": [
