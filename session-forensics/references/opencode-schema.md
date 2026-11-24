@@ -52,4 +52,6 @@ WHERE p.session_id = ? ORDER BY m.seq, p.ordinal;
 - edit/write 工具入参路径字段 `filePath` 与 `path` 并存（同库两种都出现），统计编辑足迹时必须 coalesce 两字段，否则漏计。
 - `users` 子命令只剔空消息；用户消息里仍可能混入 system-reminder 等注入形态，还原真人输入时须人工剔除（类型层的 system/synthetic 见上节）。
 - 子代理会话量大且是主会话的执行细节；`list`/`stats` 默认含子代理会话，宏观统计加 `--main-only`（`parent_id IS NULL`）分出主会话，再决定是否下钻。归属主会话的编辑足迹用递归 CTE 沿 parent_id 汇总。
+- 编排器驱动的 worker 会话混在主会话里（`parent_id` 为空但非真人会话）：首条用户消息为派发词形态（「Act as the … sub-agent for this task.」、goal 启动「Start working toward this goal: …」等），其 user 消息是父代理的派发与纠正、不是真人输入；宏观统计与真人输入分析必须识别并分开，否则真人口径失真（2026-11-24 复盘实测：261 个主会话中 71 个为 t3/goal worker，占 27%）。
+- 即席 SQL 的窗口边界 epoch 用 `date` 计算（macOS `date -j -f "%Y-%m-%d %H:%M:%S" "2026-10-24 00:00:00" +%s`，产出秒，×1000 为毫秒边界），不手算——2026-11-24 复盘实测手算错一年（2026 当成 2025），靠 `MIN(time_created)` 与下界矛盾才发现。
 - 会话库只记本会话 harness；Codex 的 rollout jsonl 等其他 harness 的会话存储各找各的。

@@ -24,6 +24,7 @@
 
 - reasoning 加密：以 summary 有无文本为准；提取结果为 None 即不可读——报告条数，不编造内容。
 - `role=user` 消息大量是环境与指令注入（`environment_context`、AGENTS.md 注入、`external_codex_apps` 等）；还原真人输入须人工剔除，脚本只剔空消息。
+- goal 编排形态同样非真人输入：`<codex_internal_context source="goal">`（goal 自动续轮心跳，长 goal 会话里可占 user 消息相当比例）、`Delegated task node:…`（委派完成回执）、worker 会话首条「Act as the … sub-agent for this task.」派发词；剔除清单与统计口径都要覆盖（2026-11-24 复盘实测：180 会话 1075 条用户消息中 413 条为注入/心跳/回执形态）。
 - 列表的 `created` = 首份 rollout 文件名日期；resume 会话在 `--since` 过滤下按首份文件日期的口径计数。
 - jsonl 无 schema 可守：解析失败的行跳过并计数，尾部报告；payload 非 dict 的行同样跳过；候选文件名不匹配命名方案时计数报障——2026-09 前存在 `ses_*` 旧命名的孤儿 rollout，不匹配计数基线可能非零，关注计数**变化**，不关注绝对值。
 - 会话无 title 字段（列表标题列展示 `originator`）；`session_meta` 另有 `model_provider` 等字段，是否稳定可用未核实。
