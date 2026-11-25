@@ -2,7 +2,7 @@
   "schema": "grokbot-skills-sync/v2",
   "source": {
     "repo": "https://github.com/chess-li/my-skills.git",
-    "commit": "d56f500b003c8b27110e501ebd5ba3fad894c2d8",
+    "commit": "9f3ce13d263c1963dde651b1241308e1d75e0a03",
     "dirty": true
   },
   "skills": [
@@ -89,6 +89,12 @@
       "name": "generate-tpd-report",
       "description": "根据转让定价工作底稿 Excel 与上期 Word 报告，依据外置业务规则 Skill 包生成本期 TPD 报告模板与区域差异报告。纯声明式驱动，解析全部由内部 Python 脚本承载，支持流程A编译与 ETL 承载。",
       "dir": "generate-tpd-report"
+    },
+    {
+      "id": "git-mutations",
+      "name": "git-mutations",
+      "description": "git 写操作的授权纪律与防护实践：整理/重新提交、迁移提交（cherry-pick/rebase）、推送远端、删除分支或未跟踪文件等独立 git 任务的授权默认值、历史改写防护与交付口径。用于：用户要求整理/重新提交/压缩提交、迁移提交到别分支、推送或处理与远端的差异、删除分支/文件等 git 写操作任务。不用于：issue 驱动实现流程内的切片提交与 squash 合入（implement 的事）；worktree 作业位置裁决（worktree 的事）。",
+      "dir": "git-mutations"
     },
     {
       "id": "handoff",
